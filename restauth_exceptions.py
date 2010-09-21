@@ -14,7 +14,7 @@ class RestAuthException( Exception ):
 
 class ResourceNotFound( RestAuthException ):
 	"""
-	Common base class for resources (L{users<User.User>}, L{groups<Group.Group>}) not found.
+	Common base class for resources (L{users<user.User>}, L{groups<Group.Group>}) not found.
 	"""
 	pass
 

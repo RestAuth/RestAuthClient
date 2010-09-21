@@ -1,12 +1,12 @@
 #!/usr/bin/python3
 
-import group, user, common
+import group, restauth_user, common
 
 conn = common.RestAuthConnection( 'localhost', 8000, 'vowi', 'vowi', False )
-u = user.User.get( conn, 'user1' )
+u = restauth_user.User.get( conn, 'user1' )
 
 
-print( user.User.get_all( conn ) )
+print( restauth_user.User.get_all( conn ) )
 u.set_password( 'foo bar' )
 if u.verify_password( 'foo bar' ):
 	print( 'verified' )
@@ -40,13 +40,13 @@ print( u.get_properties() )
 print( "\n\n\nTest groups" )
 g = group.Group( conn, 'vowi1' )
 print( g.get_members() )
-g.add_user( user.User( conn, 'user5') )
+g.add_user( restauth_user.User( conn, 'user5') )
 print( g.get_members() )
 print( group.Group.get_all( conn ) )
 
 try:
 	print( "Get non-existing user... ", end="" )
-	u_ne = user.User.get( conn, 'user_foobar' )
+	u_ne = restauth_user.User.get( conn, 'user_foobar' )
 	print( "FOUND!?" )
-except user.UserNotFound:
+except restauth_user.UserNotFound:
 	print( "ok (not found)." )

@@ -3,7 +3,8 @@ Module handling code relevant to group handling.
 """
 import json
 
-import common, user, restauth_exceptions
+import common, restauth_user
+from restauth_exceptions import *
 
 class GroupNotFound( ResourceNotFound ):
 	"""
@@ -67,7 +68,7 @@ class Group( common.RestAuthResource ):
 		L{UserNotFound} if not. 
 
 		@return: The user object representing the user just created.
-		@rtype: L{user.User}
+		@rtype: L{User}
 		@raise UserNotFound: If the user does not exist in RestAuth.
 		@todo: handle response codes more carefully
 		@todo: implement this code
@@ -90,7 +91,7 @@ class Group( common.RestAuthResource ):
 		@param recursive: Set to False to exclude memberships inherited
 			from other groups.
 		@type  recursive: boolean
-		@return: A list of L{users<user.User>}.
+		@return: A list of L{users<User>}.
 		@rtype: list
 		@raise GroupNotFound: If the group does not exist.
 		@todo: document general exceptions
@@ -103,7 +104,7 @@ class Group( common.RestAuthResource ):
 		if resp.status == 200:
 			# parse user-list:
 			names = json.loads( resp.read().decode( 'utf-8' ) )
-			users = [ user.User( self.conn, name ) for name in names ]
+			users = [ restauth_user.User( self.conn, name ) for name in names ]
 			return users
 		elif resp.status == 404:
 			raise GroupNotFound( name )
@@ -115,7 +116,7 @@ class Group( common.RestAuthResource ):
 		Add a user to this group.
 
 		@param user: The user to add.
-		@type  user: L{user.User}
+		@type  user: L{user}
 		@param autocreate: Set to False if you not want to automatically
 			create the group.
 		@raise GroupNotFound: If the user is not found or if the group 
@@ -185,7 +186,7 @@ class Group( common.RestAuthResource ):
 		Check if the named user is a member.
 		
 		@param user: The user in question.
-		@type  user: L{user.User}
+		@type  user: L{User}
 		@raise GroupNotFound: If the user or the group does not exist.
 		@todo: It should be possible that user is a str.
 		@todo: document general exceptions

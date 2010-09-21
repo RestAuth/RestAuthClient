@@ -1,5 +1,5 @@
 NAME="RestAuthClient"
-MODULES=user group exceptions common
+MODULES=restauth_user group restauth_exceptions common
 DOC_DIR="doc"
 HTML_DIR="${DOC_DIR}/html"
 PDF_DIR="${DOC_DIR}/pdf"

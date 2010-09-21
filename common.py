@@ -197,7 +197,7 @@ class RestAuthConnection:
 
 class RestAuthResource:
 	"""
-	Superclass for L{User} and L{Group} objects. Exists to wrap http
+	Superclass for L{user.User} and L{group.Group} objects. Exists to wrap http
 	requests with the prefix of the given resource.
 	"""
 
