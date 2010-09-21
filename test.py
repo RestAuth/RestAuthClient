@@ -1,12 +1,12 @@
 #!/usr/bin/python3
 
-import Group, User, RestAuthCommon
+import group, user, common
 
-conn = RestAuthCommon.RestAuthConnection( 'localhost', 8000, 'vowi', 'vowi', False )
-u = User.User.get( conn, 'user1' )
+conn = common.RestAuthConnection( 'localhost', 8000, 'vowi', 'vowi', False )
+u = user.User.get( conn, 'user1' )
 
 
-print( User.User.get_all( conn ) )
+print( user.User.get_all( conn ) )
 u.set_password( 'foo bar' )
 if u.verify_password( 'foo bar' ):
 	print( 'verified' )
@@ -38,15 +38,15 @@ u.del_property( 'bar' )
 print( u.get_properties() )
 
 print( "\n\n\nTest groups" )
-g = Group.Group( conn, 'vowi1' )
+g = group.Group( conn, 'vowi1' )
 print( g.get_members() )
-g.add_user( User.User( conn, 'user5') )
+g.add_user( user.User( conn, 'user5') )
 print( g.get_members() )
-print( Group.Group.get_all( conn ) )
+print( group.Group.get_all( conn ) )
 
 try:
 	print( "Get non-existing user... ", end="" )
-	u_ne = User.User.get( conn, 'user_foobar' )
+	u_ne = user.User.get( conn, 'user_foobar' )
 	print( "FOUND!?" )
-except User.UserNotFound:
+except user.UserNotFound:
 	print( "ok (not found)." )

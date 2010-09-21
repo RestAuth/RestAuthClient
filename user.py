@@ -2,8 +2,8 @@
 Module handling code relevant to user authentication and property management.
 """
 
-from Exceptions import *
-import RestAuthCommon
+from restauth_exceptions import *
+import common
 
 class UserNotFound( ResourceNotFound ):
 	"""
@@ -17,7 +17,7 @@ class UserExists( ResourceConflict):
 	"""
 	pass
 
-class User( RestAuthCommon.RestAuthResource ):
+class User( common.RestAuthResource ):
 	"""
 	This class acts as a frontend for actions related to users.
 	"""

@@ -3,9 +3,7 @@ Module handling code relevant to group handling.
 """
 import json
 
-import RestAuthCommon
-from Exceptions import *
-import User
+import common, user, restauth_exceptions
 
 class GroupNotFound( ResourceNotFound ):
 	"""
@@ -19,7 +17,7 @@ class GroupExists( ResourceConflict ):
 	"""
 	pass
 
-class Group( RestAuthCommon.RestAuthResource ):
+class Group( common.RestAuthResource ):
 	prefix = '/groups/'
 
 	@staticmethod
@@ -69,7 +67,7 @@ class Group( RestAuthCommon.RestAuthResource ):
 		L{UserNotFound} if not. 
 
 		@return: The user object representing the user just created.
-		@rtype: L{User}
+		@rtype: L{user.User}
 		@raise UserNotFound: If the user does not exist in RestAuth.
 		@todo: handle response codes more carefully
 		@todo: implement this code
@@ -92,7 +90,7 @@ class Group( RestAuthCommon.RestAuthResource ):
 		@param recursive: Set to False to exclude memberships inherited
 			from other groups.
 		@type  recursive: boolean
-		@return: A list of L{users<User>}.
+		@return: A list of L{users<user.User>}.
 		@rtype: list
 		@raise GroupNotFound: If the group does not exist.
 		@todo: document general exceptions
@@ -105,7 +103,7 @@ class Group( RestAuthCommon.RestAuthResource ):
 		if resp.status == 200:
 			# parse user-list:
 			names = json.loads( resp.read().decode( 'utf-8' ) )
-			users = [ User.User( self.conn, name ) for name in names ]
+			users = [ user.User( self.conn, name ) for name in names ]
 			return users
 		elif resp.status == 404:
 			raise GroupNotFound( name )
@@ -117,7 +115,7 @@ class Group( RestAuthCommon.RestAuthResource ):
 		Add a user to this group.
 
 		@param user: The user to add.
-		@type  user: L{User}
+		@type  user: L{user.User}
 		@param autocreate: Set to False if you not want to automatically
 			create the group.
 		@raise GroupNotFound: If the user is not found or if the group 
@@ -187,7 +185,7 @@ class Group( RestAuthCommon.RestAuthResource ):
 		Check if the named user is a member.
 		
 		@param user: The user in question.
-		@type  user: L{User}
+		@type  user: L{user.User}
 		@raise GroupNotFound: If the user or the group does not exist.
 		@todo: It should be possible that user is a str.
 		@todo: document general exceptions
