@@ -29,6 +29,8 @@ class Group( common.RestAuthResource ):
 		@return: The group object representing the group just created.
 		@rtype: Group
 		@raise GroupExists: When the user already exists.
+		@raise BadRequest: When the RestAuth service returns HTTP status code 400
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		"""
 		resp = conn.post( Group.prefix, { 'group': name } )
 		if resp.status == 201:
@@ -36,7 +38,7 @@ class Group( common.RestAuthResource ):
 		elif resp.status == 409:
 			raise GroupExists( "Conflict." )
 		else:
-			self.handle_status_codes( body, resp )
+			raise UnknownStatus( resp )
 
 	@staticmethod
 	def get_all( conn, user=None, recursive=True ):
@@ -46,7 +48,8 @@ class Group( common.RestAuthResource ):
 
 		@return: A list of Group objects
 		@rtype: List of L{groups<Group>}
-		@todo: handle response codes more carefully
+		@raise BadRequest: When the RestAuth service returns HTTP status code 400
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		"""
 		params = {}
 		if user:
@@ -59,7 +62,7 @@ class Group( common.RestAuthResource ):
 			names = json.loads( resp.read().decode( 'utf-8' ) )
 			return [ Group( conn, name ) for name in names ]
 		else:
-			raise UnknownStatus( resp.status )
+			raise UnknownStatus( resp )
 
 	def get( conn, name ):
 		"""
@@ -70,8 +73,9 @@ class Group( common.RestAuthResource ):
 		@return: The user object representing the user just created.
 		@rtype: L{User}
 		@raise UserNotFound: If the user does not exist in RestAuth.
-		@todo: handle response codes more carefully
 		@todo: implement this code
+		@raise BadRequest: When the RestAuth service returns HTTP status code 400
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		"""
 		pass
 
@@ -94,7 +98,8 @@ class Group( common.RestAuthResource ):
 		@return: A list of L{users<User>}.
 		@rtype: list
 		@raise GroupNotFound: If the group does not exist.
-		@todo: document general exceptions
+		@raise BadRequest: When the RestAuth service returns HTTP status code 400
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		"""
 		params = {}
 		if not recursive:
@@ -109,7 +114,7 @@ class Group( common.RestAuthResource ):
 		elif resp.status == 404:
 			raise GroupNotFound( name )
 		else:
-			self.handle_status_codes( '', resp )
+			raise UnknownStatus( resp )
 
 	def add_user( self, user, autocreate=True ):
 		"""
@@ -121,8 +126,9 @@ class Group( common.RestAuthResource ):
 			create the group.
 		@raise GroupNotFound: If the user is not found or if the group 
 			does not exists and autocreate=False
+		@raise BadRequest: When the RestAuth service returns HTTP status code 400
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		@todo: It should be possible that user is a str.
-		@todo: document general exceptions
 		"""
 		params = { 'user': user.name }
 		if autocreate:
@@ -137,7 +143,7 @@ class Group( common.RestAuthResource ):
 			else:
 				raise ResourceNotFound( name )
 		else:
-			self.handle_status_codes( body, resp )
+			raise UnknownStatus( resp )
 
 	def add_group( self, group, autocreate=True ):
 		"""
@@ -149,8 +155,9 @@ class Group( common.RestAuthResource ):
 			create the (parent) group.
 		@raise GroupNotFound: If the child group is not found or if the
 			parent group does not exists and autocreate=False
+		@raise BadRequest: When the RestAuth service returns HTTP status code 400
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		@todo: It should be possible that group is a str.
-		@todo: document general exceptions
 		"""
 		params = { 'group': group.name }
 		if autocreate:
@@ -165,13 +172,15 @@ class Group( common.RestAuthResource ):
 			else:
 				raise ResourceNotFound( name )
 		else:
-			self.handle_status_codes( body, resp )
+			raise UnknownStatus( resp )
 
 	def delete( self ):
 		"""
 		Delete this group.
 		
 		@raise GroupNotFound: If the group does not exist.
+		@raise BadRequest: When the RestAuth service returns HTTP status code 400
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		"""
 		resp = self._delete( self.name )
 		if resp.status == 200:
@@ -179,7 +188,7 @@ class Group( common.RestAuthResource ):
 		elif resp.status == 404:
 			raise GroupNotFound( name )
 		else:
-			self.handle_status_codes( '', resp )
+			raise UnknownStatus( resp )
 
 	def is_member( self, user ):
 		"""
@@ -188,8 +197,9 @@ class Group( common.RestAuthResource ):
 		@param user: The user in question.
 		@type  user: L{User}
 		@raise GroupNotFound: If the user or the group does not exist.
+		@raise BadRequest: When the RestAuth service returns HTTP status code 400
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		@todo: It should be possible that user is a str.
-		@todo: document general exceptions
 		"""
 		params = { 'user': user.name }
 
@@ -202,7 +212,7 @@ class Group( common.RestAuthResource ):
 			else:
 				raise ResourceNotFound( name )
 		else:
-			self.handle_status_codes( body, resp )
+			raise UnknownStatus( resp )
 
 	def add_group( self, group, autocreate=True ):
 		"""
@@ -215,7 +225,8 @@ class Group( common.RestAuthResource ):
 		@return: True if the user is a member, False otherwise.
 		@rtype: boolean
 		@raise GroupNotFound: If the group does not exist.
-		@todo: document general exceptions
+		@raise BadRequest: When the RestAuth service returns HTTP status code 400
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		@todo: It should be possible that user is a str.
 		"""
 		resp = self._get( '%s/%s'%(self.name, user.name) )
@@ -228,7 +239,7 @@ class Group( common.RestAuthResource ):
 			else:
 				raise GroupNotFound( name )
 		else:
-			self.handle_status_codes( '', resp )
+			raise UnknownStatus( resp )
 
 	def remove_user( self, user ):
 		"""
@@ -237,7 +248,8 @@ class Group( common.RestAuthResource ):
 		@raise GroupNotFound: If the group does not exist.
 		@raise ResourceNotFound: If the group is not found I{or} if the
 			user is not a member of the group.
-		@todo: document general exceptions
+		@raise BadRequest: When the RestAuth service returns HTTP status code 400
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		@todo: It should be possible that user is a str.
 		"""
 		resp = self._delete( '%s/%s'%(self.name, user.name), 'DELETE' )
@@ -246,7 +258,7 @@ class Group( common.RestAuthResource ):
 		elif resp.status == 404:
 			raise ResourceNotFound( name )
 		else:
-			self.handle_status_codes( '', resp )
+			raise UnknownStatus( resp )
 
 	def __repr__( self ):
 		return '<Group: %s>'%(self.name)

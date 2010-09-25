@@ -23,9 +23,8 @@ class RestAuthInternalException( RestAuthException ):
 	Base class for errors internal to RestAuth and where the error is not
 	related to user input.
 	"""
-	def __init__( self, status, body ):
-		self.status = status
-		self.body = body
+	def __init__( self, response ):
+		self.response = response
 
 class BadRequest( RestAuthInternalException ):
 	"""
@@ -35,9 +34,7 @@ class BadRequest( RestAuthInternalException ):
 	This exception is only thrown when using either the POST or PUT HTTP
 	methods.
 	"""
-	def __init__( self, requ_body, resp_body ):
-		self.requ_body = requ_body
-		self.resp_body = resp_body 
+	pass
 
 class InternalServerError( RestAuthInternalException ):
 	"""
@@ -47,9 +44,7 @@ class InternalServerError( RestAuthInternalException ):
 	This exception can be thrown by every method that interacts with the
 	RestAuth service.
 	"""
-	def __init__( self, body ):
-		self.status = 500
-		self.body = body 
+	pass
 
 class UnknownStatus( RestAuthInternalException ):
 	"""

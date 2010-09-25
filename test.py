@@ -1,8 +1,43 @@
 #!/usr/bin/python3
 
+import unittest
 import group, restauth_user, common
 
-conn = common.RestAuthConnection( 'localhost', 8000, 'vowi', 'vowi', False )
+class RestAuthTestCase( unittest.TestCase ):
+	def setUp( self ):
+		self.conn = common.RestAuthConnection( 'localhost', 8000, 'vowi', 'vowi', False )
+
+		if restauth_user.User.get_all( self.conn ):
+			raise RuntimeError( "Left over users!" )
+
+		if group.Group.get_all( self.conn ):
+			raise RuntimeError( "Left over groups!" )
+
+class TestAddUser( RestAuthTestCase ):
+	def test_add_user_one( self ):
+		print( "AddUser: 1" )
+
+	def test_add_user_two( self ):
+		print( "AddUser: 2" )
+	
+	def test_add_user_three( self ):
+		print( "AddUser: 3" )
+
+class TestDelUser( RestAuthTestCase ):
+	def test_del_user_one( self ):
+		print( 'DelUser: 1' )
+	
+	def test_del_user_two( self ):
+		print( 'DelUser: 2' )
+	
+	def test_del_user_three( self ):
+		print( 'DelUser: 3' )
+
+unittest.main()
+
+import sys
+sys.exit()
+
 u = restauth_user.User.get( conn, 'user1' )
 
 

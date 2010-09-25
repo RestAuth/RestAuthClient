@@ -34,8 +34,9 @@ class User( common.RestAuthResource ):
 		@return: The user object representing the user just created.
 		@rtype: L{User}
 		@raise UserExists: If the user already exists.
+		@raise BadRequest: When the RestAuth service returns HTTP status code 400
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		@raise UnknownStatus: If the response status is unknown.
-		@todo: handle response codes more carefully
 		"""
 		params = { 'user': name, 'password': pwd }
 		resp = conn.post( User.prefix, params )
@@ -56,7 +57,8 @@ class User( common.RestAuthResource ):
 		@return: The user object representing the user just created.
 		@rtype: L{User}
 		@raise UserNotFound: If the user does not exist in RestAuth.
-		@todo: handle response codes more carefully
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise UnknownStatus: If the response status is unknown.
 		"""
 		# this just verify that the user exists in RestAuth:
 		resp = conn.get( '/users/%s/'%(name) )
@@ -66,7 +68,7 @@ class User( common.RestAuthResource ):
 		elif resp.status == 404:
 			raise UserNotFound( name )
 		else:
-			self.handle_status_codes( body, resp )
+			raise UnknownStatus( resp )
 	
 	@staticmethod
 	def get_all( conn ):
@@ -75,7 +77,8 @@ class User( common.RestAuthResource ):
 
 		@return: A list of User objects
 		@rtype: List of L{users<User>}
-		@todo: handle response codes more carefully
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise UnknownStatus: If the response status is unknown.
 		"""
 		resp = conn.get( User.prefix )
 		
@@ -88,7 +91,7 @@ class User( common.RestAuthResource ):
 				users.append( User( conn, name ) )
 			return users
 		else:
-			self.handle_status_codes( body, resp )
+			raise UnknownStatus( resp )
 
 	def __init__( self, conn, name ):
 		"""
@@ -104,7 +107,8 @@ class User( common.RestAuthResource ):
 		Set the password of the given user.
 
 		@raise UserNotFound: If the user does not exist in RestAuth.
-		@todo: Document general exceptions
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise UnknownStatus: If the response status is unknown.
 		"""
 		resp = self._put( self.name, { 'password': pwd } )
 		if resp.status == 200:
@@ -112,7 +116,7 @@ class User( common.RestAuthResource ):
 		elif resp.status == 404:
 			raise UserNotFound( self.name )
 		else:
-			self.handle_status_codes( body, resp )
+			raise UnknownStatus( resp )
 
 	def verify_password( self, pwd ):
 		"""
@@ -121,7 +125,8 @@ class User( common.RestAuthResource ):
 		@return: True if the password is correct, False if the password
 			is wrong or the user does not exist.
 		@rtype: boolean
-		@todo: Document general exceptions
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise UnknownStatus: If the response status is unknown.
 		"""
 		resp = self._post( self.name, { 'password': pwd } )
 		if resp.status == 200:
@@ -129,14 +134,15 @@ class User( common.RestAuthResource ):
 		elif resp.status == 404:
 			return False
 		else:
-			self.handle_status_codes( body, resp )
+			raise UnknownStatus( resp )
 
 	def delete( self ):
 		"""
 		Delete this user.
 
 		@raise UserNotFound: If the user does not exist in RestAuth.
-		@todo: Document general exceptions
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise UnknownStatus: If the response status is unknown.
 		"""
 		resp = self._delete( self.name )
 		if resp.status == 200:
@@ -144,7 +150,7 @@ class User( common.RestAuthResource ):
 		if resp.status == 404:
 			raise UserNotFound( self.name )
 		else:
-			self.handle_status_codes( body, resp )
+			raise UnknownStatus( resp )
 
 	def get_properties( self ):
 		"""
@@ -153,7 +159,8 @@ class User( common.RestAuthResource ):
 		@return: A dictionary containing key/value pairs.
 		@rtype: dict
 		@raise UserNotFound: If the user does not exist in RestAuth.
-		@todo: Document general exceptions
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise UnknownStatus: If the response status is unknown.
 		"""
 		resp = self._get( self.name, prefix='/userprops/' )
 		if resp.status == 200:
@@ -163,7 +170,7 @@ class User( common.RestAuthResource ):
 		elif resp.status == 404:
 			raise UserNotFound( self.name )
 		else:
-			self.handle_status_codes( body, resp )
+			raise UnknownStatus( resp )
 
 	def create_property( self, prop, value ):
 		"""
@@ -172,8 +179,9 @@ class User( common.RestAuthResource ):
 		if the property already exists.
 
 		@raise UserNotFound: If the user does not exist in RestAuth.
-		@todo: Document general exceptions
 		@todo: Raise correct exception in case of conflict
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise UnknownStatus: If the response status is unknown.
 		"""
 		params = { 'prop': prop, 'value': value }
 		resp = self._post( self.name, params=params, prefix='/userprops/' )
@@ -184,7 +192,7 @@ class User( common.RestAuthResource ):
 		elif resp.status == 409:
 			raise Exception( "Property already existed" )
 		else:
-			self.handle_status_codes( body, resp )
+			raise UnknownStatus( resp )
 
 	def set_property( self, prop, value ):
 		"""
@@ -192,9 +200,10 @@ class User( common.RestAuthResource ):
 		previous entry.
 
 		@raise UserNotFound: If the user does not exist in RestAuth.
-		@todo: Document general exceptions
 		@todo: When the response body contains the previous setting, 
 			return that. This is also a todo on the interface side.
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise UnknownStatus: If the response status is unknown.
 		"""
 		params = { 'value': value }
 		url = '%s/%s'%( self.name, prop )
@@ -204,7 +213,7 @@ class User( common.RestAuthResource ):
 		elif resp.status == 404:
 			raise UserNotFound( self.name )
 		else:
-			self.handle_status_codes( body, resp )
+			raise UnknownStatus( resp )
 
 	def get_property( self, prop ):
 		"""
@@ -213,7 +222,8 @@ class User( common.RestAuthResource ):
 		@return: The value of the property.
 		@rtype: str
 		@raise UserNotFound: If the user does not exist in RestAuth.
-		@todo: Document general exceptions
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise UnknownStatus: If the response status is unknown.
 		"""
 		url = '%s/%s'%( self.name, prop )
 		resp = self._get( url, prefix='/userprops/' )
@@ -222,14 +232,15 @@ class User( common.RestAuthResource ):
 		elif resp.status == 404:
 			raise UserNotFound( self.name )
 		else:
-			self.handle_status_codes( body, resp )
+			raise UnknownStatus( resp )
 
 	def del_property( self, prop ):
 		"""
 		Delete the given property.
 
 		@raise UserNotFound: If the user does not exist in RestAuth.
-		@todo: Document general exceptions
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise UnknownStatus: If the response status is unknown.
 		"""
 		url = '%s/%s'%( self.name, prop )
 		resp = self._delete( url, prefix='/userprops/' )
@@ -238,7 +249,7 @@ class User( common.RestAuthResource ):
 		elif resp.status == 404:
 			raise UserNotFound( self.name )
 		else:
-			self.handle_status_codes( body, resp )
+			raise UnknownStatus( resp )
 
 	def __repr__( self ):
 		return '<User: %s>'%(self.name)

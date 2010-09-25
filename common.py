@@ -39,7 +39,6 @@ class RestAuthConnection:
 		@type  use_ssl: bool
 		@param cert: The certificate to use when using SSL.
 		@type  cert: str
-		@todo: actually use SSL
 		"""
 		self.host = host
 		self.port = port
@@ -88,6 +87,15 @@ class RestAuthConnection:
 		@type    body: str
 		@param headers: A dictionary of key/value pairs of headers to set.
 		@param headers: dict
+
+		@return: The response to the request
+		@rtype: U{HTTPResponse<http://docs.python.org/py3k/library/http.client.html#httpresponse-objects>}
+
+		@raise BadRequest: When the RestAuth service returns HTTP status code 400
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+
+		@todo: catch 401/403 codes
+		@todo: actually use SSL
 		"""
 		if self.auth_header:
 			headers['Authorization'] = self.auth_header
@@ -102,7 +110,13 @@ class RestAuthConnection:
 			print( 'body: %s'%(body) )
 
 		conn.request( method, url, body, headers )
-		return conn.getresponse()
+		response = conn.getresponse()
+		if response.status == 400:
+			raise BadRequest( body, resp.read() )
+		elif response.status == 500:
+			raise InternalServerError( resp.read() )
+		else:
+			return response
 
 	def _sanitize( self, url, params ):
 		params = urlencode( params )
@@ -131,6 +145,8 @@ class RestAuthConnection:
 		@param headers: Additional headers to send with this request.
 		@type  headers: dict
 
+		@raise BadRequest: When the RestAuth service returns HTTP status code 400
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		"""
 		url, qs = self._sanitize( url, params )
 		if qs:
@@ -155,6 +171,8 @@ class RestAuthConnection:
 		@param headers: Additional headers to send with this request.
 		@type  headers: dict
 
+		@raise BadRequest: When the RestAuth service returns HTTP status code 400
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		"""
 		url, body = self._sanitize( url, params )
 		return self.send( 'POST', url, body, headers )
@@ -176,6 +194,8 @@ class RestAuthConnection:
 		@param headers: Additional headers to send with this request.
 		@type  headers: dict
 
+		@raise BadRequest: When the RestAuth service returns HTTP status code 400
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		"""
 		url, body = self._sanitize( url, params )
 		return self.send( 'PUT', url, body, headers )
@@ -191,6 +211,8 @@ class RestAuthConnection:
 		@param headers: Additional headers to send with this request.
 		@type  headers: dict
 
+		@raise BadRequest: When the RestAuth service returns HTTP status code 400
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		"""
 		url, body = self._sanitize( url, {} )
 		return self.send( 'DELETE', url, headers=headers )
@@ -205,6 +227,9 @@ class RestAuthResource:
 		"""
 		Internal method that prefixes a GET request with the resources
 		name.
+		
+		@raise BadRequest: When the RestAuth service returns HTTP status code 400
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		"""
 		if prefix:
 			url = '%s%s'%( prefix, url )
@@ -216,6 +241,9 @@ class RestAuthResource:
 		"""
 		Internal method that prefixes a POST request with the resources
 		name.
+		
+		@raise BadRequest: When the RestAuth service returns HTTP status code 400
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		"""
 		if prefix:
 			url = '%s%s'%( prefix, url )
@@ -227,6 +255,9 @@ class RestAuthResource:
 		"""
 		Internal method that prefixes a PUT request with the resources
 		name.
+		
+		@raise BadRequest: When the RestAuth service returns HTTP status code 400
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		"""
 		if prefix:
 			url = '%s%s'%( prefix, url )
@@ -238,6 +269,9 @@ class RestAuthResource:
 		"""
 		Internal method that prefixes a DELETE request with the
 		resources name.
+		
+		@raise BadRequest: When the RestAuth service returns HTTP status code 400
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		"""
 		if prefix:
 			url = '%s%s'%( prefix, url )
@@ -245,17 +279,3 @@ class RestAuthResource:
 			url = '%s%s'%( self.__class__.prefix, url )
 
 		return self.conn.delete( url, headers )
-	
-	def handle_status_codes( self, body, response ):
-		"""
-		@todo: relocate this to some place more sensible.
-		@todo: catch 401/403 codes
-		"""
-		if response.status == 400:
-			raise BadRequest( body, resp.read() )
-		elif response.status == 500:
-			raise InternalServerError( resp.read() )
-		else:   
-			raise UnknownStatus( resp.status, resp.read() )
-
-
