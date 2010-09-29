@@ -1,3 +1,6 @@
+"""
+Central code for handling connections to a RestAuth service.
+"""
 try:
 	from http import client
 except ImportError:
@@ -15,7 +18,7 @@ except ImportError:
 
 class RestAuthConnection:
 	"""
-	A connection to a RestAuth service.
+	An instance of this class represents a connection to a RestAuth service.
 	"""
 	
 	def __init__( self, host, port, user, passwd, use_ssl=True, cert='' ):
@@ -31,7 +34,8 @@ class RestAuthConnection:
 		@type  host: str
 		@param port: The port the RestAuth service listens on
 		@type  port: int
-		@param user: The service name to use for authenticating with RestAuth
+		@param user: The service name to use for authenticating with 
+			RestAuth
 		@type  user: str
 		@param passwd: The password to use for authenticating with
 			RestAuth.
@@ -68,7 +72,7 @@ class RestAuthConnection:
 		else:
 			self.auth_header = None
 
-	def send( self, method, url, body=None, headers={}):
+	def send( self, method, url, body=None, headers={} ):
 		"""
 		Send an HTTP request to the RestAuth service. This method is
 		called by the L{get}, L{post}, L{put} and L{delete} methods. 
@@ -224,11 +228,18 @@ class RestAuthConnection:
 		"""
 		url = self._sanitize_url( url )
 		return self.send( 'DELETE', url, headers=headers )
+	
+	def __eq__( self, other ):
+		return self.host == other.host and self.port == other.port and \
+			self.user == other.user and \
+			self.passwd == other.passwd and \
+			self.use_ssl == other.use_ssl and \
+			self.cert == other.cert
 
 class RestAuthResource:
 	"""
-	Superclass for L{user.User} and L{group.Group} objects. Exists to wrap http
-	requests with the prefix of the given resource.
+	Superclass for L{user<user.User>} and L{group<group.Group>} objects.
+	Exists to wrap http requests with the prefix of the given resource.
 	"""
 
 	def _get( self, url, params={}, headers={}, prefix=None ):
@@ -236,8 +247,10 @@ class RestAuthResource:
 		Internal method that prefixes a GET request with the resources
 		name.
 		
-		@raise BadRequest: When the RestAuth service returns HTTP status code 400
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise BadRequest: When the RestAuth service returns HTTP status
+			code 400
+		@raise InternalServerError: When the RestAuth service returns
+			HTTP status code 500
 		"""
 		if prefix:
 			url = '%s%s'%( prefix, url )
@@ -250,8 +263,10 @@ class RestAuthResource:
 		Internal method that prefixes a POST request with the resources
 		name.
 		
-		@raise BadRequest: When the RestAuth service returns HTTP status code 400
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise BadRequest: When the RestAuth service returns HTTP status
+			code 400
+		@raise InternalServerError: When the RestAuth service returns
+			HTTP status code 500
 		"""
 		if prefix:
 			url = '%s%s'%( prefix, url )
@@ -264,8 +279,10 @@ class RestAuthResource:
 		Internal method that prefixes a PUT request with the resources
 		name.
 		
-		@raise BadRequest: When the RestAuth service returns HTTP status code 400
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise BadRequest: When the RestAuth service returns HTTP status
+			code 400
+		@raise InternalServerError: When the RestAuth service returns
+			HTTP status code 500
 		"""
 		if prefix:
 			url = '%s%s'%( prefix, url )
@@ -278,8 +295,10 @@ class RestAuthResource:
 		Internal method that prefixes a DELETE request with the
 		resources name.
 		
-		@raise BadRequest: When the RestAuth service returns HTTP status code 400
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise BadRequest: When the RestAuth service returns HTTP status
+			code 400
+		@raise InternalServerError: When the RestAuth service returns
+			HTTP status code 500
 		"""
 		if prefix:
 			url = '%s%s'%( prefix, url )
@@ -288,9 +307,3 @@ class RestAuthResource:
 
 		return self.conn.delete( url, headers )
 
-	def __eq__( self, other ):
-		return self.host == other.host and self.port == other.port and \
-			self.user == other.user and \
-			self.passwd == other.passwd and \
-			self.use_ssl == other.use_ssl and \
-			self.cert == other.cert
