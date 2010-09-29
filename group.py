@@ -66,6 +66,7 @@ class Group( common.RestAuthResource ):
 		else:
 			raise UnknownStatus( resp )
 
+	@staticmethod
 	def get( conn, name ):
 		"""
 		Factory method that gets an I{existing} user from RestAuth. This
