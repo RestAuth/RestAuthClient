@@ -5,7 +5,7 @@ except ImportError:
 	import httplib as client
 
 import os, json, base64
-from restauth_exceptions import *
+from errors import *
 
 try:
 	from urllib.parse import quote_plus, urlencode

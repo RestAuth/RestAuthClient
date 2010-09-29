@@ -2,7 +2,7 @@
 Module handling code relevant to user authentication and property management.
 """
 
-from restauth_exceptions import *
+from errors import *
 import common
 
 class UserNotFound( ResourceNotFound ):

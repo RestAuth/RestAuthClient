@@ -1,1 +1,1 @@
-__all__ = [ 'restauth_exceptions', 'restauth_user', 'group', 'common' ]
+__all__ = [ 'common', 'errors', 'restauth_user', 'group' ]

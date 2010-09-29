@@ -4,7 +4,7 @@ Module handling code relevant to group handling.
 import json
 
 import common, restauth_user
-from restauth_exceptions import *
+from errors import *
 
 class GroupNotFound( ResourceNotFound ):
 	"""

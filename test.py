@@ -2,7 +2,7 @@
 
 import sys
 import group, restauth_user, common
-from restauth_exceptions import *
+from errors import *
 
 conn = common.RestAuthConnection( 'localhost', 8000, 'vowi', 'vowi', False )
 
