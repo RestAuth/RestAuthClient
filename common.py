@@ -4,7 +4,8 @@ except ImportError:
 	# this is for python 2.x and earlier
 	import httplib as client
 
-import os, base64
+import os, json, base64
+from restauth_exceptions import *
 
 try:
 	from urllib.parse import quote_plus, urlencode
@@ -100,33 +101,35 @@ class RestAuthConnection:
 		if self.auth_header:
 			headers['Authorization'] = self.auth_header
 
-		headers['Content-Type'] = 'application/json'
 		headers['Accept'] = 'application/json'
 	
 		# TODO: alternatively use an HTTPS connection
 		conn = client.HTTPConnection( self.host, self.port )
-		print( '%s: %s'%(method, url ) )
-		if body:
-			print( 'body: %s'%(body) )
 
 		conn.request( method, url, body, headers )
 		response = conn.getresponse()
 		if response.status == 400:
-			raise BadRequest( body, resp.read() )
+			print( response.read().decode('utf-8').replace('\n', "\n") )
+			raise BadRequest( response )
 		elif response.status == 500:
-			raise InternalServerError( resp.read() )
+			body = response.read()
+			raise InternalServerError( response )
 		else:
 			return response
 
-	def _sanitize( self, url, params ):
-		params = urlencode( params )
-
+	def _sanitize_qs( self, params ):
+		"""
+		@todo: replace still necessary?
+		"""
+		return urlencode( params ).replace( '+', '%20' )
+		
+	def _sanitize_url( self, url ):
 		# make sure that it starts and ends with /, cut double-slashes:
 		url = '%s/'%( os.path.normpath( url ) )
 		if not url.startswith( '/' ):
 			url = '/%s'%(url)
 		url = quote_plus( url, '/' )
-		return url, params
+		return url
 
 	def get( self, url, params={}, headers={} ):
 		"""
@@ -148,7 +151,8 @@ class RestAuthConnection:
 		@raise BadRequest: When the RestAuth service returns HTTP status code 400
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		"""
-		url, qs = self._sanitize( url, params )
+		url = self._sanitize_url( url )
+		qs = self._sanitize_qs( params )
 		if qs:
 			url = '%s?%s'%( url, qs )
 
@@ -174,7 +178,9 @@ class RestAuthConnection:
 		@raise BadRequest: When the RestAuth service returns HTTP status code 400
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		"""
-		url, body = self._sanitize( url, params )
+		headers['Content-Type'] = 'application/json'
+		url = self._sanitize_url( url )
+		body = json.dumps( params )
 		return self.send( 'POST', url, body, headers )
 
 	def put( self, url, params={}, headers={} ):
@@ -197,7 +203,9 @@ class RestAuthConnection:
 		@raise BadRequest: When the RestAuth service returns HTTP status code 400
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		"""
-		url, body = self._sanitize( url, params )
+		headers['Content-Type'] = 'application/json'
+		url = self._sanitize_url( url )
+		body = json.dumps( params )
 		return self.send( 'PUT', url, body, headers )
 
 	def delete( self, url, headers={} ):
@@ -214,7 +222,7 @@ class RestAuthConnection:
 		@raise BadRequest: When the RestAuth service returns HTTP status code 400
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		"""
-		url, body = self._sanitize( url, {} )
+		url = self._sanitize_url( url )
 		return self.send( 'DELETE', url, headers=headers )
 
 class RestAuthResource:
@@ -279,3 +287,10 @@ class RestAuthResource:
 			url = '%s%s'%( self.__class__.prefix, url )
 
 		return self.conn.delete( url, headers )
+
+	def __eq__( self, other ):
+		return self.host == other.host and self.port == other.port and \
+			self.user == other.user and \
+			self.passwd == other.passwd and \
+			self.use_ssl == other.use_ssl and \
+			self.cert == other.cert

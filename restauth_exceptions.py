@@ -16,6 +16,9 @@ class ResourceNotFound( RestAuthException ):
 	"""
 	Common base class for resources (L{users<user.User>}, L{groups<Group.Group>}) not found.
 	"""
+	def __init__( self, response, resource_class ):
+		self.response = response
+		self.resource_class = resource_class
 	pass
 
 class RestAuthInternalException( RestAuthException ):

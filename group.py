@@ -10,7 +10,9 @@ class GroupNotFound( ResourceNotFound ):
 	"""
 	Exception thrown when a L{Group} is not found.
 	"""
-	pass
+	def __init__( self, response ):
+		self.response = response
+		self.resource_class = Group
 
 class GroupExists( ResourceConflict ):
 	"""
@@ -34,7 +36,7 @@ class Group( common.RestAuthResource ):
 		"""
 		resp = conn.post( Group.prefix, { 'group': name } )
 		if resp.status == 201:
-			return Group( name )
+			return Group( conn, name )
 		elif resp.status == 409:
 			raise GroupExists( "Conflict." )
 		else:
@@ -124,8 +126,8 @@ class Group( common.RestAuthResource ):
 		@type  user: L{user}
 		@param autocreate: Set to False if you not want to automatically
 			create the group.
-		@raise GroupNotFound: If the user is not found or if the group 
-			does not exists and autocreate=False
+		@raise GroupNotFound: If the group does not exists and autocreate=False.
+		@raise UserNotFound: If the user does not exist.
 		@raise BadRequest: When the RestAuth service returns HTTP status code 400
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		@todo: It should be possible that user is a str.
@@ -138,10 +140,17 @@ class Group( common.RestAuthResource ):
 		if resp.status == 200:
 			return
 		elif resp.status == 404:
-			if autocreate:
-				raise GroupNotFound( name )
-			else:
-				raise ResourceNotFound( name )
+			try:
+				typ = resp.getheader( 'Resource' )
+				if typ == 'User':
+					raise restauth_user.UserNotFound( resp )
+				elif typ == 'Group':
+					raise GroupNotFound( resp )
+				else:
+					raise RuntimeError('Received wrong response header!')
+			except TypeError:
+				body = resp.read().decode( 'utf-8' ).replace( '\n', "\n" )
+				print( body )
 		else:
 			raise UnknownStatus( resp )
 
@@ -167,10 +176,7 @@ class Group( common.RestAuthResource ):
 		if resp.status == 200:
 			return
 		elif resp.status == 404:
-			if autocreate:
-				raise GroupNotFound( name )
-			else:
-				raise ResourceNotFound( name )
+			raise GroupNotFound( self.name )
 		else:
 			raise UnknownStatus( resp )
 
@@ -196,7 +202,8 @@ class Group( common.RestAuthResource ):
 		
 		@param user: The user in question.
 		@type  user: L{User}
-		@raise GroupNotFound: If the user or the group does not exist.
+		@raise GroupNotFound: If the group does not exist.
+		@raise UserNotFound: If the user does not exist.
 		@raise BadRequest: When the RestAuth service returns HTTP status code 400
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		@todo: It should be possible that user is a str.
@@ -207,37 +214,13 @@ class Group( common.RestAuthResource ):
 		if resp.status == 200:
 			return
 		elif resp.status == 404:
-			if autocreate:
-				raise GroupNotFound( name )
+			typ = resp.getheader( 'Resource' )
+			if typ == 'User':
+				raise restauth_user.UserNotFound( resp )
+			elif typ == 'Group':
+				raise GroupNotFound( resp )
 			else:
-				raise ResourceNotFound( name )
-		else:
-			raise UnknownStatus( resp )
-
-	def add_group( self, group, autocreate=True ):
-		"""
-		Add a group to this group.
-		
-		@param group: The group to add.
-		@type  group: L{Group}
-		@param autocreate: Set to False if you not want to automatically
-			create the (parent) group.
-		@return: True if the user is a member, False otherwise.
-		@rtype: boolean
-		@raise GroupNotFound: If the group does not exist.
-		@raise BadRequest: When the RestAuth service returns HTTP status code 400
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
-		@todo: It should be possible that user is a str.
-		"""
-		resp = self._get( '%s/%s'%(self.name, user.name) )
-		if resp.status == 200:
-			return True
-		elif resp.status == 404:
-			body = resp.read().strip()
-			if not body:
-				return False
-			else:
-				raise GroupNotFound( name )
+				raise RuntimeError('Received wrong response header!')
 		else:
 			raise UnknownStatus( resp )
 
@@ -246,8 +229,7 @@ class Group( common.RestAuthResource ):
 		Remove the given user from the group.
 
 		@raise GroupNotFound: If the group does not exist.
-		@raise ResourceNotFound: If the group is not found I{or} if the
-			user is not a member of the group.
+		@raise UserNotFound: If the user does not exist.
 		@raise BadRequest: When the RestAuth service returns HTTP status code 400
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		@todo: It should be possible that user is a str.
@@ -256,9 +238,18 @@ class Group( common.RestAuthResource ):
 		if resp.status == 200:
 			return
 		elif resp.status == 404:
-			raise ResourceNotFound( name )
+			typ = resp.getheader( 'Resource' )
+			if typ == 'User':
+				raise restauth_user.UserNotFound( resp )
+			elif typ == 'Group':
+				raise GroupNotFound( resp )
+			else:
+				raise RuntimeError('Received wrong response header!')
 		else:
 			raise UnknownStatus( resp )
+
+	def __eq__( self, other ):
+		return self.name == other.name
 
 	def __repr__( self ):
 		return '<Group: %s>'%(self.name)
