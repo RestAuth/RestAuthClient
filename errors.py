@@ -14,12 +14,12 @@ class RestAuthException( Exception ):
 
 class ResourceNotFound( RestAuthException ):
 	"""
-	Common base class for resources (L{users<user.User>}, L{groups<Group.Group>}) not found.
+	Common base class for resources (L{users<user.User>}, 
+	L{groups<Group.Group>} or properties) not found.
 	"""
 	def __init__( self, response, resource_class ):
 		self.response = response
 		self.resource_class = resource_class
-	pass
 
 class RestAuthInternalException( RestAuthException ):
 	"""
@@ -32,10 +32,9 @@ class RestAuthInternalException( RestAuthException ):
 class BadRequest( RestAuthInternalException ):
 	"""
 	Thrown when RestAuth was unable to parse/find the required request
-	parameters. 
+	parameters.
 
-	This exception is only thrown when using either the POST or PUT HTTP
-	methods.
+	On a protocol level, this represents HTTP status code 400.
 	"""
 	pass
 
@@ -61,5 +60,14 @@ class UnknownStatus( RestAuthInternalException ):
 class ResourceConflict( RestAuthException ):
 	"""
 	Thrown when trying to create a resource that already exists.
+
+	On a protocol level, this represents HTTP status code 409.
+	"""
+	pass
+
+class DataUnacceptable( RestAuthException ):
+	"""
+	Thrown when the submitted data was unacceptable to the system. This
+	usually occurs when the username is invalid or the password is to short.
 	"""
 	pass
