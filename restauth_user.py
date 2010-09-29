@@ -48,8 +48,11 @@ class User( common.RestAuthResource ):
 		@return: The user object representing the user just created.
 		@rtype: L{User}
 		@raise UserExists: If the user already exists.
-		@raise BadRequest: When the username or password is unacceptable to RestAuth.
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise BadRequest: When the username or password is unacceptable
+			to RestAuth.
+		@raise DataUnacceptable: When username or password is invalid
+		@raise InternalServerError: When the RestAuth service returns
+			HTTP status code 500
 		@raise UnknownStatus: If the response status is unknown.
 		"""
 		params = { 'user': name, 'password': pwd }
@@ -58,6 +61,8 @@ class User( common.RestAuthResource ):
 			return User( conn, name )
 		elif resp.status == 409:
 			raise UserExists( name )
+		elif resp.status == 412:
+			raise DataUnacceptable( resp.read() )
 		else:
 			raise UnknownStatus( resp.status )
 
@@ -71,7 +76,8 @@ class User( common.RestAuthResource ):
 		@return: The user object representing the user just created.
 		@rtype: L{User}
 		@raise UserNotFound: If the user does not exist in RestAuth.
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise InternalServerError: When the RestAuth service returns
+			HTTP status code 500
 		@raise UnknownStatus: If the response status is unknown.
 		"""
 		# this just verify that the user exists in RestAuth:
@@ -91,7 +97,8 @@ class User( common.RestAuthResource ):
 
 		@return: A list of User objects
 		@rtype: List of L{users<User>}
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise InternalServerError: When the RestAuth service returns
+			HTTP status code 500
 		@raise UnknownStatus: If the response status is unknown.
 		"""
 		resp = conn.get( User.prefix )
@@ -121,7 +128,8 @@ class User( common.RestAuthResource ):
 		Set the password of the given user.
 
 		@raise UserNotFound: If the user does not exist in RestAuth.
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise InternalServerError: When the RestAuth service returns
+			HTTP status code 500
 		@raise UnknownStatus: If the response status is unknown.
 		"""
 		resp = self._put( self.name, { 'password': pwd } )
@@ -139,7 +147,8 @@ class User( common.RestAuthResource ):
 		@return: True if the password is correct, False if the password
 			is wrong or the user does not exist.
 		@rtype: boolean
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise InternalServerError: When the RestAuth service returns
+			HTTP status code 500
 		@raise UnknownStatus: If the response status is unknown.
 		"""
 		resp = self._post( self.name, { 'password': pwd } )
@@ -155,7 +164,8 @@ class User( common.RestAuthResource ):
 		Delete this user.
 
 		@raise UserNotFound: If the user does not exist in RestAuth.
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise InternalServerError: When the RestAuth service returns
+			HTTP status code 500
 		@raise UnknownStatus: If the response status is unknown.
 		"""
 		resp = self._delete( self.name )
@@ -173,7 +183,8 @@ class User( common.RestAuthResource ):
 		@return: A dictionary containing key/value pairs.
 		@rtype: dict
 		@raise UserNotFound: If the user does not exist in RestAuth.
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise InternalServerError: When the RestAuth service returns
+			HTTP status code 500
 		@raise UnknownStatus: If the response status is unknown.
 		"""
 		resp = self._get( self.name, prefix='/userprops/' )
@@ -194,7 +205,8 @@ class User( common.RestAuthResource ):
 
 		@raise UserNotFound: If the user does not exist in RestAuth.
 		@raise PropertyExists: When the property already exists
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise InternalServerError: When the RestAuth service returns
+			HTTP status code 500
 		@raise UnknownStatus: If the response status is unknown.
 		"""
 		params = { 'prop': prop, 'value': value }
@@ -216,7 +228,8 @@ class User( common.RestAuthResource ):
 		@raise UserNotFound: If the user does not exist in RestAuth.
 		@todo: When the response body contains the previous setting, 
 			return that. This is also a todo on the interface side.
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise InternalServerError: When the RestAuth service returns
+			HTTP status code 500
 		@raise UnknownStatus: If the response status is unknown.
 		"""
 		params = { 'value': value }
@@ -263,7 +276,8 @@ class User( common.RestAuthResource ):
 		Delete the given property.
 
 		@raise UserNotFound: If the user does not exist in RestAuth.
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise InternalServerError: When the RestAuth service returns
+			HTTP status code 500
 		@raise UnknownStatus: If the response status is unknown.
 		"""
 		url = '%s/%s'%( self.name, prop )
