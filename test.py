@@ -1,4 +1,10 @@
 #!/usr/bin/python3
+try:
+	from __future__ import print_statement
+except SyntaxError:
+	pass
+except ImportError:
+	pass
 
 import sys
 import group, restauth_user, common

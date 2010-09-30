@@ -1,5 +1,5 @@
 NAME="RestAuthClient"
-MODULES=restauth_user group errors common
+MODULES=src.restauth_user src.group src.errors src.common
 DOC_DIR="doc"
 HTML_DIR="${DOC_DIR}/html"
 PDF_DIR="${DOC_DIR}/pdf"
