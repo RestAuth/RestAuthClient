@@ -2,8 +2,12 @@
 Module handling code relevant to user authentication and property management.
 """
 
-from errors import *
-import common
+try:
+	from RestAuthClient import common
+	from RestAuthClient.errors import *
+except ImportError:
+	from errors import *
+	import common
 
 class UserNotFound( ResourceNotFound ):
 	"""

@@ -8,7 +8,10 @@ except ImportError:
 	import httplib as client
 
 import os, json, base64
-from errors import *
+try:
+	from RestAuthClient.errors import *
+except ImportError:
+	from errors import *
 
 try:
 	from urllib.parse import quote_plus, urlencode

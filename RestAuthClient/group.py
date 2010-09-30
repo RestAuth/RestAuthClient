@@ -3,8 +3,12 @@ Module handling code relevant to group handling.
 """
 import json
 
-import common, restauth_user
-from errors import *
+try:
+	from RestAuthClient import common, restauth_user
+	from RestAuthClient.errors import *
+except ImportError:
+	import common, restauth_user
+	from errors import *
 
 class GroupNotFound( ResourceNotFound ):
 	"""
