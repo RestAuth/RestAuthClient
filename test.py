@@ -1,14 +1,21 @@
 #!/usr/bin/python3
-try:
-	from __future__ import print_statement
-except SyntaxError:
-	pass
-except ImportError:
-	pass
+
+"""
+This is a test script using (hopefully) all the features of RestAuthClient.py.
+It accepts no parameters, just execute it to see if everything still works.
+
+This is not designed to be very sophisticated, it creates users and groups and
+deletes them afterwards. If an error occurs, the script exits right away and
+leaves everything as it is at that moment.
+
+You might want to change the username and password at the start. The info here
+corresponds to what is added when the server is started with the test.sh script
+shipping with RestAuth.
+"""
 
 import sys
-import group, restauth_user, common
-from errors import *
+from RestAuthClient import group, restauth_user, common
+from RestAuthClient.errors import *
 
 conn = common.RestAuthConnection( 'localhost', 8000, 'vowi', 'vowi', False )
 
