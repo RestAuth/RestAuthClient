@@ -1,0 +1,4 @@
+* use HTTPS
+* complete epydoc
+* rename restauth_users to something more sensible?
+* move static functions from class --> model
