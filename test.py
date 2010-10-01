@@ -20,7 +20,7 @@ from RestAuthClient.errors import *
 conn = common.RestAuthConnection( 'localhost', 8000, 'vowi', 'vowi', False )
 
 # verify initial state:
-users = restauth_user.User.get_all( conn )
+users = restauth_user.get_all( conn )
 if users:
 	print( users )
 	raise RuntimeError( "Left over users:" )
@@ -35,20 +35,20 @@ if groups:
 ##########################
 
 print( 'Creating test users... ', end='' )
-user0 = restauth_user.User.create( conn, 'user0', 'password0' )
-user1 = restauth_user.User.create( conn, 'user1', 'password1' )
-user2 = restauth_user.User.create( conn, 'user2', 'password2' )
-user3 = restauth_user.User.create( conn, 'user3', 'password3' )
-user4 = restauth_user.User.create( conn, 'user4', 'password4' )
-user5 = restauth_user.User.create( conn, 'user5', 'password5' )
-user6 = restauth_user.User.create( conn, 'user6', 'password6' )
-user7 = restauth_user.User.create( conn, 'user7', 'password7' )
-user8 = restauth_user.User.create( conn, 'user8', 'password8' )
-user9 = restauth_user.User.create( conn, 'user9', 'password9' )
+user0 = restauth_user.create( conn, 'user0', 'password0' )
+user1 = restauth_user.create( conn, 'user1', 'password1' )
+user2 = restauth_user.create( conn, 'user2', 'password2' )
+user3 = restauth_user.create( conn, 'user3', 'password3' )
+user4 = restauth_user.create( conn, 'user4', 'password4' )
+user5 = restauth_user.create( conn, 'user5', 'password5' )
+user6 = restauth_user.create( conn, 'user6', 'password6' )
+user7 = restauth_user.create( conn, 'user7', 'password7' )
+user8 = restauth_user.create( conn, 'user8', 'password8' )
+user9 = restauth_user.create( conn, 'user9', 'password9' )
 print( 'Ok.' )
 
 print( 'Verifing added users... ', end='' )
-user_list = restauth_user.User.get_all( conn )
+user_list = restauth_user.get_all( conn )
 if len( user_list ) == 10:
 	print( 'Ok.' )
 else:
@@ -72,14 +72,14 @@ print( 'Ok.' )
 
 print( 'Trying to create already existing user... ', end='' )
 try:
-	userx = restauth_user.User.create( conn, 'user0', 'password-foobar' )
+	userx = restauth_user.create( conn, 'user0', 'password-foobar' )
 	print( 'FAILED - successfully created user?' )
 	sys.exit(1)
 except restauth_user.UserExists:
 	pass
 
 # verify that we still have 10 users?
-user_list = restauth_user.User.get_all( conn ) 
+user_list = restauth_user.get_all( conn ) 
 if not len( user_list ) == 10:
 	print( 'FAILED - We no longer have 10 users in RestAuth!' )
 	sys.exit(1)
@@ -90,12 +90,12 @@ if not user0.verify_password( 'password0' ):
 print( 'Ok.' )
 
 print( 'Trying to get some users... ', end='' )
-user0 = restauth_user.User.get( conn, 'user0' )
-user1 = restauth_user.User.get( conn, 'user1' )
+user0 = restauth_user.get( conn, 'user0' )
+user1 = restauth_user.get( conn, 'user1' )
 print( 'Ok.' )
 try:
 	print( 'Trying to get nonexistent user... ', end='' )
-	user99 = restauth_user.User.get( conn, 'user99' )
+	user99 = restauth_user.get( conn, 'user99' )
 	print( 'FAILED - GOT A USER???' )
 	sys.exit(1)
 except restauth_user.UserNotFound:
@@ -350,7 +350,7 @@ group8.delete()
 group9.delete()
 
 # verify initial state:
-users = restauth_user.User.get_all( conn )
+users = restauth_user.get_all( conn )
 if users:
 	print( users )
 	raise RuntimeError( "Left over users:" )
@@ -364,10 +364,10 @@ print( 'Ok.' )
 sys.exit(0)
 
 
-u = restauth_user.User.get( conn, 'user1' )
+u = restauth_user.get( conn, 'user1' )
 
 
-print( restauth_user.User.get_all( conn ) )
+print( restauth_user.get_all( conn ) )
 u.set_password( 'foo bar' )
 if u.verify_password( 'foo bar' ):
 	print( 'verified' )
@@ -407,7 +407,7 @@ print( group.Group.get_all( conn ) )
 
 try:
 	print( "Get non-existing user... ", end="" )
-	u_ne = restauth_user.User.get( conn, 'user_foobar' )
+	u_ne = restauth_user.get( conn, 'user_foobar' )
 	print( "FOUND!?" )
 except restauth_user.UserNotFound:
 	print( "ok (not found)." )

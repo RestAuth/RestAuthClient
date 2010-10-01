@@ -49,6 +49,88 @@ class PropertyNotFound( ResourceNotFound ):
 	"""
 	def __init__( self, response ):
 		self.response = response
+	
+def create( conn, name, pwd ):
+	"""
+	Factory method that creates a I{new} user in the RestAuth
+	database.
+	
+	@param conn: A connection to a RestAuth service.
+	@type  conn: L{RestAuthConnection}
+	@param name: Name of the user to get
+	@type  name: str
+	@param pwd: Password for the new user
+	@type  pwd: str
+	@return: The user object representing the user just created.
+	@rtype: L{User}
+	@raise UserExists: If the user already exists.
+	@raise DataUnacceptable: When username or password is invalid.
+	@raise InternalServerError: When the RestAuth service returns HTTP
+		status code 500
+	@raise UnknownStatus: If the response status is unknown.
+	"""
+	params = { 'user': name, 'password': pwd }
+	resp = conn.post( User.prefix, params )
+	if resp.status == 201:
+		return User( conn, name )
+	elif resp.status == 409:
+		raise UserExists( name )
+	elif resp.status == 412:
+		raise DataUnacceptable( resp.read() )
+	else:
+		raise UnknownStatus( resp.status )
+
+def get( conn, name ):
+	"""
+	Factory method that gets an I{existing} user from RestAuth. This
+	method verifies that the user exists in the RestAuth and throws
+	L{UserNotFound} if not. 
+
+	@param conn: A connection to a RestAuth service.
+	@type  conn: L{RestAuthConnection}
+	@param name: Name of the user to get
+	@type  name: str
+	@return: The user object representing the user just created.
+	@rtype: L{User}
+	@raise UserNotFound: If the user does not exist in RestAuth.
+	@raise InternalServerError: When the RestAuth service returns
+		HTTP status code 500
+	@raise UnknownStatus: If the response status is unknown.
+	"""
+	# this just verify that the user exists in RestAuth:
+	resp = conn.get( '/users/%s/'%(name) )
+
+	if resp.status == 200:
+		return User( conn, name )
+	elif resp.status == 404:
+		raise UserNotFound( name )
+	else:
+		raise UnknownStatus( resp )
+	
+def get_all( conn ):
+	"""
+	Factory method that gets all users known to RestAuth.
+
+	@param conn: A connection to a RestAuth service.
+	@type  conn: L{RestAuthConnection}
+	@return: A list of User objects
+	@rtype: List of L{users<User>}
+	@raise InternalServerError: When the RestAuth service returns HTTP
+		status code 500
+	@raise UnknownStatus: If the response status is unknown.
+	"""
+	resp = conn.get( User.prefix )
+		
+	if resp.status == 200:
+		import json
+		users = []
+		body = resp.read().decode( 'utf-8' )
+		usernames = json.loads( body )
+		for name in usernames:
+			users.append( User( conn, name ) )
+		return users
+	else:
+		raise UnknownStatus( resp )
 
 class User( common.RestAuthResource ):
 	"""
@@ -57,81 +139,6 @@ class User( common.RestAuthResource ):
 
 	#: Prefix used for queries, not used by property related functions
 	prefix = '/users/'
-
-	@staticmethod
-	def create( conn, name, pwd ):
-		"""
-		Factory method that creates a I{new} user in the RestAuth
-		database.
-
-		@return: The user object representing the user just created.
-		@rtype: L{User}
-		@raise UserExists: If the user already exists.
-		@raise BadRequest: When the username or password is unacceptable
-			to RestAuth.
-		@raise DataUnacceptable: When username or password is invalid
-		@raise InternalServerError: When the RestAuth service returns
-			HTTP status code 500
-		@raise UnknownStatus: If the response status is unknown.
-		"""
-		params = { 'user': name, 'password': pwd }
-		resp = conn.post( User.prefix, params )
-		if resp.status == 201:
-			return User( conn, name )
-		elif resp.status == 409:
-			raise UserExists( name )
-		elif resp.status == 412:
-			raise DataUnacceptable( resp.read() )
-		else:
-			raise UnknownStatus( resp.status )
-
-	@staticmethod
-	def get( conn, name ):
-		"""
-		Factory method that gets an I{existing} user from RestAuth. This
-		method verifies that the user exists in the RestAuth and throws
-		L{UserNotFound} if not. 
-
-		@return: The user object representing the user just created.
-		@rtype: L{User}
-		@raise UserNotFound: If the user does not exist in RestAuth.
-		@raise InternalServerError: When the RestAuth service returns
-			HTTP status code 500
-		@raise UnknownStatus: If the response status is unknown.
-		"""
-		# this just verify that the user exists in RestAuth:
-		resp = conn.get( '/users/%s/'%(name) )
-
-		if resp.status == 200:
-			return User( conn, name )
-		elif resp.status == 404:
-			raise UserNotFound( name )
-		else:
-			raise UnknownStatus( resp )
-	
-	@staticmethod
-	def get_all( conn ):
-		"""
-		Factory method that gets all users known to RestAuth.
-
-		@return: A list of User objects
-		@rtype: List of L{users<User>}
-		@raise InternalServerError: When the RestAuth service returns
-			HTTP status code 500
-		@raise UnknownStatus: If the response status is unknown.
-		"""
-		resp = conn.get( User.prefix )
-		
-		if resp.status == 200:
-			import json
-			users = []
-			body = resp.read().decode( 'utf-8' )
-			usernames = json.loads( body )
-			for name in usernames:
-				users.append( User( conn, name ) )
-			return users
-		else:
-			raise UnknownStatus( resp )
 
 	def __init__( self, conn, name ):
 		"""

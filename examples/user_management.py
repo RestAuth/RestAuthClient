@@ -16,7 +16,7 @@ conn = common.RestAuthConnection( 'localhost', 8000, 'vowi', 'vowi', False )
 # create a new user. the standard configuration does not allow spaces in the
 # username, because this does not work on XMPP, email, ...
 # The factory-methods for creating users guarantee that the user exist:
-managed_user = restauth_user.User.create( conn, 'managed_user', 'password' )
+managed_user = restauth_user.create( conn, 'managed_user', 'password' )
 
 # handle the password:
 if managed_user.verify_password( 'password' ):
@@ -29,7 +29,7 @@ managed_user.set_password( 'new password' )
 
 # Now we want to get a user from the service - this again guarantees that the
 # user exists:
-managed_user = restauth_user.User.get( conn, 'managed_user' )
+managed_user = restauth_user.get( conn, 'managed_user' )
 
 # You can always just construct your own object, i.e. if you know that the user
 # exists and do not want to hit the service. Here we create an instance of a
