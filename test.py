@@ -25,7 +25,7 @@ if users:
 	print( users )
 	raise RuntimeError( "Left over users:" )
 
-groups = group.Group.get_all( conn )
+groups = group.get_all( conn )
 if groups:
 	print( groups )
 	raise RuntimeError( "Left over groups!" )
@@ -219,28 +219,28 @@ print( 'Ok.' )
 ### GROUP TESTING ###
 #####################
 print( 'Creating test groups... ', end='' )
-group0 = group.Group.create( conn, 'group0' )
-group1 = group.Group.create( conn, 'group1' )
-group2 = group.Group.create( conn, 'group2' )
-group3 = group.Group.create( conn, 'group3' )
-group4 = group.Group.create( conn, 'group4' )
-group5 = group.Group.create( conn, 'group5' )
-group6 = group.Group.create( conn, 'group6' )
-group7 = group.Group.create( conn, 'group7' )
-group8 = group.Group.create( conn, 'group8' )
-group9 = group.Group.create( conn, 'group9' )
+group0 = group.create( conn, 'group0' )
+group1 = group.create( conn, 'group1' )
+group2 = group.create( conn, 'group2' )
+group3 = group.create( conn, 'group3' )
+group4 = group.create( conn, 'group4' )
+group5 = group.create( conn, 'group5' )
+group6 = group.create( conn, 'group6' )
+group7 = group.create( conn, 'group7' )
+group8 = group.create( conn, 'group8' )
+group9 = group.create( conn, 'group9' )
 print( 'Ok.' )
 
 print( 'Try to create already existing group... ', end='' )
 try:
-	group0 = group.Group.create( conn, 'group0' )
+	group0 = group.create( conn, 'group0' )
 	print( 'Error: Successfully created existing group' )
 except group.GroupExists:
 	pass
 print( 'Ok.' )
 
 print( 'Get all groups... ', end='' )
-groups = group.Group.get_all( conn )
+groups = group.get_all( conn )
 if len( groups ) != 10:
 	print( 'Error: Got %s groups, but created 10!'%(len(groups)) )
 	sys.exit(1)
@@ -252,8 +252,19 @@ group1.add_user( user1, False )
 
 new_group = group.Group( conn, 'new group' ) # this doesn't exist!
 new_group.add_user( user0 ) # default is autocreate!
-group.Group.get( conn, 'new group' ) # throws an error if it doesn't exist
+new_group = group.get( conn, 'new group' ) # throws an error if it doesn't exist
+if new_group.get_members() != [ user0 ]:
+	print( "Error: New group does not have any members!" )
+	sys.exit(1)
 new_group.delete()
+
+try:
+	# verify that new_group is gone
+	group.get( conn, 'new group' )
+	print( "Error: deleted group is still there!" )
+	sys.exit( 1 )
+except group.GroupNotFound:
+	pass
 
 wrong_user = restauth_user.User( conn, 'user99' )
 try:
@@ -355,7 +366,7 @@ if users:
 	print( users )
 	raise RuntimeError( "Left over users:" )
 
-groups = group.Group.get_all( conn )
+groups = group.get_all( conn )
 if groups:
 	print( groups )
 	raise RuntimeError( "Left over groups!" )
@@ -403,7 +414,7 @@ g = group.Group( conn, 'vowi1' )
 print( g.get_members() )
 g.add_user( restauth_user.User( conn, 'user5') )
 print( g.get_members() )
-print( group.Group.get_all( conn ) )
+print( group.get_all( conn ) )
 
 try:
 	print( "Get non-existing user... ", end="" )

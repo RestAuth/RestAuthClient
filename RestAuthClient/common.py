@@ -29,10 +29,10 @@ except ImportError:
 	from errors import *
 
 try:
-	from urllib.parse import quote_plus, urlencode
+	from urllib.parse import quote, urlencode
 except ImportError:
 	# this is for python 2.x and earlier
-	from urllib import quote_plus, urlencode
+	from urllib import quote, urlencode
 
 class RestAuthConnection:
 	"""
@@ -131,7 +131,6 @@ class RestAuthConnection:
 		conn.request( method, url, body, headers )
 		response = conn.getresponse()
 		if response.status == 400:
-			print( response.read().decode('utf-8').replace('\n', "\n") )
 			raise BadRequest( response )
 		elif response.status == 500:
 			body = response.read()
@@ -150,7 +149,7 @@ class RestAuthConnection:
 		url = '%s/'%( os.path.normpath( url ) )
 		if not url.startswith( '/' ):
 			url = '/%s'%(url)
-		url = quote_plus( url, '/' )
+		url = quote( url )
 		return url
 
 	def get( self, url, params={}, headers={} ):
@@ -165,7 +164,7 @@ class RestAuthConnection:
 		@type  url: str
 		@param params: The query parameters for this request. A
 			dictionary of key/value pairs that is passed to
-			U{quote_plus<http://docs.python.org/py3k/library/urllib.parse.html#urllib.parse.quote_plus>}.
+			U{quote<http://docs.python.org/py3k/library/urllib.parse.html#urllib.parse.quote>}.
 		@type  params: dict
 		@param headers: Additional headers to send with this request.
 		@type  headers: dict
@@ -192,7 +191,7 @@ class RestAuthConnection:
 		@type  url: str
 		@param params: The query parameters for this request. A
 			dictionary of key/value pairs that is passed to
-			U{quote_plus<http://docs.python.org/py3k/library/urllib.parse.html#urllib.parse.quote_plus>}.
+			U{quote<http://docs.python.org/py3k/library/urllib.parse.html#urllib.parse.quote>}.
 		@type  params: dict
 		@param headers: Additional headers to send with this request.
 		@type  headers: dict
@@ -217,7 +216,7 @@ class RestAuthConnection:
 		@type  url: str
 		@param params: The query parameters for this request. A
 			dictionary of key/value pairs that is passed to
-			U{quote_plus<http://docs.python.org/py3k/library/urllib.parse.html#urllib.parse.quote_plus>}.
+			U{quote<http://docs.python.org/py3k/library/urllib.parse.html#urllib.parse.quote>}.
 		@type  params: dict
 		@param headers: Additional headers to send with this request.
 		@type  headers: dict

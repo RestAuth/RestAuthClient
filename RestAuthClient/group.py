@@ -39,67 +39,83 @@ class GroupExists( ResourceConflict ):
 	"""
 	pass
 
+def create( conn, name ):
+	"""
+	Factory method that creates a I{new} group in RestAuth.
+
+	@param conn: A connection to a RestAuth service.
+	@type  conn: L{RestAuthConnection}
+	@param name: The name of the group to create
+	@type  name: str
+	@return: The group object representing the group just created.
+	@rtype: Group
+	@raise GroupExists: When the user already exists.
+	@raise BadRequest: When the RestAuth service returns HTTP status code 400
+	@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+	"""
+	resp = conn.post( Group.prefix, { 'group': name } )
+	if resp.status == 201:
+		return Group( conn, name )
+	elif resp.status == 409:
+		raise GroupExists( "Conflict." )
+	else:
+		raise UnknownStatus( resp )
+
+def get_all( conn, user=None, recursive=True ):
+	"""
+	Factory method that gets all groups for this service known to
+	RestAuth.
+
+	@param conn: A connection to a RestAuth service.
+	@type  conn: L{RestAuthConnection}
+	@param user: Only return groups where the named user is a member
+	@type  user: str
+	@param recursive: Disable recursive group parsing
+	@type  recursive: bool
+	@return: A list of Group objects
+	@rtype: List of L{groups<Group>}
+	@raise BadRequest: When the RestAuth service returns HTTP status code 400
+	@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+	"""
+	params = {}
+	if user:
+		params['user'] = user
+	if not recursive:
+		params['nonrecursive'] = 1
+
+	resp = conn.get( Group.prefix, params )
+	if resp.status == 200:
+		body = resp.read().decode( 'utf-8' )
+		names = json.loads( body )
+		return [ Group( conn, name ) for name in names ]
+	else:
+		raise UnknownStatus( resp )
+
+def get( conn, name ):
+	"""
+	Factory method that gets an I{existing} user from RestAuth. This
+	method verifies that the user exists in the RestAuth and throws
+	L{UserNotFound} if not. 
+
+	@param conn: A connection to a RestAuth service.
+	@type  conn: L{RestAuthConnection}
+	@param name: The name of the group to get
+	@type  name: str
+	@return: The group object representing the group in RestAuth.
+	@rtype: L{Group}
+	@raise GroupNotFound: If the group does not exist in RestAuth.
+	@raise BadRequest: When the RestAuth service returns HTTP status code 400
+	@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+	"""
+	all_groups = get_all( conn )
+	g = Group( conn, name )
+	if g in all_groups:
+		return g
+	else:
+		raise GroupNotFound( name )
+
 class Group( common.RestAuthResource ):
 	prefix = '/groups/'
-
-	@staticmethod
-	def create( conn, name ):
-		"""
-		Factory method that creates a I{new} group in RestAuth.
-
-		@return: The group object representing the group just created.
-		@rtype: Group
-		@raise GroupExists: When the user already exists.
-		@raise BadRequest: When the RestAuth service returns HTTP status code 400
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
-		"""
-		resp = conn.post( Group.prefix, { 'group': name } )
-		if resp.status == 201:
-			return Group( conn, name )
-		elif resp.status == 409:
-			raise GroupExists( "Conflict." )
-		else:
-			raise UnknownStatus( resp )
-
-	@staticmethod
-	def get_all( conn, user=None, recursive=True ):
-		"""
-		Factory method that gets all groups for this service known to
-		RestAuth.
-
-		@return: A list of Group objects
-		@rtype: List of L{groups<Group>}
-		@raise BadRequest: When the RestAuth service returns HTTP status code 400
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
-		"""
-		params = {}
-		if user:
-			params['user'] = user
-		if not recursive:
-			params['nonrecursive'] = 1
-
-		resp = conn.get( Group.prefix, params )
-		if resp.status == 200:
-			names = json.loads( resp.read().decode( 'utf-8' ) )
-			return [ Group( conn, name ) for name in names ]
-		else:
-			raise UnknownStatus( resp )
-
-	@staticmethod
-	def get( conn, name ):
-		"""
-		Factory method that gets an I{existing} user from RestAuth. This
-		method verifies that the user exists in the RestAuth and throws
-		L{UserNotFound} if not. 
-
-		@return: The user object representing the user just created.
-		@rtype: L{User}
-		@raise UserNotFound: If the user does not exist in RestAuth.
-		@todo: implement this code
-		@raise BadRequest: When the RestAuth service returns HTTP status code 400
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
-		"""
-		pass
 
 	def __init__( self, conn, name ):
 		"""
