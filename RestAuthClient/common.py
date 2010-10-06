@@ -168,6 +168,9 @@ class RestAuthConnection:
 		@type  params: dict
 		@param headers: Additional headers to send with this request.
 		@type  headers: dict
+		
+		@return: The response to the request
+		@rtype: U{HTTPResponse<http://docs.python.org/py3k/library/http.client.html#httpresponse-objects>}
 
 		@raise BadRequest: When the RestAuth service returns HTTP status code 400
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
@@ -196,6 +199,9 @@ class RestAuthConnection:
 		@param headers: Additional headers to send with this request.
 		@type  headers: dict
 
+		@return: The response to the request
+		@rtype: U{HTTPResponse<http://docs.python.org/py3k/library/http.client.html#httpresponse-objects>}
+
 		@raise BadRequest: When the RestAuth service returns HTTP status code 400
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		"""
@@ -221,6 +227,9 @@ class RestAuthConnection:
 		@param headers: Additional headers to send with this request.
 		@type  headers: dict
 
+		@return: The response to the request
+		@rtype: U{HTTPResponse<http://docs.python.org/py3k/library/http.client.html#httpresponse-objects>}
+
 		@raise BadRequest: When the RestAuth service returns HTTP status code 400
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		"""
@@ -239,6 +248,9 @@ class RestAuthConnection:
 		@type  url: str
 		@param headers: Additional headers to send with this request.
 		@type  headers: dict
+
+		@return: The response to the request
+		@rtype: U{HTTPResponse<http://docs.python.org/py3k/library/http.client.html#httpresponse-objects>}
 
 		@raise BadRequest: When the RestAuth service returns HTTP status code 400
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
