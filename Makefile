@@ -25,7 +25,7 @@ doc/pdf:
 
 doc/html:
 	mkdir -p ${HTML_DIR}
-	epydoc -v --html -o ${HTML_DIR} --name ${NAME} --redundant-details --no-private ${MODULES}
+	epydoc -v --html -o ${HTML_DIR} --name ${NAME} --no-private ${MODULES}
 
 check:
 	epydoc --no-private --no-imports --check ${MODULES}
