@@ -238,11 +238,15 @@ class Group( common.RestAuthResource ):
 		
 		@param user: The user in question.
 		@type  user: L{User}
+		@return: True if the user is a member, false if not
+		@rtype: bool
+
 		@raise GroupNotFound: If the group does not exist.
 		@raise UserNotFound: If the user does not exist.
 		@raise BadRequest: When the RestAuth service returns HTTP status code 400
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		@todo: It should be possible that user is a str.
+		@todo: this code looks really wrong: a Post to where?
 		"""
 		params = { 'user': user.name }
 
@@ -270,7 +274,7 @@ class Group( common.RestAuthResource ):
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		@todo: It should be possible that user is a str.
 		"""
-		resp = self._delete( '%s/%s'%(self.name, user.name), 'DELETE' )
+		resp = self._delete( '%s/%s'%(self.name, user.name) )
 		if resp.status == 200:
 			return
 		elif resp.status == 404:
