@@ -149,16 +149,16 @@ class User( common.RestAuthResource ):
 		self.conn = conn
 		self.name = name
 
-	def set_password( self, pwd ):
+	def set_password( self, password ):
 		"""
-		Set the password of the given user.
+		Set the password of this user.
 
 		@raise UserNotFound: If the user does not exist in RestAuth.
 		@raise InternalServerError: When the RestAuth service returns
 			HTTP status code 500
 		@raise UnknownStatus: If the response status is unknown.
 		"""
-		resp = self._put( self.name, { 'password': pwd } )
+		resp = self._put( self.name, { 'password': password } )
 		if resp.status == 200:
 			return
 		elif resp.status == 404:
@@ -166,10 +166,12 @@ class User( common.RestAuthResource ):
 		else:
 			raise UnknownStatus( resp )
 
-	def verify_password( self, pwd ):
+	def verify_password( self, password ):
 		"""
 		Verify the given password.
 
+		@param password: The password to verify.
+		@type  password: str
 		@return: True if the password is correct, False if the password
 			is wrong or the user does not exist.
 		@rtype: boolean
@@ -177,7 +179,7 @@ class User( common.RestAuthResource ):
 			HTTP status code 500
 		@raise UnknownStatus: If the response status is unknown.
 		"""
-		resp = self._post( self.name, { 'password': pwd } )
+		resp = self._post( self.name, { 'password': password } )
 		if resp.status == 200:
 			return True
 		elif resp.status == 404:
@@ -206,7 +208,7 @@ class User( common.RestAuthResource ):
 		"""
 		Get all properties defined for this user.
 
-		@return: A dictionary containing key/value pairs.
+		@return: A key/value array of the properties defined for this user.
 		@rtype: dict
 		@raise UserNotFound: If the user does not exist in RestAuth.
 		@raise InternalServerError: When the RestAuth service returns
@@ -229,6 +231,10 @@ class User( common.RestAuthResource ):
 		property already existed. Use L{set_property} if you do not care
 		if the property already exists.
 
+		@param prop: The property to set.
+		@type  prop: str
+		@param value: The new value of the property
+		@type  value: str
 		@raise UserNotFound: If the user does not exist in RestAuth.
 		@raise PropertyExists: When the property already exists
 		@raise InternalServerError: When the RestAuth service returns
@@ -251,6 +257,10 @@ class User( common.RestAuthResource ):
 		Set a property for this user. This method overwrites any
 		previous entry.
 
+		@param prop: The property to set.
+		@type  prop: str
+		@param value: The new value of the property
+		@type  value: str
 		@raise UserNotFound: If the user does not exist in RestAuth.
 		@todo: When the response body contains the previous setting, 
 			return that. This is also a todo on the interface side.
