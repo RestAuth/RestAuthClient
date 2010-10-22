@@ -134,6 +134,7 @@ class RestAuthConnection:
 			raise BadRequest( response )
 		elif response.status == 500:
 			body = response.read()
+			print( body.decode('utf-8').replace( '\n', "\n") )
 			raise InternalServerError( response )
 		else:
 			return response

@@ -215,7 +215,7 @@ class User( common.RestAuthResource ):
 			HTTP status code 500
 		@raise UnknownStatus: If the response status is unknown.
 		"""
-		resp = self._get( self.name, prefix='/userprops/' )
+		resp = self._get( '%s/props/'%(self.name) )
 		if resp.status == 200:
 			import json
 			props = json.loads( resp.read().decode( 'utf-8' ) )
@@ -242,7 +242,7 @@ class User( common.RestAuthResource ):
 		@raise UnknownStatus: If the response status is unknown.
 		"""
 		params = { 'prop': prop, 'value': value }
-		resp = self._post( self.name, params=params, prefix='/userprops/' )
+		resp = self._post( '%s/props/'%(self.name), params=params )
 		if resp.status == 200:
 			return
 		elif resp.status == 404:
@@ -268,9 +268,8 @@ class User( common.RestAuthResource ):
 			HTTP status code 500
 		@raise UnknownStatus: If the response status is unknown.
 		"""
-		params = { 'value': value }
-		url = '%s/%s'%( self.name, prop )
-		resp = self._put( url, params=params, prefix='/userprops/' )
+		url = '%s/props/%s/'%( self.name, prop )
+		resp = self._put( url, params={'value': value} )
 		if resp.status == 200:
 			return
 		elif resp.status == 404:
@@ -292,8 +291,7 @@ class User( common.RestAuthResource ):
 			"property not found" requires some interface change or
 			clarification.
 		"""
-		url = '%s/%s'%( self.name, prop )
-		resp = self._get( url, prefix='/userprops/' )
+		resp = self._get( '%s/props/%s'%( self.name, prop ) )
 		if resp.status == 200:
 			return resp.read().decode( 'utf-8' )
 		elif resp.status == 404:
@@ -316,8 +314,7 @@ class User( common.RestAuthResource ):
 			HTTP status code 500
 		@raise UnknownStatus: If the response status is unknown.
 		"""
-		url = '%s/%s'%( self.name, prop )
-		resp = self._delete( url, prefix='/userprops/' )
+		resp = self._delete( '%s/props/%s'%(self.name, prop) )
 		if resp.status == 200:
 			return
 		elif resp.status == 404:
