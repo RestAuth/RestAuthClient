@@ -2,3 +2,4 @@
 * complete epydoc
 * rename restauth_users to something more sensible?
 * move static functions from class --> model
+* handle sessions for more efficiency
