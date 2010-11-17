@@ -22,7 +22,7 @@ except ImportError:
 	# this is for python 2.x and earlier
 	import httplib as client
 
-import os, json, base64
+import os, json, base64, time
 try:
 	from RestAuthClient.errors import *
 except ImportError:
@@ -33,6 +33,49 @@ try:
 except ImportError:
 	# this is for python 2.x and earlier
 	from urllib import quote, urlencode
+
+class RestAuthCookie:
+	def __init__( self, raw_value ):
+		self.creation = time.time()
+		self.items = {}
+
+		items = raw_value.split( ';' )
+		items = [ item.strip() for item in items ]
+
+		# parse key/value pairs:
+		for item in items:
+			key, value = item.split( '=', 1 )
+			self.items[key.strip().lower()] = value.strip()
+		
+		if 'expires' in self.items:
+			try:
+				raw = self.items['expires']
+				self.items['expires'] = time.mktime(
+					time.strptime( raw, '%a, %d-%b-%Y %H:%M:%S %Z' ) )
+			except Exception:
+				pass # don't fail on this
+
+		if 'max-age' in self.items:
+			try:
+				val = int( self.items['max-age'] )
+				self.items['expires'] = self.creation + raw
+			except Exception:
+				pass # don't fail on this
+	
+	def valid( self ):
+		if not 'sessionid' in self.items:
+			return False # no sessionid
+
+		if 'expires' in self.items and self.items['expires'] < time.time():
+			return False # cookie has expired
+
+		return True
+
+	def get_value( self ):
+		return 'sessionid=%s'%(self.items['sessionid'])
+
+	def get_session( self ):
+		return self.items['sessionid']
 
 class RestAuthConnection:
 	"""
@@ -63,6 +106,7 @@ class RestAuthConnection:
 		@param cert: The certificate to use when using SSL.
 		@type  cert: str
 		"""
+		self.cookie = None
 		self.host = host
 		self.port = port
 		self.user = user
@@ -120,7 +164,9 @@ class RestAuthConnection:
 		@todo: catch 401/403 codes
 		@todo: actually use SSL
 		"""
-		if self.auth_header:
+		if self.cookie and self.cookie.valid():
+			headers['Cookie'] = self.cookie.get_value()
+		elif self.auth_header:
 			headers['Authorization'] = self.auth_header
 
 		headers['Accept'] = 'application/json'
@@ -130,6 +176,15 @@ class RestAuthConnection:
 
 		conn.request( method, url, body, headers )
 		response = conn.getresponse()
+
+		# handle cookie:
+		try:
+			raw_header = response.getheader( 'Set-Cookie', None )
+		except TypeError:
+			raw_header = None
+		if raw_header and (not self.cookie or not self.cookie.valid()):
+			self.cookie = RestAuthCookie( raw_header )
+
 		if response.status == 400:
 			raise BadRequest( response )
 		elif response.status == 500:
