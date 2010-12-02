@@ -64,7 +64,7 @@ def create( conn, name, pwd ):
 	@return: The user object representing the user just created.
 	@rtype: L{User}
 	@raise UserExists: If the user already exists.
-	@raise DataUnacceptable: When username or password is invalid.
+	@raise PreconditionFailed: When username or password is invalid.
 	@raise InternalServerError: When the RestAuth service returns HTTP
 		status code 500
 	@raise UnknownStatus: If the response status is unknown.
@@ -76,7 +76,7 @@ def create( conn, name, pwd ):
 	elif resp.status == 409:
 		raise UserExists( name )
 	elif resp.status == 412:
-		raise DataUnacceptable( resp.read() )
+		raise PreconditionFailed( resp.read() )
 	else:
 		raise UnknownStatus( resp.status )
 
@@ -157,7 +157,7 @@ class User( common.RestAuthResource ):
 		@raise InternalServerError: When the RestAuth service returns
 			HTTP status code 500
 		@raise UnknownStatus: If the response status is unknown.
-		@raise DataUnacceptable: When the password is invalid.
+		@raise PreconditionFailed: When the password is invalid.
 		"""
 		resp = self._put( self.name, { 'password': password } )
 		if resp.status == 204:
@@ -165,7 +165,7 @@ class User( common.RestAuthResource ):
 		elif resp.status == 404:
 			raise UserNotFound( self.name )
 		elif resp.status == 412:
-			raise DataUnacceptable( resp.read() )
+			raise PreconditionFailed( resp.read() )
 		else:
 			raise UnknownStatus( resp )
 

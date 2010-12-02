@@ -33,21 +33,6 @@ class Unauthorized( RestAuthException ):
 	"""
 	pass
 
-class NotAcceptable( RestAuthException ):
-	"""
-	The current content type is not acceptable to the RestAuth service.
-	"""
-	pass
-
-class ResourceNotFound( RestAuthException ):
-	"""
-	Common base class for resources (L{users<user.User>}, 
-	L{groups<Group.Group>} or properties) not found.
-	"""
-	def __init__( self, response, resource_class ):
-		self.response = response
-		self.resource_class = resource_class
-
 class RestAuthInternalException( RestAuthException ):
 	"""
 	Base class for errors internal to RestAuth and where the error is not
@@ -84,6 +69,39 @@ class UnknownStatus( RestAuthInternalException ):
 	"""
 	pass
 
+class ContentTypeException( RestAuthInternalException ):
+	"""
+	Meta-class for Content-Type related exceptions.
+	"""
+	pass
+
+class NotAcceptable( ContentTypeException ):
+	"""
+	The current content type is not acceptable to the RestAuth service.
+	
+	On a protocol level, this represents HTTP status code 406.
+	"""
+	pass
+
+class RestAuthUnsupportedMediaType( ContentTypeException ):
+	"""
+	The RestAuth service does not support the media type used by this client
+	implementation.
+
+	On a protocol level, this represents HTTP status code 406.
+	"""
+	pass
+
+class ResourceNotFound( RestAuthException ):
+	"""
+	Common base class for resources (L{users<user.User>}, 
+	L{groups<Group.Group>} or properties) not found.
+	"""
+	def __init__( self, response, resource_class ):
+		self.response = response
+		self.resource_class = resource_class
+
+
 class ResourceConflict( RestAuthException ):
 	"""
 	Thrown when trying to create a resource that already exists.
@@ -92,9 +110,11 @@ class ResourceConflict( RestAuthException ):
 	"""
 	pass
 
-class DataUnacceptable( RestAuthException ):
+class PreconditionFailed( RestAuthException ):
 	"""
 	Thrown when the submitted data was unacceptable to the system. This
 	usually occurs when the username is invalid or the password is to short.
+	
+	On a protocol level, this represents HTTP status code 412.
 	"""
 	pass

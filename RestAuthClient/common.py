@@ -272,7 +272,7 @@ class RestAuthConnection:
 		elif response.status == 411:
 			raise RuntimeError( "Request did not send a Content-Length header!" )
 		elif response.status == 415:
-			raise NotAcceptable( response )
+			raise UnsupportedMediaType( response )
 
 		return response
 
@@ -308,7 +308,7 @@ class RestAuthConnection:
 		elif response.status == 411:
 			raise RuntimeError( "Request did not send a Content-Length header!" )
 		elif response.status == 415:
-			raise NotAcceptable( response )
+			raise UnsupportedMediaType( response )
 		return response
 
 	def delete( self, url, headers={} ):
