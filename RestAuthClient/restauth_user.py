@@ -100,7 +100,7 @@ def get( conn, name ):
 	# this just verify that the user exists in RestAuth:
 	resp = conn.get( '/users/%s/'%(name) )
 
-	if resp.status == 200:
+	if resp.status == 204:
 		return User( conn, name )
 	elif resp.status == 404:
 		raise UserNotFound( name )
@@ -157,12 +157,15 @@ class User( common.RestAuthResource ):
 		@raise InternalServerError: When the RestAuth service returns
 			HTTP status code 500
 		@raise UnknownStatus: If the response status is unknown.
+		@raise DataUnacceptable: When the password is invalid.
 		"""
 		resp = self._put( self.name, { 'password': password } )
-		if resp.status == 200:
+		if resp.status == 204:
 			return
 		elif resp.status == 404:
 			raise UserNotFound( self.name )
+		elif resp.status == 412:
+			raise DataUnacceptable( resp.read() )
 		else:
 			raise UnknownStatus( resp )
 
@@ -180,7 +183,7 @@ class User( common.RestAuthResource ):
 		@raise UnknownStatus: If the response status is unknown.
 		"""
 		resp = self._post( self.name, { 'password': password } )
-		if resp.status == 200:
+		if resp.status == 204:
 			return True
 		elif resp.status == 404:
 			return False
@@ -197,7 +200,7 @@ class User( common.RestAuthResource ):
 		@raise UnknownStatus: If the response status is unknown.
 		"""
 		resp = self._delete( self.name )
-		if resp.status == 200:
+		if resp.status == 204:
 			return
 		if resp.status == 404:
 			raise UserNotFound( self.name )
@@ -243,7 +246,7 @@ class User( common.RestAuthResource ):
 		"""
 		params = { 'prop': prop, 'value': value }
 		resp = self._post( '%s/props/'%(self.name), params=params )
-		if resp.status == 200:
+		if resp.status == 201:
 			return
 		elif resp.status == 404:
 			raise UserNotFound( self.name )
@@ -271,6 +274,11 @@ class User( common.RestAuthResource ):
 		url = '%s/props/%s/'%( self.name, prop )
 		resp = self._put( url, params={'value': value} )
 		if resp.status == 200:
+			import json
+			users = []
+			body = resp.read().decode( 'utf-8' )
+			return json.loads( body )
+		if resp.status == 201:
 			return
 		elif resp.status == 404:
 			raise UserNotFound( self.name )
@@ -315,7 +323,7 @@ class User( common.RestAuthResource ):
 		@raise UnknownStatus: If the response status is unknown.
 		"""
 		resp = self._delete( '%s/props/%s'%(self.name, prop) )
-		if resp.status == 200:
+		if resp.status == 204:
 			return
 		elif resp.status == 404:
 			raise UserNotFound( self.name )

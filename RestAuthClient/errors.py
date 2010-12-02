@@ -27,6 +27,18 @@ class RestAuthException( Exception ):
 	def __str__(self):
 		return repr(self.value)
 
+class Unauthorized( RestAuthException ):
+	"""
+	Thrown when service authentication failed.
+	"""
+	pass
+
+class NotAcceptable( RestAuthException ):
+	"""
+	The current content type is not acceptable to the RestAuth service.
+	"""
+	pass
+
 class ResourceNotFound( RestAuthException ):
 	"""
 	Common base class for resources (L{users<user.User>}, 

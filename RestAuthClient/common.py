@@ -185,8 +185,10 @@ class RestAuthConnection:
 		if raw_header and (not self.cookie or not self.cookie.valid()):
 			self.cookie = RestAuthCookie( raw_header )
 
-		if response.status == 400:
-			raise BadRequest( response )
+		if response.status == 401:
+			raise Unauthorized( response )
+		elif response.status == 406:
+			raise NotAcceptable( response )
 		elif response.status == 500:
 			body = response.read()
 			print( body.decode('utf-8').replace( '\n', "\n") )
@@ -264,7 +266,15 @@ class RestAuthConnection:
 		headers['Content-Type'] = 'application/json'
 		url = self._sanitize_url( url )
 		body = json.dumps( params )
-		return self.send( 'POST', url, body, headers )
+		response = self.send( 'POST', url, body, headers )
+		if response.status == 400:
+			raise BadRequest( response )
+		elif response.status == 411:
+			raise RuntimeError( "Request did not send a Content-Length header!" )
+		elif response.status == 415:
+			raise NotAcceptable( response )
+
+		return response
 
 	def put( self, url, params={}, headers={} ):
 		"""
@@ -292,7 +302,14 @@ class RestAuthConnection:
 		headers['Content-Type'] = 'application/json'
 		url = self._sanitize_url( url )
 		body = json.dumps( params )
-		return self.send( 'PUT', url, body, headers )
+		response = self.send( 'PUT', url, body, headers )
+		if response.status == 400:
+			raise BadRequest( response )
+		elif response.status == 411:
+			raise RuntimeError( "Request did not send a Content-Length header!" )
+		elif response.status == 415:
+			raise NotAcceptable( response )
+		return response
 
 	def delete( self, url, headers={} ):
 		"""
