@@ -107,10 +107,9 @@ def get( conn, name ):
 	@raise BadRequest: When the RestAuth service returns HTTP status code 400
 	@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 	"""
-	all_groups = get_all( conn )
-	g = Group( conn, name )
-	if g in all_groups:
-		return g
+	resp = conn.get( '%s%s'%(Group.prefix, name) )
+	if resp.status == 204:
+		return Group( conn, name )
 	else:
 		raise GroupNotFound( name )
 
@@ -143,7 +142,7 @@ class Group( common.RestAuthResource ):
 		if not recursive:
 			params['nonrecursive'] = 1
 
-		resp = self._get( self.name, params )
+		resp = self._get( '/%s/users/'%(self.name), params )
 		if resp.status == 200:
 			# parse user-list:
 			names = json.loads( resp.read().decode( 'utf-8' ) )
@@ -169,11 +168,11 @@ class Group( common.RestAuthResource ):
 		@todo: It should be possible that user is a str.
 		"""
 		params = { 'user': user.name }
-		if autocreate:
-			params['autocreate'] = 1
+#		if autocreate:
+#			params['autocreate'] = 1
 
-		resp = self._post( self.name, params )
-		if resp.status == 200:
+		resp = self._post( '/%s/users/'%(self.name), params )
+		if resp.status == 204:
 			return
 		elif resp.status == 404:
 			try:
@@ -204,18 +203,61 @@ class Group( common.RestAuthResource ):
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		@todo: It should be possible that group is a str.
 		"""
+		path = '/%s/groups/'%(self.name)
 		params = { 'group': group.name }
-		if autocreate:
-			params['autocreate'] = 1
+#		if autocreate:
+#			params['autocreate'] = 1
 		
-		resp = self._post( self.name, params )
-		if resp.status == 200:
+		resp = self._post( path, params )
+		if resp.status == 204:
 			return
 		elif resp.status == 404:
 			raise GroupNotFound( self.name )
 		else:
 			raise UnknownStatus( resp )
 
+	def get_groups( self, group ):
+		"""
+		Get a list of sub-groups of this group.
+
+		@param group: The group to add.
+		@type  group: L{Group}
+		@raise GroupNotFound: If the child group is not found or if the
+			parent group does not exists and autocreate=False
+		@raise BadRequest: When the RestAuth service returns HTTP status code 400
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		"""
+		path = '/%s/groups/'%(self.name)
+		resp = self._get( path )
+		if resp.status == 200:
+			names = json.loads( body )
+			return [ Group( self.conn, name ) for name in names ]
+		elif resp.status == 404:
+			raise GroupNotFound( self.name )
+		else:
+			raise UnknownStatus( resp )
+
+	def remove_group( self, group ):
+		"""
+		Remove a sub-group from this group.
+		path = '/%s/groups/%s/'%(self.name, group.name)
+		
+		@param group: The group to add.
+		@type  group: L{Group}
+		@raise GroupNotFound: If the child group is not found or if the
+			parent group does not exists and autocreate=False
+		@raise BadRequest: When the RestAuth service returns HTTP status code 400
+		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		"""
+		path = '/%s/groups/%s/'%(self.name, group.name)
+		resp = self._delete( path )
+		if resp.status == 204:
+			return
+		elif resp.status == 404:
+			raise GroupNotFound( self.name )
+		else:
+			raise UnknownStatus( resp )
+		
 	def delete( self ):
 		"""
 		Delete this group.
@@ -225,7 +267,7 @@ class Group( common.RestAuthResource ):
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		"""
 		resp = self._delete( self.name )
-		if resp.status == 200:
+		if resp.status == 204:
 			return
 		elif resp.status == 404:
 			raise GroupNotFound( name )
@@ -248,15 +290,14 @@ class Group( common.RestAuthResource ):
 		@todo: It should be possible that user is a str.
 		@todo: this code looks really wrong: a Post to where?
 		"""
-		params = { 'user': user.name }
-
-		resp = self._post( self.name, params )
-		if resp.status == 200:
-			return
+		path = '/%s/users/%s/'%(self.name, user.name)
+		resp = self._get( path )
+		if resp.status == 204:
+			return True
 		elif resp.status == 404:
 			typ = resp.getheader( 'Resource' )
 			if typ == 'User':
-				raise restauth_user.UserNotFound( resp )
+				return False
 			elif typ == 'Group':
 				raise GroupNotFound( resp )
 			else:
@@ -274,8 +315,9 @@ class Group( common.RestAuthResource ):
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		@todo: It should be possible that user is a str.
 		"""
-		resp = self._delete( '%s/%s'%(self.name, user.name) )
-		if resp.status == 200:
+		path = '/%s/users/%s/'%(self.name, user.name)
+		resp = self._delete( path )
+		if resp.status == 204:
 			return
 		elif resp.status == 404:
 			typ = resp.getheader( 'Resource' )

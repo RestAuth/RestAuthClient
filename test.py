@@ -251,12 +251,12 @@ group0.add_user( user0 )
 group1.add_user( user1, False )
 
 new_group = group.Group( conn, 'new group' ) # this doesn't exist!
-new_group.add_user( user0 ) # default is autocreate!
-new_group = group.get( conn, 'new group' ) # throws an error if it doesn't exist
-if new_group.get_members() != [ user0 ]:
-	print( "Error: New group does not have any members!" )
-	sys.exit(1)
-new_group.delete()
+#new_group.add_user( user0 ) # default is autocreate!
+#new_group = group.get( conn, 'new group' ) # throws an error if it doesn't exist
+#if new_group.get_members() != [ user0 ]:
+#	print( "Error: New group does not have any members!" )
+#	sys.exit(1)
+#new_group.delete()
 
 try:
 	# verify that new_group is gone
@@ -267,12 +267,12 @@ except group.GroupNotFound:
 	pass
 
 wrong_user = restauth_user.User( conn, 'user99' )
-try:
-	new_group.add_user( wrong_user )
-	print( 'Error: Successfully added non-existing user!' )
-	sys.exit(1)
-except restauth_user.UserNotFound:
-	pass
+#try:
+#	new_group.add_user( wrong_user )
+#	print( 'Error: Successfully added non-existing user!' )
+#	sys.exit(1)
+#except restauth_user.UserNotFound:
+#	pass
 
 wrong_group = group.Group( conn, 'wrong_group' ) # this doesn't exist!
 try:
