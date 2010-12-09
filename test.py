@@ -140,7 +140,7 @@ print( "Ok." )
 print( "Getting some properties... ", end="" )
 mail = user1.get_property( 'email' )
 if mail != "user1@example.com":
-	print( "FAILED - got wrong mail address..." )
+	print( "FAILED - got wrong mail address: %s"%mail )
 	sys.exit(1)
 try:
 	user1.get_property( 'wrong property' )
