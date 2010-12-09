@@ -301,7 +301,8 @@ class User( common.RestAuthResource ):
 		"""
 		resp = self._get( '%s/props/%s'%( self.name, prop ) )
 		if resp.status == 200:
-			return resp.read().decode( 'utf-8' )
+			import json
+			return json.loads( resp.read().decode( 'utf-8' ) )
 		elif resp.status == 404:
 			typ = resp.getheader( 'Resource' )
 			if typ == 'User':
