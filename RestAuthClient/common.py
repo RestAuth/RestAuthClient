@@ -22,10 +22,12 @@ except ImportError:
 	# this is for python 2.x and earlier
 	import httplib as client
 
-import os, json, base64, time
+import os, base64, time
 try:
+	from RestAuthClient import content_types
 	from RestAuthClient.errors import *
 except ImportError:
+	import content_types
 	from errors import *
 
 try:
@@ -82,7 +84,7 @@ class RestAuthConnection:
 	An instance of this class represents a connection to a RestAuth service.
 	"""
 	
-	def __init__( self, host, port, user, passwd, use_ssl=True, cert='' ):
+	def __init__( self, host, port, user, passwd, use_ssl=True, content_handler='application/json' ):
 		"""
 		Initialize a new connection to a RestAuth service. 
 		
@@ -96,15 +98,16 @@ class RestAuthConnection:
 		@param port: The port the RestAuth service listens on
 		@type  port: int
 		@param user: The service name to use for authenticating with 
-			RestAuth
+			RestAuth (passed to L{set_credentials}).
 		@type  user: str
 		@param passwd: The password to use for authenticating with
-			RestAuth.
+			RestAuth (passed to L{set_credentials}).
 		@type  passwd: str
 		@param use_ssl: Wether or not to use SSL.
 		@type  use_ssl: bool
-		@param cert: The certificate to use when using SSL.
-		@type  cert: str
+		@param content_handler: Directly passed to L{set_content_handler}.
+		@type  content_handler: str or subclass of 
+			L{content_handler<content_types.content_handler>}
 		"""
 		self.cookie = None
 		self.host = host
@@ -112,7 +115,7 @@ class RestAuthConnection:
 		self.user = user
 		self.passwd = passwd
 		self.use_ssl = True
-		self.cert = cert
+		self.set_content_handler( content_handler )
 	
 		# pre-calculate the auth-header so we only have to do this once:
 		self.set_credentials( user, passwd )
@@ -133,6 +136,32 @@ class RestAuthConnection:
 			self.auth_header = "Basic %s"%(enc_credentials.decode( 'ascii' ) )
 		else:
 			self.auth_header = None
+
+	def set_content_handler( self, content_handler='application/json' ):
+		"""
+		Set the content type used by this connection. The default value
+		is 'json', which is supported by the reference server
+		implementation.
+
+		@param content_handler: Either a self-implemented handler, which
+			must be a subclass of
+			L{content_handler<content_types.content_handler>} or a
+			str, in which case the str suffixed with '_handler'
+			must give a class found in L{content_types}.
+		@type  content_handler: str or subclass of 
+			L{content_handler<content_types.content_handler>}
+
+		"""
+		if isinstance( content_handler, content_types.content_handler ):
+			self.content_handler = content_handler
+		elif isinstance( content_handler, str ):
+			handler_dict = content_types.CONTENT_HANDLERS
+			try:
+				cl = handler_dict[content_handler]
+			except KeyError:
+				raise RuntimeError( "Unknown content_handler: %s"%(content_handler) )
+			
+			self.content_handler = cl()
 
 	def send( self, method, url, body=None, headers={} ):
 		"""
@@ -158,10 +187,13 @@ class RestAuthConnection:
 		@return: The response to the request
 		@rtype: U{HTTPResponse<http://docs.python.org/py3k/library/http.client.html#httpresponse-objects>}
 
-		@raise BadRequest: When the RestAuth service returns HTTP status code 400
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise Unauthorized: When the connection uses wrong credentials.
+		@raise NotAcceptable: When the server cannot generate a response
+			in the content type used by this connection (see also:
+			L{set_content_handler}).
+		@raise InternalServerError: When the server has some internal
+			error.
 
-		@todo: catch 401/403 codes
 		@todo: actually use SSL
 		"""
 		if self.cookie and self.cookie.valid():
@@ -169,7 +201,7 @@ class RestAuthConnection:
 		elif self.auth_header:
 			headers['Authorization'] = self.auth_header
 
-		headers['Accept'] = 'application/json'
+		headers['Accept'] = self.content_handler.mime
 	
 		# TODO: alternatively use an HTTPS connection
 		conn = client.HTTPConnection( self.host, self.port )
@@ -230,8 +262,12 @@ class RestAuthConnection:
 		@return: The response to the request
 		@rtype: U{HTTPResponse<http://docs.python.org/py3k/library/http.client.html#httpresponse-objects>}
 
-		@raise BadRequest: When the RestAuth service returns HTTP status code 400
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise Unauthorized: When the connection uses wrong credentials.
+		@raise NotAcceptable: When the server cannot generate a response
+			in the content type used by this connection (see also:
+			L{set_content_handler}).
+		@raise InternalServerError: When the server has some internal
+			error.
 		"""
 		url = self._sanitize_url( url )
 		qs = self._sanitize_qs( params )
@@ -250,9 +286,8 @@ class RestAuthConnection:
 		@param url: The URL to perform the GET request on. The URL
 			must not include a query string.
 		@type  url: str
-		@param params: The query parameters for this request. A
-			dictionary of key/value pairs that is passed to
-			U{quote<http://docs.python.org/py3k/library/urllib.parse.html#urllib.parse.quote>}.
+		@param params: A dictionary that will be wrapped into the
+			request body.
 		@type  params: dict
 		@param headers: Additional headers to send with this request.
 		@type  headers: dict
@@ -260,12 +295,20 @@ class RestAuthConnection:
 		@return: The response to the request
 		@rtype: U{HTTPResponse<http://docs.python.org/py3k/library/http.client.html#httpresponse-objects>}
 
-		@raise BadRequest: When the RestAuth service returns HTTP status code 400
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise BadRequest: If the server was unable to parse the request
+			body.
+		@raise Unauthorized: When the connection uses wrong credentials.
+		@raise NotAcceptable: When the server cannot generate a response
+			in the content type used by this connection (see also:
+			L{set_content_handler}).
+		@raise UnsupportedMediaType: The server does not support the
+			content type used by this connection.
+		@raise InternalServerError: When the server has some internal
+			error.
 		"""
-		headers['Content-Type'] = 'application/json'
+		headers['Content-Type'] = self.content_handler.mime
+		body = self.content_handler.serialize_dict( params )
 		url = self._sanitize_url( url )
-		body = json.dumps( params )
 		response = self.send( 'POST', url, body, headers )
 		if response.status == 400:
 			raise BadRequest( response )
@@ -286,9 +329,8 @@ class RestAuthConnection:
 		@param url: The URL to perform the GET request on. The URL
 			must not include a query string.
 		@type  url: str
-		@param params: The query parameters for this request. A
-			dictionary of key/value pairs that is passed to
-			U{quote<http://docs.python.org/py3k/library/urllib.parse.html#urllib.parse.quote>}.
+		@param params: A dictionary that will be wrapped into the
+			request body.
 		@type  params: dict
 		@param headers: Additional headers to send with this request.
 		@type  headers: dict
@@ -296,12 +338,20 @@ class RestAuthConnection:
 		@return: The response to the request
 		@rtype: U{HTTPResponse<http://docs.python.org/py3k/library/http.client.html#httpresponse-objects>}
 
-		@raise BadRequest: When the RestAuth service returns HTTP status code 400
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise BadRequest: If the server was unable to parse the request
+			body.
+		@raise Unauthorized: When the connection uses wrong credentials.
+		@raise NotAcceptable: When the server cannot generate a response
+			in the content type used by this connection (see also:
+			L{set_content_handler}).
+		@raise UnsupportedMediaType: The server does not support the
+			content type used by this connection.
+		@raise InternalServerError: When the server has some internal
+			error.
 		"""
-		headers['Content-Type'] = 'application/json'
+		headers['Content-Type'] = self.content_handler.mime
+		body = self.content_handler.serialize_dict( params )
 		url = self._sanitize_url( url )
-		body = json.dumps( params )
 		response = self.send( 'PUT', url, body, headers )
 		if response.status == 400:
 			raise BadRequest( response )
@@ -325,8 +375,12 @@ class RestAuthConnection:
 		@return: The response to the request
 		@rtype: U{HTTPResponse<http://docs.python.org/py3k/library/http.client.html#httpresponse-objects>}
 
-		@raise BadRequest: When the RestAuth service returns HTTP status code 400
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise Unauthorized: When the connection uses wrong credentials.
+		@raise NotAcceptable: When the server cannot generate a response
+			in the content type used by this connection (see also:
+			L{set_content_handler}).
+		@raise InternalServerError: When the server has some internal
+			error.
 		"""
 		url = self._sanitize_url( url )
 		return self.send( 'DELETE', url, headers=headers )
@@ -335,77 +389,47 @@ class RestAuthConnection:
 		return self.host == other.host and self.port == other.port and \
 			self.user == other.user and \
 			self.passwd == other.passwd and \
-			self.use_ssl == other.use_ssl and \
-			self.cert == other.cert
+			self.use_ssl == other.use_ssl
 
 class RestAuthResource:
 	"""
 	Superclass for L{user<user.User>} and L{group<group.Group>} objects.
-	Exists to wrap http requests with the prefix of the given resource.
+	The private methods of this class do nothing but prefix all request URLs
+	with the prefix of that class (i.e. /users/).
 	"""
 
-	def _get( self, url, params={}, headers={}, prefix=None ):
+	def _get( self, url, params={}, headers={} ):
 		"""
-		Internal method that prefixes a GET request with the resources
-		name.
-		
-		@raise BadRequest: When the RestAuth service returns HTTP status
-			code 400
-		@raise InternalServerError: When the RestAuth service returns
-			HTTP status code 500
+		Internal method that prefixes a GET request with the resource
+		name and passes the request to L{get}.
 		"""
-		if prefix:
-			url = '%s%s'%( prefix, url )
-		else:
-			url = '%s%s'%( self.__class__.prefix, url )
+		url = '%s%s'%( self.__class__.prefix, url )
 		return self.conn.get( url, params, headers )
 	
-	def _post( self, url, params={}, headers={}, prefix=None ):
+	def _post( self, url, params={}, headers={} ):
 		"""
 		Internal method that prefixes a POST request with the resources
-		name.
+		name and passes the request to L{post}.
 		
-		@raise BadRequest: When the RestAuth service returns HTTP status
-			code 400
-		@raise InternalServerError: When the RestAuth service returns
-			HTTP status code 500
 		"""
-		if prefix:
-			url = '%s%s'%( prefix, url )
-		else:
-			url = '%s%s'%( self.__class__.prefix, url )
+		url = '%s%s'%( self.__class__.prefix, url )
 		return self.conn.post( url, params, headers )
 	
-	def _put( self, url, params={}, headers={}, prefix=None ):
+	def _put( self, url, params={}, headers={} ):
 		"""
 		Internal method that prefixes a PUT request with the resources
-		name.
+		name and passes the request to L{put}.
 		
-		@raise BadRequest: When the RestAuth service returns HTTP status
-			code 400
-		@raise InternalServerError: When the RestAuth service returns
-			HTTP status code 500
 		"""
-		if prefix:
-			url = '%s%s'%( prefix, url )
-		else:
-			url = '%s%s'%( self.__class__.prefix, url )
+		url = '%s%s'%( self.__class__.prefix, url )
 		return self.conn.put( url, params, headers )
 	
-	def _delete( self, url, headers={}, prefix=None ):
+	def _delete( self, url, headers={} ):
 		"""
 		Internal method that prefixes a DELETE request with the
-		resources name.
+		resources name and passes the request to L{delete}.
 		
-		@raise BadRequest: When the RestAuth service returns HTTP status
-			code 400
-		@raise InternalServerError: When the RestAuth service returns
-			HTTP status code 500
 		"""
-		if prefix:
-			url = '%s%s'%( prefix, url )
-		else:
-			url = '%s%s'%( self.__class__.prefix, url )
-
+		url = '%s%s'%( self.__class__.prefix, url )
 		return self.conn.delete( url, headers )
 
