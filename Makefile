@@ -14,7 +14,7 @@
 #    along with RestAuthClient.py.  If not, see <http://www.gnu.org/licenses/>.
 
 NAME="RestAuthClient"
-MODULES=RestAuthClient.restauth_user RestAuthClient.group RestAuthClient.errors RestAuthClient.common
+MODULES=RestAuthClient.restauth_user RestAuthClient.group RestAuthClient.errors RestAuthClient.common RestAuthClient.content_types
 DOC_DIR="doc"
 HTML_DIR="${DOC_DIR}/html"
 PDF_DIR="${DOC_DIR}/pdf"
