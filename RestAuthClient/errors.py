@@ -83,12 +83,12 @@ class NotAcceptable( ContentTypeException ):
 	"""
 	pass
 
-class RestAuthUnsupportedMediaType( ContentTypeException ):
+class UnsupportedMediaType( ContentTypeException ):
 	"""
 	The RestAuth service does not support the media type used by this client
 	implementation.
 
-	On a protocol level, this represents HTTP status code 406.
+	On a protocol level, this represents HTTP status code 415.
 	"""
 	pass
 
