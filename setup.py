@@ -14,14 +14,59 @@
 #    along with RestAuthClient.py.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from distutils.core import setup
+import os, sys, shutil
+from distutils.core import setup, Command
+from subprocess import Popen, PIPE
+from distutils.command.clean import clean as _clean
+
+name = 'RestAuthClient'
+
+class build_doc( Command ):
+	description = "Build epydoc documentation."
+	user_options = [('dest=', None, 'Output directory of documentation' )]
+
+	def initialize_options( self ):
+		self.dest = 'doc'
+
+	def finalize_options( self ):
+		command = self.get_command_name()
+		options = self.distribution.command_options[ command ]
+
+		if 'dest' in options:
+			self.dest = options['dest'][1]
+
+	def run( self ):
+		try:
+			# check for epydoc
+			import epydoc
+		except ImportError:
+			print( "Error: epydoc is not installed." )
+			sys.exit(1)
+
+		html_dest = self.dest + '/html'
+		if not os.path.exists( html_dest ):
+			os.makedirs( html_dest )
+
+		cmd = [ 'epydoc', '-v', '--html', '--name', name, '-o',
+			html_dest, '--no-private', 'RestAuthClient' ]
+		p = Popen( cmd )
+		p.communicate()
+
+class clean( _clean ):
+	def run( self ):
+		for directory in [ 'doc', 'build' ]:
+			if os.path.exists( directory ):
+				shutil.rmtree( directory )
+
+		_clean.run( self )
 
 setup(
-	name='RestAuthClient',
+	name=name,
 	version='1.0',
 	description='RestAuth client library',
 	author='Mathias Ertl',
 	author_email='mati@fsinf.at',
 	url='http://fs.fsinf.at/wiki/RestAuth',
-	packages=['RestAuthClient']
+	packages=['RestAuthClient'],
+	cmdclass = { 'build_doc': build_doc, 'clean': clean }
 )
