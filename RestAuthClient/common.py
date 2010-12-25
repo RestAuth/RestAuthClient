@@ -22,12 +22,10 @@ except ImportError:
 	# this is for python 2.x and earlier
 	import httplib as client
 
-import os, base64, time
+import os, sys, base64, time
 try:
-	from RestAuthClient import content_types
 	from RestAuthClient.errors import *
 except ImportError:
-	import content_types
 	from errors import *
 
 try:
@@ -35,6 +33,12 @@ try:
 except ImportError:
 	# this is for python 2.x and earlier
 	from urllib import quote, urlencode
+
+try:
+	import RestAuthCommon
+except ImportError:
+	print( "Error: The RestAuthCommon library is not installed." )
+	sys.exit(1)
 
 class RestAuthCookie:
 	def __init__( self, raw_value ):
@@ -107,7 +111,7 @@ class RestAuthConnection:
 		@type  use_ssl: bool
 		@param content_handler: Directly passed to L{set_content_handler}.
 		@type  content_handler: str or subclass of 
-			L{content_handler<content_types.content_handler>}
+			RestAuthCommon.handlers.content_handler.
 		"""
 		self.cookie = None
 		self.host = host
@@ -122,8 +126,8 @@ class RestAuthConnection:
 
 	def set_credentials( self, user, passwd ):
 		"""
-		Set the password for the given user. This method is
-		automatically is also called by the constructor.
+		Set the password for the given user. This method is also
+		automatically called by the constructor.
 
 		@param user: The user for whom the password should be changed.
 		@type  user: str
@@ -145,17 +149,17 @@ class RestAuthConnection:
 
 		@param content_handler: Either a self-implemented handler, which
 			must be a subclass of
-			L{content_handler<content_types.content_handler>} or a
+			RestAuthCommon.handlers.content_handler or a str
 			str, in which case the str suffixed with '_handler'
-			must give a class found in L{content_types}.
+			must give a class found in RestAuthCommon.handlers.
 		@type  content_handler: str or subclass of 
-			L{content_handler<content_types.content_handler>}
+			RestAuthCommon.handlers.content_handler.
 
 		"""
-		if isinstance( content_handler, content_types.content_handler ):
+		if isinstance( content_handler, RestAuthCommon.handlers.content_handler ):
 			self.content_handler = content_handler
 		elif isinstance( content_handler, str ):
-			handler_dict = content_types.CONTENT_HANDLERS
+			handler_dict = RestAuthCommon.CONTENT_HANDLERS
 			try:
 				cl = handler_dict[content_handler]
 			except KeyError:
@@ -307,7 +311,7 @@ class RestAuthConnection:
 			error.
 		"""
 		headers['Content-Type'] = self.content_handler.mime
-		body = self.content_handler.serialize_dict( params )
+		body = self.content_handler.marshal_dict( params )
 		url = self._sanitize_url( url )
 		response = self.send( 'POST', url, body, headers )
 		if response.status == 400:
@@ -350,7 +354,7 @@ class RestAuthConnection:
 			error.
 		"""
 		headers['Content-Type'] = self.content_handler.mime
-		body = self.content_handler.serialize_dict( params )
+		body = self.content_handler.marshal_dict( params )
 		url = self._sanitize_url( url )
 		response = self.send( 'PUT', url, body, headers )
 		if response.status == 400:

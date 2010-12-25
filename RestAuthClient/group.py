@@ -16,8 +16,6 @@
 """
 Module handling code relevant to group handling.
 """
-import json
-
 try:
 	from RestAuthClient import common, restauth_user
 	from RestAuthClient.errors import *
@@ -86,7 +84,7 @@ def get_all( conn, user=None, recursive=True ):
 	resp = conn.get( Group.prefix, params )
 	if resp.status == 200:
 		body = resp.read().decode( 'utf-8' )
-		names = json.loads( body )
+		names = self.conn.content_handler.unmarshal_list( body )
 		return [ Group( conn, name ) for name in names ]
 	else:
 		raise UnknownStatus( resp )
@@ -145,7 +143,8 @@ class Group( common.RestAuthResource ):
 		resp = self._get( '/%s/users/'%(self.name), params )
 		if resp.status == 200:
 			# parse user-list:
-			names = json.loads( resp.read().decode( 'utf-8' ) )
+			body = resp.read().decode( 'utf-8' )
+			names = self.conn.content_handler.unmarshal_list( body )
 			users = [ restauth_user.User( self.conn, name ) for name in names ]
 			return users
 		elif resp.status == 404:
@@ -230,7 +229,8 @@ class Group( common.RestAuthResource ):
 		path = '/%s/groups/'%(self.name)
 		resp = self._get( path )
 		if resp.status == 200:
-			names = json.loads( body )
+			body = resp.read().decode( 'utf-8' )
+			names = self.conn.content_handler.unmarshal_list( body )
 			return [ Group( self.conn, name ) for name in names ]
 		elif resp.status == 404:
 			raise GroupNotFound( self.name )

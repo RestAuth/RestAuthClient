@@ -122,13 +122,9 @@ def get_all( conn ):
 	resp = conn.get( User.prefix )
 		
 	if resp.status == 200:
-		import json
-		users = []
 		body = resp.read().decode( 'utf-8' )
-		usernames = json.loads( body )
-		for name in usernames:
-			users.append( User( conn, name ) )
-		return users
+		usernames = conn.content_handler.unmarshal_list( body )
+		return [ User( conn, name ) for name in usernames ]
 	else:
 		raise UnknownStatus( resp )
 
@@ -220,9 +216,8 @@ class User( common.RestAuthResource ):
 		"""
 		resp = self._get( '%s/props/'%(self.name) )
 		if resp.status == 200:
-			import json
-			props = json.loads( resp.read().decode( 'utf-8' ) )
-			return props
+			body = resp.read().decode( 'utf-8' )
+			return self.conn.content_handler.unmarshal_dict( body )
 		elif resp.status == 404:
 			raise UserNotFound( self.name )
 		else:
@@ -274,10 +269,8 @@ class User( common.RestAuthResource ):
 		url = '%s/props/%s/'%( self.name, prop )
 		resp = self._put( url, params={'value': value} )
 		if resp.status == 200:
-			import json
-			users = []
 			body = resp.read().decode( 'utf-8' )
-			return json.loads( body )
+			return self.conn.content_handler.unmarshal_str( body )
 		if resp.status == 201:
 			return
 		elif resp.status == 404:
@@ -301,8 +294,8 @@ class User( common.RestAuthResource ):
 		"""
 		resp = self._get( '%s/props/%s'%( self.name, prop ) )
 		if resp.status == 200:
-			import json
-			return json.loads( resp.read().decode( 'utf-8' ) )
+			body = resp.read().decode( 'utf-8' )
+			return self.conn.content_handler.unmarshal_str( body )
 		elif resp.status == 404:
 			typ = resp.getheader( 'Resource' )
 			if typ == 'User':

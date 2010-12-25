@@ -14,7 +14,7 @@ shipping with RestAuth.
 """
 
 import sys
-from RestAuthClient import group, restauth_user, common
+from RestAuthClient import common, group, restauth_user
 from RestAuthClient.errors import *
 
 conn = common.RestAuthConnection( 'localhost', 8000, 'vowi', 'vowi', False )

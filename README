@@ -1,8 +1,8 @@
 === ABOUT ===
 This library implements all features of the RestAuth specification and is a
-reference implementation. It is written in pure python 3.x but is still
-compatible with python 2.6. It does not work with python 2.5 because it uses the
-JSON library which was added in 2.6.
+reference implementation. It is written in pure python. It generally works with
+python 2.6 or later (including python3). You can also use this library with
+python2.5, if you take some precautions (see USING WITH PYTHON 2.5).
 
 === INSTALLATION ===
 The library ships with a with a standard setup.py file, so you should be able to
@@ -32,3 +32,12 @@ available online, please see:
 
 The examples directory includes a few examples, which you need to invoke from
 the top-level directory.
+
+=== USING WITH PYTHON 2.5 ===
+In its default configuration, this library uses JSON to marshal/unmarshal data
+sent to/received from the server. If you want to use this code with python2.5
+you either have to install the simplejson library[1] or provide your own content
+handler to the constructor. This content handler must be a subclass of
+RestAuthCommon.handlers.content_handler.
+
+[1] http://pypi.python.org/pypi/simplejson/2.1.2
