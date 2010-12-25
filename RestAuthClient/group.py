@@ -84,7 +84,7 @@ def get_all( conn, user=None, recursive=True ):
 	resp = conn.get( Group.prefix, params )
 	if resp.status == 200:
 		body = resp.read().decode( 'utf-8' )
-		names = self.conn.content_handler.unmarshal_list( body )
+		names = conn.content_handler.unmarshal_list( body )
 		return [ Group( conn, name ) for name in names ]
 	else:
 		raise UnknownStatus( resp )
