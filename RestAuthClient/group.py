@@ -175,7 +175,7 @@ class Group( common.RestAuthResource ):
 			return
 		elif resp.status == 404:
 			try:
-				typ = resp.getheader( 'Resource' )
+				typ = resp.getheader( 'Resource-Type' )
 				if typ == 'User':
 					raise restauth_user.UserNotFound( resp )
 				elif typ == 'Group':
@@ -295,7 +295,7 @@ class Group( common.RestAuthResource ):
 		if resp.status == 204:
 			return True
 		elif resp.status == 404:
-			typ = resp.getheader( 'Resource' )
+			typ = resp.getheader( 'Resource-Type' )
 			if typ == 'User':
 				return False
 			elif typ == 'Group':
@@ -320,7 +320,7 @@ class Group( common.RestAuthResource ):
 		if resp.status == 204:
 			return
 		elif resp.status == 404:
-			typ = resp.getheader( 'Resource' )
+			typ = resp.getheader( 'Resource-Type' )
 			if typ == 'User':
 				raise restauth_user.UserNotFound( resp )
 			elif typ == 'Group':

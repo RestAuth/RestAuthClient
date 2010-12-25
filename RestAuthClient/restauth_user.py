@@ -297,7 +297,7 @@ class User( common.RestAuthResource ):
 			body = resp.read().decode( 'utf-8' )
 			return self.conn.content_handler.unmarshal_str( body )
 		elif resp.status == 404:
-			typ = resp.getheader( 'Resource' )
+			typ = resp.getheader( 'Resource-Type' )
 			if typ == 'User':
 				raise UserNotFound( self.name )
 			elif typ == 'Property':
