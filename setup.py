@@ -15,11 +15,13 @@
 
 
 import os, sys, shutil
+from os.path import exists
 from distutils.core import setup, Command
 from subprocess import Popen, PIPE
 from distutils.command.clean import clean as _clean
 
 name = 'RestAuthClient'
+url = 'https://fs.fsinf.at/wiki/RestAuth/Python'
 
 class build_doc( Command ):
 	description = "Build epydoc documentation."
@@ -48,7 +50,8 @@ class build_doc( Command ):
 			os.makedirs( html_dest )
 
 		cmd = [ 'epydoc', '-v', '--html', '--name', name, '-o',
-			html_dest, '--no-private', 'RestAuthClient' ]
+			html_dest, '--no-private', '-u', url, 
+			'RestAuthClient' ]
 		p = Popen( cmd )
 		p.communicate()
 
@@ -60,13 +63,27 @@ class clean( _clean ):
 
 		_clean.run( self )
 
+def get_version():
+	version = '0.1'
+	if exists( '.version' ):
+		print( 'get version from file...' )
+		version = open( '.version' ).readlines()[0]
+	elif exists( '.svn' ):
+		cmd = [ 'svn', 'info' ]
+		p = Popen( cmd, stdout=PIPE )
+		stdin, stderr = p.communicate()
+		lines = stdin.split( "\n" )
+		line = [ line for line in lines if line.startswith( 'Revision' ) ][0]
+		version = '0.0-' + line.split( ': ' )[1].strip()
+	return version
+
 setup(
 	name=name,
-	version='1.0',
+	version=get_version(),
 	description='RestAuth client library',
 	author='Mathias Ertl',
 	author_email='mati@fsinf.at',
-	url='http://fs.fsinf.at/wiki/RestAuth',
+	url = url,
 	packages=['RestAuthClient'],
 	cmdclass = { 'build_doc': build_doc, 'clean': clean }
 )
