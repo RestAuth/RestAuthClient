@@ -77,6 +77,15 @@ def get_version():
 		version = '0.0-' + line.split( ': ' )[1].strip()
 	return version
 
+class version( Command ):
+	description = "Print version and exit."
+	user_options = []
+
+	def initialize_options( self ): pass
+	def finalize_options( self ): pass
+	def run( self ):
+		print( get_version() )
+
 setup(
 	name=name,
 	version=get_version(),
@@ -85,5 +94,5 @@ setup(
 	author_email='mati@fsinf.at',
 	url = url,
 	packages=['RestAuthClient'],
-	cmdclass = { 'build_doc': build_doc, 'clean': clean }
+	cmdclass = { 'build_doc': build_doc, 'clean': clean, 'version': version }
 )
