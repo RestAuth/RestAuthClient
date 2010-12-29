@@ -29,10 +29,11 @@ except ImportError:
 	from errors import *
 
 try:
-	from urllib.parse import quote, urlencode
+	from urllib.parse import quote, urlencode, urlparse
 except ImportError:
 	# this is for python 2.x and earlier
 	from urllib import quote, urlencode
+	import urlparse
 
 try:
 	import RestAuthCommon
@@ -88,7 +89,7 @@ class RestAuthConnection:
 	An instance of this class represents a connection to a RestAuth service.
 	"""
 	
-	def __init__( self, host, port, user, passwd, use_ssl=True, content_handler='application/json' ):
+	def __init__( self, host, user, passwd, content_handler='application/json' ):
 		"""
 		Initialize a new connection to a RestAuth service. 
 		
@@ -99,26 +100,26 @@ class RestAuthConnection:
 
 		@param host: The hostname of the RestAuth service
 		@type  host: str
-		@param port: The port the RestAuth service listens on
-		@type  port: int
 		@param user: The service name to use for authenticating with 
 			RestAuth (passed to L{set_credentials}).
 		@type  user: str
 		@param passwd: The password to use for authenticating with
 			RestAuth (passed to L{set_credentials}).
 		@type  passwd: str
-		@param use_ssl: Wether or not to use SSL.
-		@type  use_ssl: bool
 		@param content_handler: Directly passed to L{set_content_handler}.
 		@type  content_handler: str or subclass of 
 			RestAuthCommon.handlers.content_handler.
 		"""
 		self.cookie = None
-		self.host = host
-		self.port = port
+		parseresult = urlparse( host )
+		if parseresult.scheme == 'https':
+			self.use_ssl = True
+		else:
+			self.use_ssl = False
+		self.host = parseresult.netloc
+
 		self.user = user
 		self.passwd = passwd
-		self.use_ssl = True
 		self.set_content_handler( content_handler )
 	
 		# pre-calculate the auth-header so we only have to do this once:
@@ -197,8 +198,6 @@ class RestAuthConnection:
 			L{set_content_handler}).
 		@raise InternalServerError: When the server has some internal
 			error.
-
-		@todo: actually use SSL
 		"""
 		if self.cookie and self.cookie.valid():
 			headers['Cookie'] = self.cookie.get_value()
@@ -207,8 +206,10 @@ class RestAuthConnection:
 
 		headers['Accept'] = self.content_handler.mime
 	
-		# TODO: alternatively use an HTTPS connection
-		conn = client.HTTPConnection( self.host, self.port )
+		if self.use_ssl:
+			conn = client.HTTPSConnection( self.host )
+		else:
+			conn = client.HTTPConnection( self.host )
 
 		conn.request( method, url, body, headers )
 		response = conn.getresponse()
