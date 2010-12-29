@@ -17,7 +17,7 @@ import sys
 from RestAuthClient import common, group, restauth_user
 from RestAuthClient.errors import *
 
-conn = common.RestAuthConnection( 'http://localhost:8000', 'vowi', 'vowi' )
+conn = common.RestAuthConnection( 'http://localhost:8000', 'vowi', 'vowi', True )
 
 # verify initial state:
 users = restauth_user.get_all( conn )

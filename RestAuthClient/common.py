@@ -89,7 +89,7 @@ class RestAuthConnection:
 	An instance of this class represents a connection to a RestAuth service.
 	"""
 	
-	def __init__( self, host, user, passwd, content_handler='application/json' ):
+	def __init__( self, host, user, passwd, use_cookies=True, content_handler='application/json' ):
 		"""
 		Initialize a new connection to a RestAuth service. 
 		
@@ -106,11 +106,17 @@ class RestAuthConnection:
 		@param passwd: The password to use for authenticating with
 			RestAuth (passed to L{set_credentials}).
 		@type  passwd: str
+		@param use_cookies: Wether or not to use cookies. Using cookies
+			is faster when doing multiple requests, but may not work
+			on all server configurations.
+		@type  use_cookies: bool
 		@param content_handler: Directly passed to L{set_content_handler}.
 		@type  content_handler: str or subclass of 
 			RestAuthCommon.handlers.content_handler.
 		"""
 		self.cookie = None
+		self.use_cookies = use_cookies
+
 		parseresult = urlparse( host )
 		if parseresult.scheme == 'https':
 			self.use_ssl = True
@@ -199,7 +205,7 @@ class RestAuthConnection:
 		@raise InternalServerError: When the server has some internal
 			error.
 		"""
-		if self.cookie and self.cookie.valid():
+		if self.use_cookies and self.cookie and self.cookie.valid():
 			headers['Cookie'] = self.cookie.get_value()
 		elif self.auth_header:
 			headers['Authorization'] = self.auth_header
