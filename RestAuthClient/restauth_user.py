@@ -298,9 +298,9 @@ class User( common.RestAuthResource ):
 			return self.conn.content_handler.unmarshal_str( body )
 		elif resp.status == 404:
 			typ = resp.getheader( 'Resource-Type' )
-			if typ == 'User':
+			if typ == 'user':
 				raise UserNotFound( self.name )
-			elif typ == 'Property':
+			elif typ == 'property':
 				raise PropertyNotFound( prop )
 			else:
 				raise RuntimeError( 'Received wrong response header!' )

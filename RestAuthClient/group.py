@@ -176,9 +176,9 @@ class Group( common.RestAuthResource ):
 		elif resp.status == 404:
 			try:
 				typ = resp.getheader( 'Resource-Type' )
-				if typ == 'User':
+				if typ == 'user':
 					raise restauth_user.UserNotFound( resp )
-				elif typ == 'Group':
+				elif typ == 'group':
 					raise GroupNotFound( resp )
 				else:
 					raise RuntimeError('Received wrong response header!')
@@ -296,9 +296,9 @@ class Group( common.RestAuthResource ):
 			return True
 		elif resp.status == 404:
 			typ = resp.getheader( 'Resource-Type' )
-			if typ == 'User':
+			if typ == 'user':
 				return False
-			elif typ == 'Group':
+			elif typ == 'group':
 				raise GroupNotFound( resp )
 			else:
 				raise RuntimeError('Received wrong response header!')
@@ -321,9 +321,9 @@ class Group( common.RestAuthResource ):
 			return
 		elif resp.status == 404:
 			typ = resp.getheader( 'Resource-Type' )
-			if typ == 'User':
+			if typ == 'user':
 				raise restauth_user.UserNotFound( resp )
-			elif typ == 'Group':
+			elif typ == 'group':
 				raise GroupNotFound( resp )
 			else:
 				raise RuntimeError('Received wrong response header!')
