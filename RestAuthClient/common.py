@@ -250,6 +250,10 @@ class RestAuthConnection:
 		url = '%s/'%( os.path.normpath( url ) )
 		if not url.startswith( '/' ):
 			url = '/%s'%(url)
+
+		if url.__class__ == unicode: # encode utf-8
+			url = url.encode( 'utf-8' )
+
 		url = quote( url )
 		return url
 
