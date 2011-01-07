@@ -86,6 +86,23 @@ class version( Command ):
 	def run( self ):
 		print( get_version() )
 
+class test( Command ):
+	description = "Run test suite."
+	user_options = []
+
+	def initialize_options( self ): pass
+	def finalize_options( self ): pass
+	def run( self ):
+		import unittest
+		from tests import users
+
+		for mod in [ users ]:
+			loader = unittest.TestLoader()
+			suite = loader.loadTestsFromModule( mod )
+			unittest.TextTestRunner(verbosity=1).run(suite)
+
+
+
 setup(
 	name=name,
 	version=get_version(),
@@ -94,5 +111,6 @@ setup(
 	author_email='mati@fsinf.at',
 	url = url,
 	packages=['RestAuthClient'],
-	cmdclass = { 'build_doc': build_doc, 'clean': clean, 'version': version }
+	cmdclass = { 'build_doc': build_doc, 'clean': clean, 'version': version,
+		'test': test }
 )
