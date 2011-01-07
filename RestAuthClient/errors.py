@@ -99,7 +99,7 @@ class ResourceNotFound( RestAuthException ):
 	def __init__( self, response ):
 		self.response = response
 
-	def get_type():
+	def get_type( self ):
 		"""
 		Get the type of the queried resource that wasn't found.
 
