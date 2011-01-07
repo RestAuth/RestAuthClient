@@ -98,7 +98,7 @@ try:
 	user99 = restauth_user.get( conn, 'user99' )
 	print( 'FAILED - GOT A USER???' )
 	sys.exit(1)
-except restauth_user.UserNotFound:
+except ResourceNotFound:
 	print( 'Ok.' )
 	
 print( 'Updating some passwords... ', end='' )
@@ -115,7 +115,7 @@ try:
 	user99.set_password( 'new password' )
 	print( 'FAILED - set password for non-existing user' )
 	sys.exit(1)
-except restauth_user.UserNotFound:
+except ResourceNotFound:
 	pass
 
 user1.set_password( 'password1' )
@@ -146,7 +146,7 @@ try:
 	user1.get_property( 'wrong property' )
 	print( 'FAILED - got wrong property' )
 	sys.exit(1)
-except restauth_user.PropertyNotFound:
+except ResourceNotFound:
 	pass
 
 try: 
@@ -154,7 +154,7 @@ try:
 	user99.get_property( 'email' )
 	print( 'FAILED - got property of non-existing user...' )
 	sys.exit(1)
-except restauth_user.UserNotFound:
+except ResourceNotFound:
 	pass
 print( "Ok." )
 
@@ -206,7 +206,7 @@ try:
 	skin = user1.get_property( 'skin' )
 	print( 'get_property returned deleted property' )
 	sys.exit(1)
-except restauth_user.PropertyNotFound:
+except ResourceNotFound:
 	pass
 
 props = user1.get_properties()
@@ -248,43 +248,31 @@ print( 'Ok.' )
 
 print( 'Adding users to groups... ', end='' )
 group0.add_user( user0 )
-group1.add_user( user1, False )
+group1.add_user( user1 )
 
 new_group = group.Group( conn, 'new group' ) # this doesn't exist!
-#new_group.add_user( user0 ) # default is autocreate!
-#new_group = group.get( conn, 'new group' ) # throws an error if it doesn't exist
-#if new_group.get_members() != [ user0 ]:
-#	print( "Error: New group does not have any members!" )
-#	sys.exit(1)
-#new_group.delete()
 
 try:
 	# verify that new_group is gone
 	group.get( conn, 'new group' )
 	print( "Error: deleted group is still there!" )
 	sys.exit( 1 )
-except group.GroupNotFound:
+except ResourceNotFound:
 	pass
 
 wrong_user = restauth_user.User( conn, 'user99' )
-#try:
-#	new_group.add_user( wrong_user )
-#	print( 'Error: Successfully added non-existing user!' )
-#	sys.exit(1)
-#except restauth_user.UserNotFound:
-#	pass
 
 wrong_group = group.Group( conn, 'wrong_group' ) # this doesn't exist!
 try:
-	wrong_group.add_user( user0, autocreate=False )
-	print( 'Error: added user to non-existing group without autocreate!' )
+	wrong_group.add_user( user0 )
+	print( 'Error: added user to non-existing group!' )
 	sys.exit(1)
-except group.GroupNotFound:
+except ResourceNotFound:
 	pass
 
 try:
-	new_group.add_user( wrong_user, autocreate=False )
-	print( 'Error: Successfully added non-existing user to non-existing group without autocreate!' )
+	new_group.add_user( wrong_user )
+	print( 'Error: Successfully added non-existing user to non-existing group!' )
 	sys.exit(1)
 except ResourceNotFound:
 	pass
@@ -420,5 +408,5 @@ try:
 	print( "Get non-existing user... ", end="" )
 	u_ne = restauth_user.get( conn, 'user_foobar' )
 	print( "FOUND!?" )
-except restauth_user.UserNotFound:
+except ResourceNotFound:
 	print( "ok (not found)." )

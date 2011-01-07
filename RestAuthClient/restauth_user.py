@@ -24,13 +24,6 @@ except ImportError:
 	from errors import *
 	import common
 
-class UserNotFound( ResourceNotFound ):
-	"""
-	Exception thrown when a L{User} is not found.
-	"""
-	def __init__( self, response ):
-		self.response = response
-
 class UserExists( ResourceConflict):
 	"""
 	Thrown when a L{User} that already exists should be created.
@@ -43,13 +36,6 @@ class PropertyExists( ResourceConflict ):
 	"""
 	pass
 
-class PropertyNotFound( ResourceNotFound ):
-	"""
-	Thrown when a property is not found.
-	"""
-	def __init__( self, response ):
-		self.response = response
-	
 def create( conn, name, pwd ):
 	"""
 	Factory method that creates a I{new} user in the RestAuth
@@ -78,13 +64,13 @@ def create( conn, name, pwd ):
 	elif resp.status == 412:
 		raise PreconditionFailed( resp.read() )
 	else:
-		raise UnknownStatus( resp.status )
+		raise UnknownStatus( resp )
 
 def get( conn, name ):
 	"""
 	Factory method that gets an I{existing} user from RestAuth. This
 	method verifies that the user exists in the RestAuth and throws
-	L{UserNotFound} if not. 
+	L{ResourceNotFound} if not. 
 
 	@param conn: A connection to a RestAuth service.
 	@type  conn: L{RestAuthConnection}
@@ -92,7 +78,7 @@ def get( conn, name ):
 	@type  name: str
 	@return: The user object representing the user just created.
 	@rtype: L{User}
-	@raise UserNotFound: If the user does not exist in RestAuth.
+	@raise ResourceNotFound: If the user does not exist in RestAuth.
 	@raise InternalServerError: When the RestAuth service returns
 		HTTP status code 500
 	@raise UnknownStatus: If the response status is unknown.
@@ -103,7 +89,7 @@ def get( conn, name ):
 	if resp.status == 204:
 		return User( conn, name )
 	elif resp.status == 404:
-		raise UserNotFound( name )
+		raise ResourceNotFound( resp )
 	else:
 		raise UnknownStatus( resp )
 	
@@ -149,7 +135,7 @@ class User( common.RestAuthResource ):
 		"""
 		Set the password of this user.
 
-		@raise UserNotFound: If the user does not exist in RestAuth.
+		@raise ResourceNotFound: If the user does not exist in RestAuth.
 		@raise InternalServerError: When the RestAuth service returns
 			HTTP status code 500
 		@raise UnknownStatus: If the response status is unknown.
@@ -159,7 +145,7 @@ class User( common.RestAuthResource ):
 		if resp.status == 204:
 			return
 		elif resp.status == 404:
-			raise UserNotFound( self.name )
+			raise ResourceNotFound( resp )
 		elif resp.status == 412:
 			raise PreconditionFailed( resp.read() )
 		else:
@@ -190,7 +176,7 @@ class User( common.RestAuthResource ):
 		"""
 		Delete this user.
 
-		@raise UserNotFound: If the user does not exist in RestAuth.
+		@raise ResourceNotFound: If the user does not exist in RestAuth.
 		@raise InternalServerError: When the RestAuth service returns
 			HTTP status code 500
 		@raise UnknownStatus: If the response status is unknown.
@@ -199,7 +185,7 @@ class User( common.RestAuthResource ):
 		if resp.status == 204:
 			return
 		if resp.status == 404:
-			raise UserNotFound( self.name )
+			raise ResourceNotFound( response )
 		else:
 			raise UnknownStatus( resp )
 
@@ -209,7 +195,7 @@ class User( common.RestAuthResource ):
 
 		@return: A key/value array of the properties defined for this user.
 		@rtype: dict
-		@raise UserNotFound: If the user does not exist in RestAuth.
+		@raise ResourceNotFound: If the user does not exist in RestAuth.
 		@raise InternalServerError: When the RestAuth service returns
 			HTTP status code 500
 		@raise UnknownStatus: If the response status is unknown.
@@ -219,7 +205,7 @@ class User( common.RestAuthResource ):
 			body = resp.read().decode( 'utf-8' )
 			return self.conn.content_handler.unmarshal_dict( body )
 		elif resp.status == 404:
-			raise UserNotFound( self.name )
+			raise ResourceNotFound( response )
 		else:
 			raise UnknownStatus( resp )
 
@@ -233,7 +219,7 @@ class User( common.RestAuthResource ):
 		@type  prop: str
 		@param value: The new value of the property
 		@type  value: str
-		@raise UserNotFound: If the user does not exist in RestAuth.
+		@raise ResourceNotFound: If the user does not exist in RestAuth.
 		@raise PropertyExists: When the property already exists
 		@raise InternalServerError: When the RestAuth service returns
 			HTTP status code 500
@@ -244,7 +230,7 @@ class User( common.RestAuthResource ):
 		if resp.status == 201:
 			return
 		elif resp.status == 404:
-			raise UserNotFound( self.name )
+			raise ResourceNotFound( resp )
 		elif resp.status == 409:
 			raise PropertyExists( resp )
 		else:
@@ -259,7 +245,7 @@ class User( common.RestAuthResource ):
 		@type  prop: str
 		@param value: The new value of the property
 		@type  value: str
-		@raise UserNotFound: If the user does not exist in RestAuth.
+		@raise ResourceNotFound: If the user does not exist in RestAuth.
 		@todo: When the response body contains the previous setting, 
 			return that. This is also a todo on the interface side.
 		@raise InternalServerError: When the RestAuth service returns
@@ -274,7 +260,7 @@ class User( common.RestAuthResource ):
 		if resp.status == 201:
 			return
 		elif resp.status == 404:
-			raise UserNotFound( self.name )
+			raise ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
 
@@ -284,9 +270,9 @@ class User( common.RestAuthResource ):
 
 		@return: The value of the property.
 		@rtype: str
-		@raise UserNotFound: If the user does not exist.
-		@raise PropertyNotFound: If the property does not exist.
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise ResourceNotFound: If the user or property does not exist.
+		@raise InternalServerError: When the RestAuth service returns
+			HTTP status code 500
 		@raise UnknownStatus: If the response status is unknown.
 		@todo: The distinction between "user not found" and
 			"property not found" requires some interface change or
@@ -297,13 +283,7 @@ class User( common.RestAuthResource ):
 			body = resp.read().decode( 'utf-8' )
 			return self.conn.content_handler.unmarshal_str( body )
 		elif resp.status == 404:
-			typ = resp.getheader( 'Resource-Type' )
-			if typ == 'user':
-				raise UserNotFound( self.name )
-			elif typ == 'property':
-				raise PropertyNotFound( prop )
-			else:
-				raise RuntimeError( 'Received wrong response header!' )
+			raise ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
 
@@ -311,7 +291,7 @@ class User( common.RestAuthResource ):
 		"""
 		Delete the given property.
 
-		@raise UserNotFound: If the user does not exist in RestAuth.
+		@raise ResourceNotFound: If the user or property does not exist.
 		@raise InternalServerError: When the RestAuth service returns
 			HTTP status code 500
 		@raise UnknownStatus: If the response status is unknown.
@@ -320,7 +300,7 @@ class User( common.RestAuthResource ):
 		if resp.status == 204:
 			return
 		elif resp.status == 404:
-			raise UserNotFound( self.name )
+			raise ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
 

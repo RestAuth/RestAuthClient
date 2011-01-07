@@ -94,12 +94,19 @@ class UnsupportedMediaType( ContentTypeException ):
 
 class ResourceNotFound( RestAuthException ):
 	"""
-	Common base class for resources (L{users<user.User>}, 
-	L{groups<Group.Group>} or properties) not found.
+	Thrown when a queried resource is not found.
 	"""
-	def __init__( self, response, resource_class ):
+	def __init__( self, response ):
 		self.response = response
-		self.resource_class = resource_class
+
+	def get_type():
+		"""
+		Get the type of the queried resource that wasn't found.
+
+		See the U{specification<http://fs.fsinf.at/wiki/RestAuth/Specification#Resource-Type_header>}
+		for possible values.
+		"""
+		return self.response.getheader( 'Resource-Type' )
 
 
 class ResourceConflict( RestAuthException ):
