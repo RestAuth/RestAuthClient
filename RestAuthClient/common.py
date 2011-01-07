@@ -33,7 +33,7 @@ try:
 except ImportError:
 	# this is for python 2.x and earlier
 	from urllib import quote, urlencode
-	import urlparse
+	from urlparse import urlparse
 
 try:
 	import RestAuthCommon
