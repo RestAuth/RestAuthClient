@@ -185,7 +185,7 @@ class User( common.RestAuthResource ):
 		if resp.status == 204:
 			return
 		if resp.status == 404:
-			raise ResourceNotFound( response )
+			raise ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
 
@@ -205,7 +205,7 @@ class User( common.RestAuthResource ):
 			body = resp.read().decode( 'utf-8' )
 			return self.conn.content_handler.unmarshal_dict( body )
 		elif resp.status == 404:
-			raise ResourceNotFound( response )
+			raise ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
 
