@@ -83,6 +83,31 @@ class BasicTests( unittest.TestCase ):
 			self.fail()
 		except ResourceNotFound as e:
 			self.assertEqual( e.get_type(), "user" )
+	
+	def test_getInvalidUser( self ):
+		try:
+			restauth_user.get( self.conn, "invalid" )
+		except ResourceNotFound as e:
+			self.assertEqual( "user", e.get_type() )
+
+	def test_removeUser( self ):
+		user = restauth_user.create( self.conn, uniname, unipass )
+		user.delete()
+
+		self.assertEqual( [], restauth_user.get_all( self.conn ) )
+		try:
+			restauth_user.get( self.conn, uniname )
+			self.fail()
+		except ResourceNotFound as e:
+			self.assertEqual( "user", e.get_type() )
+
+	def test_removeInvalidUser( self ):
+		user = restauth_user.User( self.conn, "invalid" )
+		try:
+			user.delete()
+		except ResourceNotFound as e:
+			self.assertEqual( "user", e.get_type() )
+
 
 class PropertyTests( unittest.TestCase ):
 	def setUp( self ):
@@ -141,3 +166,81 @@ class PropertyTests( unittest.TestCase ):
 		self.assertEqual( unival, self.user.set_property( unikey, newunival ) )
 		self.assertEqual( {unikey:newunival}, self.user.get_properties() )
 		self.assertEqual( newunival, self.user.get_property( unikey ) )
+
+	def test_setPropertyWithInvalidUser( self ):
+		user = restauth_user.User( self.conn, uniname + " foo" )
+		try:
+			user.create_property( unikey, unival )
+			self.fail()
+		except ResourceNotFound as e:
+			self.assertEqual( "user", e.get_type() )
+
+			# verify that no user was created:
+			self.assertNotEqual( user, self.user )
+			self.assertEqual( [ self.user ], restauth_user.get_all(self.conn) )
+
+	def test_removeProperty( self ):
+		self.assertEqual( None, self.user.create_property( unikey, unival ) )
+		
+		self.user.del_property( unikey )
+		self.assertEqual( {}, self.user.get_properties() )
+		try:
+			self.user.get_property( unikey )
+			self.fail()
+		except ResourceNotFound as e:
+			self.assertEqual( "property", e.get_type() )
+	
+	def test_removeInvalidProperty( self ):
+		self.user.create_property( unikey, unival )
+
+		try:
+			self.user.del_property( unikey + " foo" )
+			self.fail()
+		except ResourceNotFound as e:
+			self.assertEqual( "property", e.get_type() )
+			self.assertEqual( [ self.user ], restauth_user.get_all( self.conn ) )
+			self.assertEqual( {unikey:unival}, self.user.get_properties() )
+			self.assertEqual( unival, self.user.get_property( unikey ) )
+
+	def test_removePropertyWithInvalidUser( self ):
+		user = restauth_user.User( self.conn, "new user" )
+
+		try:
+			user.del_property( "foobar" )
+		except ResourceNotFound as e:
+			self.assertEqual( "user", e.get_type() )
+
+	def test_removePropertyFromWrongUser( self ):
+		"""
+		Purpose of this test is to add a property to one user, and
+		verify that deleting it from the *other* user does not delete it
+		for the original user.
+		"""
+
+		user_2 = restauth_user.create( self.conn, "new user", "password" )
+		self.user.create_property( unikey, unival )
+
+		try:
+			user_2.del_property( unikey )
+		except ResourceNotFound as e:
+			self.assertEqual( "property", e.get_type() )
+
+		self.assertEqual( {}, user_2.get_properties() )
+
+		self.assertEqual( {unikey:unival}, self.user.get_properties() )
+		self.assertEqual( unival, self.user.get_property( unikey ) )
+
+	def test_getInvalidProperty( self ):
+		try:
+			self.user.get_property( "foobar" )
+		except ResourceNotFound as e:
+			self.assertEqual( "property", e.get_type() )
+
+	def test_getPropertiesInvalidUser( self ):
+		user = restauth_user.User( self.conn, "foobar" )
+
+		try:
+			user.get_properties()
+			self.fail()
+		except ResourceNotFound as e:
+			self.assertEqual( "user", e.get_type() )
