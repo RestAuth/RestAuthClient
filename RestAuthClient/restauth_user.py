@@ -315,4 +315,8 @@ class User( common.RestAuthResource ):
 		return hash( self.name )
 
 	def __repr__( self ):
-		return '<User: %s>'%(self.name)
+		import sys
+		if sys.version_info < (3, 0) and self.name.__class__ == unicode:
+			return '<User: {0}>'.format(self.name.encode( 'utf-8' ))
+		else:
+			return '<User: {0}>'.format( self.name )

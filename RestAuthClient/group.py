@@ -245,7 +245,7 @@ class Group( common.RestAuthResource ):
 		
 		@param user: The user in question.
 		@type  user: L{User}
-		@return: True if the user is a member, false if not
+		@return: True if the user is a member, False if not.
 		@rtype: bool
 
 		@raise ResourceNotFound: If the group or user does not exist.
@@ -259,7 +259,10 @@ class Group( common.RestAuthResource ):
 		if resp.status == 204:
 			return True
 		elif resp.status == 404:
-			raise ResourceNotFound( resp )
+			if resp.getheader( 'Resource-Type' ) == 'user':
+				return False
+			else:
+				raise ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
 
@@ -289,4 +292,9 @@ class Group( common.RestAuthResource ):
 		return self.name == other.name and self.conn == other.conn
 
 	def __repr__( self ):
-		return '<Group: %s>'%(self.name)
+		import sys
+		if sys.version_info < (3, 0) and self.name.__class__ == unicode:
+			return '<Group: {0}>'.format(self.name.encode( 'utf-8' ))
+		else:
+			return '<Group: {0}>'.format(self.name)
+			
