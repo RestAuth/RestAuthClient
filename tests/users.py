@@ -13,11 +13,12 @@ simple = u'mati'
 space = u'mati space'
 uniname = u"mati \u6110"
 unipass = u"mati \u6111"
+unikey = u"mati \u6112"
+unival = u"mati \u6113"
 
-class BasicTests(unittest.TestCase):
+class BasicTests( unittest.TestCase ):
 	def setUp( self ):
 		self.conn = RestAuthConnection( host, user, passwd )
-
 		if restauth_user.get_all( self.conn ):
 			raise RuntimeError( "Found leftover users." )
 
@@ -83,4 +84,60 @@ class BasicTests(unittest.TestCase):
 		except ResourceNotFound as e:
 			self.assertEqual( e.get_type(), "user" )
 
+class PropertyTests( unittest.TestCase ):
+	def setUp( self ):
+		self.conn = RestAuthConnection( host, user, passwd )
+		if restauth_user.get_all( self.conn ):
+			raise RuntimeError( "Found leftover users." )
 
+		self.user = restauth_user.create( self.conn, uniname, unipass )
+
+	def tearDown( self ):
+		for user in restauth_user.get_all( self.conn ):
+			user.delete()
+
+	def test_createProperty( self ):
+		self.user.create_property( unikey, unival )
+		self.assertEqual( {unikey:unival}, self.user.get_properties() )
+		self.assertEqual( unival, self.user.get_property( unikey ) )
+
+	def test_createPropertyTwice( self ):
+		self.user.create_property( unikey, unival )
+		self.assertEqual( {unikey:unival}, self.user.get_properties() )
+		self.assertEqual( unival, self.user.get_property( unikey ) )
+
+		try:
+			self.user.create_property( unikey, unival + "foo" )
+			self.fail()
+		except restauth_user.PropertyExists as e:
+			# verify that the prop hasn't changed:
+			self.assertEqual( {unikey:unival}, self.user.get_properties() )
+			self.assertEqual( unival, self.user.get_property( unikey ) )
+
+	def test_createPropertyWithInvalidUser( self ):
+		user = restauth_user.User( self.conn, uniname + " foo" )
+		try:
+			user.create_property( unikey, unival )
+			self.fail()
+		except ResourceNotFound as e:
+			self.assertEqual( "user", e.get_type() )
+
+			# verify that no user was created:
+			self.assertNotEqual( user, self.user )
+			self.assertEqual( [ self.user ], restauth_user.get_all(self.conn) )
+
+	def test_setProperty( self ):
+		self.assertEqual( None, self.user.set_property( unikey, unival ) )
+		self.assertEqual( {unikey:unival}, self.user.get_properties() )
+		self.assertEqual( unival, self.user.get_property( unikey ) )
+
+	def test_setPropertyTwice( self ):
+		newunival = unival + " new"
+
+		self.assertEqual( None, self.user.set_property( unikey, unival ) )
+		self.assertEqual( {unikey:unival}, self.user.get_properties() )
+		self.assertEqual( unival, self.user.get_property( unikey ) )
+		
+		self.assertEqual( unival, self.user.set_property( unikey, newunival ) )
+		self.assertEqual( {unikey:newunival}, self.user.get_properties() )
+		self.assertEqual( newunival, self.user.get_property( unikey ) )
