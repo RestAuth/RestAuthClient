@@ -72,7 +72,7 @@ def get_version():
 		cmd = [ 'svn', 'info' ]
 		p = Popen( cmd, stdout=PIPE )
 		stdin, stderr = p.communicate()
-		lines = stdin.split( "\n" )
+		lines = stdin.decode( "utf-8" ).split( "\n" )
 		line = [ line for line in lines if line.startswith( 'Revision' ) ][0]
 		version = '0.0-' + line.split( ': ' )[1].strip()
 	return version
