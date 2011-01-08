@@ -24,7 +24,7 @@ class BasicTests( unittest.TestCase ):
 
 	def tearDown( self ):
 		for user in restauth_user.get_all( self.conn ):
-			user.delete()
+			user.remove()
 
 	def test_createUser( self ):
 		user = restauth_user.create( self.conn, simple, "password" )
@@ -92,7 +92,7 @@ class BasicTests( unittest.TestCase ):
 
 	def test_removeUser( self ):
 		user = restauth_user.create( self.conn, uniname, unipass )
-		user.delete()
+		user.remove()
 
 		self.assertEqual( [], restauth_user.get_all( self.conn ) )
 		try:
@@ -104,7 +104,7 @@ class BasicTests( unittest.TestCase ):
 	def test_removeInvalidUser( self ):
 		user = restauth_user.User( self.conn, "invalid" )
 		try:
-			user.delete()
+			user.remove()
 		except ResourceNotFound as e:
 			self.assertEqual( "user", e.get_type() )
 
@@ -119,7 +119,7 @@ class PropertyTests( unittest.TestCase ):
 
 	def tearDown( self ):
 		for user in restauth_user.get_all( self.conn ):
-			user.delete()
+			user.remove()
 
 	def test_createProperty( self ):
 		self.user.create_property( unikey, unival )
@@ -182,7 +182,7 @@ class PropertyTests( unittest.TestCase ):
 	def test_removeProperty( self ):
 		self.assertEqual( None, self.user.create_property( unikey, unival ) )
 		
-		self.user.del_property( unikey )
+		self.user.remove_property( unikey )
 		self.assertEqual( {}, self.user.get_properties() )
 		try:
 			self.user.get_property( unikey )
@@ -194,7 +194,7 @@ class PropertyTests( unittest.TestCase ):
 		self.user.create_property( unikey, unival )
 
 		try:
-			self.user.del_property( unikey + " foo" )
+			self.user.remove_property( unikey + " foo" )
 			self.fail()
 		except ResourceNotFound as e:
 			self.assertEqual( "property", e.get_type() )
@@ -206,7 +206,7 @@ class PropertyTests( unittest.TestCase ):
 		user = restauth_user.User( self.conn, "new user" )
 
 		try:
-			user.del_property( "foobar" )
+			user.remove_property( "foobar" )
 		except ResourceNotFound as e:
 			self.assertEqual( "user", e.get_type() )
 
@@ -221,7 +221,7 @@ class PropertyTests( unittest.TestCase ):
 		self.user.create_property( unikey, unival )
 
 		try:
-			user_2.del_property( unikey )
+			user_2.remove_property( unikey )
 		except ResourceNotFound as e:
 			self.assertEqual( "property", e.get_type() )
 

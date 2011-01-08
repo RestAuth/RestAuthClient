@@ -221,7 +221,7 @@ class Group( common.RestAuthResource ):
 		else:
 			raise UnknownStatus( resp )
 		
-	def delete( self ):
+	def remove( self ):
 		"""
 		Delete this group.
 		
@@ -280,7 +280,11 @@ class Group( common.RestAuthResource ):
 			raise UnknownStatus( resp )
 
 	def __eq__( self, other ):
-		return self.name == other.name
+		"""
+		Two instances of the class User evaluate as equal if their name
+		and connection evaluate as equal.
+		"""
+		return self.name == other.name and self.conn == other.conn
 
 	def __repr__( self ):
 		return '<Group: %s>'%(self.name)

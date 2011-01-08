@@ -401,10 +401,8 @@ class RestAuthConnection:
 		return self.send( 'DELETE', url, headers=headers )
 	
 	def __eq__( self, other ):
-		return self.host == other.host and self.port == other.port and \
-			self.user == other.user and \
-			self.passwd == other.passwd and \
-			self.use_ssl == other.use_ssl
+		return self.host == other.host and self.user == other.user and \
+			self.passwd == other.passwd
 
 class RestAuthResource:
 	"""

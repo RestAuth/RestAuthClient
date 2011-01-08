@@ -172,9 +172,9 @@ class User( common.RestAuthResource ):
 		else:
 			raise UnknownStatus( resp )
 
-	def delete( self ):
+	def remove( self ):
 		"""
-		Delete this user.
+		Remove this user.
 
 		@raise ResourceNotFound: If the user does not exist in RestAuth.
 		@raise InternalServerError: When the RestAuth service returns
@@ -287,7 +287,7 @@ class User( common.RestAuthResource ):
 		else:
 			raise UnknownStatus( resp )
 
-	def del_property( self, prop ):
+	def remove_property( self, prop ):
 		"""
 		Delete the given property.
 
@@ -306,9 +306,10 @@ class User( common.RestAuthResource ):
 
 	def __eq__( self, other ):
 		"""
-		@todo: compare connection
+		Two instances of the class User evaluate as equal if their name
+		and connection evaluate as equal.
 		"""
-		return self.name == other.name
+		return self.name == other.name and self.conn == other.conn
 	
 	def __hash__( self ):
 		return hash( self.name )
