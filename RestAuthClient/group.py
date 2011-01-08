@@ -48,6 +48,8 @@ def create( conn, name ):
 		return Group( conn, name )
 	elif resp.status == 409:
 		raise GroupExists( "Conflict." )
+	elif resp.status == 412:
+		raise PreconditionFailed( resp )
 	else:
 		raise UnknownStatus( resp )
 
