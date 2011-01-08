@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import unittest
+from __future__ import unicode_literals
+
+import sys, unittest
 from RestAuthClient.errors import *
 from RestAuthClient.common import RestAuthConnection
 from RestAuthClient import restauth_user
@@ -9,12 +11,12 @@ host = 'http://localhost:8000'
 user = 'vowi'
 passwd = 'vowi'
 
-simple = u'mati'
-space = u'mati space'
-uniname = u"mati \u6110"
-unipass = u"mati \u6111"
-unikey = u"mati \u6112"
-unival = u"mati \u6113"
+simple = 'mati'
+space = 'mati space'
+uniname = "mati \u6110"
+unipass = "mati \u6111"
+unikey = "mati \u6112"
+unival = "mati \u6113"
 
 class BasicTests( unittest.TestCase ):
 	def setUp( self ):
