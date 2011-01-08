@@ -31,25 +31,19 @@ class BasicTests( unittest.TestCase ):
 	def test_createUser( self ):
 		user = restauth_user.create( self.conn, simple, "password" )
 
-		users = restauth_user.get_all( self.conn )
-		self.assertEqual( 1, len( users ) )
-		self.assertEqual( user, users[0] )
+		self.assertEqual( [user], restauth_user.get_all( self.conn ) )
 		self.assertEqual( user, restauth_user.get( self.conn, simple ) )
 	
 	def test_createUserWithSpace( self ):
 		user = restauth_user.create( self.conn, space, "password" )
 
-		users = restauth_user.get_all( self.conn )
-		self.assertEqual( 1, len( users ) )
-		self.assertEqual( user, users[0] )
+		self.assertEqual( [user], restauth_user.get_all( self.conn ) )
 		self.assertEqual( user, restauth_user.get( self.conn, space ) )
 	
 	def test_createUserUnicode( self ):
 		user = restauth_user.create( self.conn, uniname, "password" )
 
-		users = restauth_user.get_all( self.conn )
-		self.assertEqual( 1, len( users ) )
-		self.assertEqual( user, users[0] )
+		self.assertEqual( [user], restauth_user.get_all( self.conn ) )
 		self.assertEqual( user, restauth_user.get( self.conn, uniname ) )
 	
 	def test_createInvalidUser( self ):
