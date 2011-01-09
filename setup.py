@@ -94,9 +94,9 @@ class test( Command ):
 	def finalize_options( self ): pass
 	def run( self ):
 		import unittest
-		from tests import users
+		from tests import users, groups
 
-		for mod in [ users ]:
+		for mod in [ users, groups ]:
 			loader = unittest.TestLoader()
 			suite = loader.loadTestsFromModule( mod )
 			unittest.TextTestRunner(verbosity=1).run(suite)
