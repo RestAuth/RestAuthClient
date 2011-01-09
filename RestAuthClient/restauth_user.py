@@ -246,8 +246,6 @@ class User( common.RestAuthResource ):
 		@param value: The new value of the property
 		@type  value: str
 		@raise ResourceNotFound: If the user does not exist in RestAuth.
-		@todo: When the response body contains the previous setting, 
-			return that. This is also a todo on the interface side.
 		@raise InternalServerError: When the RestAuth service returns
 			HTTP status code 500
 		@raise UnknownStatus: If the response status is unknown.
@@ -274,9 +272,6 @@ class User( common.RestAuthResource ):
 		@raise InternalServerError: When the RestAuth service returns
 			HTTP status code 500
 		@raise UnknownStatus: If the response status is unknown.
-		@todo: The distinction between "user not found" and
-			"property not found" requires some interface change or
-			clarification.
 		"""
 		resp = self._get( '%s/props/%s'%( self.name, prop ) )
 		if resp.status == 200:
