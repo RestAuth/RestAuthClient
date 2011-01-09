@@ -143,15 +143,15 @@ class Group( common.RestAuthResource ):
 		"""
 		Add a user to this group.
 
-		@param user: The user to add.
-		@type  user: L{user}
+		@param user: The user the name of the user to add.
+		@type  user: L{user} or str
 		@raise ResourceNotFound: If the group or user does not exist.
 		@raise BadRequest: When the RestAuth service returns HTTP status code 400
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
-		@todo: It should be possible that user is a str.
 		"""
-		params = { 'user': user.name }
-
+		if user.__class__ == restauth_user.User:
+			user = user.name
+		params = { 'user': user }
 		resp = self._post( '/%s/users/'%(self.name), params )
 		if resp.status == 204:
 			return
@@ -164,15 +164,18 @@ class Group( common.RestAuthResource ):
 		"""
 		Add a group to this group.
 		
-		@param group: The group to add.
-		@type  group: L{Group}
+		@param group: The group or the name of the group to add.
+		@type  group: L{Group} or str
 		@raise ResourceNotFound: If the group or user does not exist.
 		@raise BadRequest: When the RestAuth service returns HTTP status code 400
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		@todo: It should be possible that group is a str.
 		"""
+		if group.__class__ == Group:
+			group = group.name
+		
+		params = { 'group': group }
 		path = '/%s/groups/'%(self.name)
-		params = { 'group': group.name }
 		
 		resp = self._post( path, params )
 		if resp.status == 204:
@@ -206,13 +209,16 @@ class Group( common.RestAuthResource ):
 		Remove a sub-group from this group.
 		path = '/%s/groups/%s/'%(self.name, group.name)
 		
-		@param group: The group to add.
-		@type  group: L{Group}
+		@param group: The group or the name of the group to remmove.
+		@type  group: L{Group} or str
 		@raise ResourceNotFound: If the sub- or meta-group not exist.
 		@raise BadRequest: When the RestAuth service returns HTTP status code 400
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		"""
-		path = '/%s/groups/%s/'%(self.name, group.name)
+		if group.__class__ == Group:
+			group = group.name
+
+		path = '/%s/groups/%s/'%(self.name, group)
 		resp = self._delete( path )
 		if resp.status == 204:
 			return
@@ -241,8 +247,8 @@ class Group( common.RestAuthResource ):
 		"""
 		Check if the named user is a member.
 		
-		@param user: The user in question.
-		@type  user: L{User}
+		@param user: The user or the name of a user in question.
+		@type  user: L{User} or str
 		@return: True if the user is a member, False if not.
 		@rtype: bool
 
@@ -252,7 +258,10 @@ class Group( common.RestAuthResource ):
 		@todo: It should be possible that user is a str.
 		@todo: this code looks really wrong: a Post to where?
 		"""
-		path = '/%s/users/%s/'%(self.name, user.name)
+		if user.__class__ == restauth_user.User:
+			user = user.name
+
+		path = '/%s/users/%s/'%(self.name, user)
 		resp = self._get( path )
 		if resp.status == 204:
 			return True
