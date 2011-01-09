@@ -11,12 +11,10 @@ host = 'http://localhost:8000'
 user = 'vowi'
 passwd = 'vowi'
 
-simple = 'mati'
-space = 'mati space'
-uniname = "mati \u6110"
-unipass = "mati \u6111"
-unikey = "mati \u6112"
-unival = "mati \u6113"
+username = "mati \u6110"
+password = "mati \u6111"
+propKey = "mati \u6112"
+propVal = "mati \u6113"
 
 class BasicTests( unittest.TestCase ):
 	def setUp( self ):
@@ -29,22 +27,22 @@ class BasicTests( unittest.TestCase ):
 			user.remove()
 
 	def test_createUser( self ):
-		user = restauth_user.create( self.conn, simple, "password" )
+		user = restauth_user.create( self.conn, "mati", "password" )
 
 		self.assertEqual( [user], restauth_user.get_all( self.conn ) )
-		self.assertEqual( user, restauth_user.get( self.conn, simple ) )
+		self.assertEqual( user, restauth_user.get( self.conn, "mati" ) )
 	
 	def test_createUserWithSpace( self ):
-		user = restauth_user.create( self.conn, space, "password" )
+		user = restauth_user.create( self.conn, "mati space", "password" )
 
 		self.assertEqual( [user], restauth_user.get_all( self.conn ) )
-		self.assertEqual( user, restauth_user.get( self.conn, space ) )
+		self.assertEqual( user, restauth_user.get( self.conn, "mati space" ) )
 	
 	def test_createUserUnicode( self ):
-		user = restauth_user.create( self.conn, uniname, "password" )
+		user = restauth_user.create( self.conn, username, "password" )
 
 		self.assertEqual( [user], restauth_user.get_all( self.conn ) )
-		self.assertEqual( user, restauth_user.get( self.conn, uniname ) )
+		self.assertEqual( user, restauth_user.get( self.conn, username ) )
 	
 	def test_createInvalidUser( self ):
 		args = [self.conn, "foo/bar", "password"]
@@ -53,29 +51,29 @@ class BasicTests( unittest.TestCase ):
 		self.assertEqual( [], restauth_user.get_all( self.conn ) )
 
 	def test_verifyPassword( self ):
-		user = restauth_user.create( self.conn, uniname, unipass )
-		self.assertTrue( user.verify_password( unipass ) )
+		user = restauth_user.create( self.conn, username, password )
+		self.assertTrue( user.verify_password( password ) )
 		self.assertFalse( user.verify_password( "whatever" ) )
 
 	def test_verifyPasswordInvalidUser( self ):
-		user = restauth_user.User( self.conn, uniname )
-		self.assertFalse( user.verify_password( unipass ) )
+		user = restauth_user.User( self.conn, username )
+		self.assertFalse( user.verify_password( password ) )
 
 	def test_setPassword( self ):
-		newpass = "new " + unipass
+		newpass = "new " + password
 
-		user = restauth_user.create( self.conn, uniname, unipass )
-		self.assertTrue( user.verify_password( unipass ) )
+		user = restauth_user.create( self.conn, username, password )
+		self.assertTrue( user.verify_password( password ) )
 		self.assertFalse( user.verify_password( newpass ) )
 
-		user.set_password( "new " + unipass )
-		self.assertFalse( user.verify_password( unipass ) )
+		user.set_password( "new " + password )
+		self.assertFalse( user.verify_password( password ) )
 		self.assertTrue( user.verify_password( newpass ) )
 
 	def test_setPasswordInvalidUser( self ):
-		user = restauth_user.User( self.conn, uniname )
+		user = restauth_user.User( self.conn, username )
 		try:
-			user.set_password( unipass )
+			user.set_password( password )
 			self.fail()
 		except ResourceNotFound as e:
 			self.assertEqual( e.get_type(), "user" )
@@ -87,12 +85,12 @@ class BasicTests( unittest.TestCase ):
 			self.assertEqual( "user", e.get_type() )
 
 	def test_removeUser( self ):
-		user = restauth_user.create( self.conn, uniname, unipass )
+		user = restauth_user.create( self.conn, username, password )
 		user.remove()
 
 		self.assertEqual( [], restauth_user.get_all( self.conn ) )
 		try:
-			restauth_user.get( self.conn, uniname )
+			restauth_user.get( self.conn, username )
 			self.fail()
 		except ResourceNotFound as e:
 			self.assertEqual( "user", e.get_type() )
@@ -111,34 +109,34 @@ class PropertyTests( unittest.TestCase ):
 		if restauth_user.get_all( self.conn ):
 			raise RuntimeError( "Found leftover users." )
 
-		self.user = restauth_user.create( self.conn, uniname, unipass )
+		self.user = restauth_user.create( self.conn, username, password )
 
 	def tearDown( self ):
 		for user in restauth_user.get_all( self.conn ):
 			user.remove()
 
 	def test_createProperty( self ):
-		self.user.create_property( unikey, unival )
-		self.assertEqual( {unikey:unival}, self.user.get_properties() )
-		self.assertEqual( unival, self.user.get_property( unikey ) )
+		self.user.create_property( propKey, propVal )
+		self.assertEqual( {propKey:propVal}, self.user.get_properties() )
+		self.assertEqual( propVal, self.user.get_property( propKey ) )
 
 	def test_createPropertyTwice( self ):
-		self.user.create_property( unikey, unival )
-		self.assertEqual( {unikey:unival}, self.user.get_properties() )
-		self.assertEqual( unival, self.user.get_property( unikey ) )
+		self.user.create_property( propKey, propVal )
+		self.assertEqual( {propKey:propVal}, self.user.get_properties() )
+		self.assertEqual( propVal, self.user.get_property( propKey ) )
 
 		try:
-			self.user.create_property( unikey, unival + "foo" )
+			self.user.create_property( propKey, propVal + "foo" )
 			self.fail()
 		except restauth_user.PropertyExists as e:
 			# verify that the prop hasn't changed:
-			self.assertEqual( {unikey:unival}, self.user.get_properties() )
-			self.assertEqual( unival, self.user.get_property( unikey ) )
+			self.assertEqual( {propKey:propVal}, self.user.get_properties() )
+			self.assertEqual( propVal, self.user.get_property( propKey ) )
 
 	def test_createPropertyWithInvalidUser( self ):
-		user = restauth_user.User( self.conn, uniname + " foo" )
+		user = restauth_user.User( self.conn, username + " foo" )
 		try:
-			user.create_property( unikey, unival )
+			user.create_property( propKey, propVal )
 			self.fail()
 		except ResourceNotFound as e:
 			self.assertEqual( "user", e.get_type() )
@@ -148,25 +146,25 @@ class PropertyTests( unittest.TestCase ):
 			self.assertEqual( [ self.user ], restauth_user.get_all(self.conn) )
 
 	def test_setProperty( self ):
-		self.assertEqual( None, self.user.set_property( unikey, unival ) )
-		self.assertEqual( {unikey:unival}, self.user.get_properties() )
-		self.assertEqual( unival, self.user.get_property( unikey ) )
+		self.assertEqual( None, self.user.set_property( propKey, propVal ) )
+		self.assertEqual( {propKey:propVal}, self.user.get_properties() )
+		self.assertEqual( propVal, self.user.get_property( propKey ) )
 
 	def test_setPropertyTwice( self ):
-		newunival = unival + " new"
+		newpropVal = propVal + " new"
 
-		self.assertEqual( None, self.user.set_property( unikey, unival ) )
-		self.assertEqual( {unikey:unival}, self.user.get_properties() )
-		self.assertEqual( unival, self.user.get_property( unikey ) )
+		self.assertEqual( None, self.user.set_property( propKey, propVal ) )
+		self.assertEqual( {propKey:propVal}, self.user.get_properties() )
+		self.assertEqual( propVal, self.user.get_property( propKey ) )
 		
-		self.assertEqual( unival, self.user.set_property( unikey, newunival ) )
-		self.assertEqual( {unikey:newunival}, self.user.get_properties() )
-		self.assertEqual( newunival, self.user.get_property( unikey ) )
+		self.assertEqual( propVal, self.user.set_property( propKey, newpropVal ) )
+		self.assertEqual( {propKey:newpropVal}, self.user.get_properties() )
+		self.assertEqual( newpropVal, self.user.get_property( propKey ) )
 
 	def test_setPropertyWithInvalidUser( self ):
-		user = restauth_user.User( self.conn, uniname + " foo" )
+		user = restauth_user.User( self.conn, username + " foo" )
 		try:
-			user.create_property( unikey, unival )
+			user.create_property( propKey, propVal )
 			self.fail()
 		except ResourceNotFound as e:
 			self.assertEqual( "user", e.get_type() )
@@ -176,27 +174,27 @@ class PropertyTests( unittest.TestCase ):
 			self.assertEqual( [ self.user ], restauth_user.get_all(self.conn) )
 
 	def test_removeProperty( self ):
-		self.assertEqual( None, self.user.create_property( unikey, unival ) )
+		self.assertEqual( None, self.user.create_property( propKey, propVal ) )
 		
-		self.user.remove_property( unikey )
+		self.user.remove_property( propKey )
 		self.assertEqual( {}, self.user.get_properties() )
 		try:
-			self.user.get_property( unikey )
+			self.user.get_property( propKey )
 			self.fail()
 		except ResourceNotFound as e:
 			self.assertEqual( "property", e.get_type() )
 	
 	def test_removeInvalidProperty( self ):
-		self.user.create_property( unikey, unival )
+		self.user.create_property( propKey, propVal )
 
 		try:
-			self.user.remove_property( unikey + " foo" )
+			self.user.remove_property( propKey + " foo" )
 			self.fail()
 		except ResourceNotFound as e:
 			self.assertEqual( "property", e.get_type() )
 			self.assertEqual( [ self.user ], restauth_user.get_all( self.conn ) )
-			self.assertEqual( {unikey:unival}, self.user.get_properties() )
-			self.assertEqual( unival, self.user.get_property( unikey ) )
+			self.assertEqual( {propKey:propVal}, self.user.get_properties() )
+			self.assertEqual( propVal, self.user.get_property( propKey ) )
 
 	def test_removePropertyWithInvalidUser( self ):
 		user = restauth_user.User( self.conn, "new user" )
@@ -214,17 +212,17 @@ class PropertyTests( unittest.TestCase ):
 		"""
 
 		user_2 = restauth_user.create( self.conn, "new user", "password" )
-		self.user.create_property( unikey, unival )
+		self.user.create_property( propKey, propVal )
 
 		try:
-			user_2.remove_property( unikey )
+			user_2.remove_property( propKey )
 		except ResourceNotFound as e:
 			self.assertEqual( "property", e.get_type() )
 
 		self.assertEqual( {}, user_2.get_properties() )
 
-		self.assertEqual( {unikey:unival}, self.user.get_properties() )
-		self.assertEqual( unival, self.user.get_property( unikey ) )
+		self.assertEqual( {propKey:propVal}, self.user.get_properties() )
+		self.assertEqual( propVal, self.user.get_property( propKey ) )
 
 	def test_getInvalidProperty( self ):
 		try:
