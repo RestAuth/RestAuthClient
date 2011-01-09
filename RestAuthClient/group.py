@@ -182,12 +182,10 @@ class Group( common.RestAuthResource ):
 		else:
 			raise UnknownStatus( resp )
 
-	def get_groups( self, group ):
+	def get_groups( self ):
 		"""
 		Get a list of sub-groups of this group.
 
-		@param group: The group to add.
-		@type  group: L{Group}
 		@raise ResourceNotFound: If the sub- or meta-group not exist.
 		@raise BadRequest: When the RestAuth service returns HTTP status code 400
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
