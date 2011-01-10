@@ -7,9 +7,9 @@ from RestAuthClient.errors import *
 from RestAuthClient.common import RestAuthConnection
 from RestAuthClient import restauth_user
 
-host = 'http://localhost:8000'
-user = 'vowi'
-passwd = 'vowi'
+rest_host = 'http://localhost:8000'
+rest_user = 'vowi'
+rest_passwd = 'vowi'
 
 username = "mati \u6110"
 password = "mati \u6111"
@@ -18,7 +18,7 @@ propVal = "mati \u6113"
 
 class BasicTests( unittest.TestCase ):
 	def setUp( self ):
-		self.conn = RestAuthConnection( host, user, passwd )
+		self.conn = RestAuthConnection( rest_host, rest_user, rest_passwd )
 		if restauth_user.get_all( self.conn ):
 			raise RuntimeError( "Found leftover users." )
 
@@ -50,6 +50,14 @@ class BasicTests( unittest.TestCase ):
 
 		self.assertEqual( [], restauth_user.get_all( self.conn ) )
 
+	def test_createUserTwice( self ):
+		user = restauth_user.create( self.conn, "mati", "password" )
+		try:
+			restauth_user.create( self.conn, "mati", "new password" )
+		except restauth_user.UserExists as e:
+			self.assertEqual( [user], restauth_user.get_all( self.conn ) )
+			self.assertTrue( user.verify_password( "password" ) )
+
 	def test_verifyPassword( self ):
 		user = restauth_user.create( self.conn, username, password )
 		self.assertTrue( user.verify_password( password ) )
@@ -78,6 +86,14 @@ class BasicTests( unittest.TestCase ):
 		except ResourceNotFound as e:
 			self.assertEqual( e.get_type(), "user" )
 	
+	def test_setTooShortPassword( self ):
+		user = restauth_user.create( self.conn, username, password )
+		try:
+			user.set_password( "x" )
+		except PreconditionFailed:
+			self.assertTrue( user.verify_password( password ) )
+			self.assertFalse( user.verify_password( "x" ) )
+	
 	def test_getInvalidUser( self ):
 		try:
 			restauth_user.get( self.conn, "invalid" )
@@ -105,7 +121,7 @@ class BasicTests( unittest.TestCase ):
 
 class PropertyTests( unittest.TestCase ):
 	def setUp( self ):
-		self.conn = RestAuthConnection( host, user, passwd )
+		self.conn = RestAuthConnection( rest_host, rest_user, rest_passwd )
 		if restauth_user.get_all( self.conn ):
 			raise RuntimeError( "Found leftover users." )
 
@@ -164,7 +180,7 @@ class PropertyTests( unittest.TestCase ):
 	def test_setPropertyWithInvalidUser( self ):
 		user = restauth_user.User( self.conn, username + " foo" )
 		try:
-			user.create_property( propKey, propVal )
+			user.set_property( propKey, propVal )
 			self.fail()
 		except ResourceNotFound as e:
 			self.assertEqual( "user", e.get_type() )
