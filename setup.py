@@ -145,8 +145,16 @@ class coverage( Command ):
 		if not os.path.exists( self.dir ):
 			os.makedirs( self.dir )
 
+		exclude_list = [ 'raise UnknownStatus.*' ]
+
 		cov = coverage.coverage( )
 		cov.start()
+		cov.exclude( 'raise UnknownStatus.*' )
+		cov.exclude( 'InternalServerError' )
+		cov.exclude( 'except ImportError' )
+		cov.exclude( 'def __repr__' )
+		cov.exclude( 'def __hash__' )
+		cov.exclude( 'use_ssl' )
 		run_test_suite( self.host, self.user, self.passwd )
 		cov.stop()
 		cov.html_report( directory=self.dir, omit_prefixes=['tests', 'setup', '/usr'] )
