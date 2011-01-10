@@ -86,22 +86,71 @@ class version( Command ):
 	def run( self ):
 		print( get_version() )
 
+def run_test_suite( host, user, passwd ):
+	import unittest
+	from tests import users, groups
+
+	for mod in [ users, groups ]:
+		mod.rest_host = host
+		mod.rest_user = user
+		mod.rest_passwd = passwd
+
+		loader = unittest.TestLoader()
+		suite = loader.loadTestsFromModule( mod )
+		unittest.TextTestRunner(verbosity=1).run(suite)
+
+
 class test( Command ):
 	description = "Run test suite."
-	user_options = []
+	user_options = [
+		( 'user=', 'u', 'Username to use vor RestAuth server' ),
+		( 'password=', 'p', 'Password to use vor RestAuth server' ),
+		( 'host=', 'h', 'URL of the RestAuth server (ex: http://auth.example.com)')]
 
-	def initialize_options( self ): pass
+	def initialize_options( self ): 
+		self.user = 'vowi'
+		self.passwd = 'vowi'
+		self.host = 'http://localhost:8000'
+
 	def finalize_options( self ): pass
+
 	def run( self ):
-		import unittest
-		from tests import users, groups
+		run_test_suite( self.host, self.user, self.passwd )
 
-		for mod in [ users, groups ]:
-			loader = unittest.TestLoader()
-			suite = loader.loadTestsFromModule( mod )
-			unittest.TextTestRunner(verbosity=1).run(suite)
+class coverage( Command ):
+	description = "Run test suite and generate code coverage analysis."
+	user_options = [
+		( 'output-dir=', 'o', 'Output directory for coverage analysis' ),
+		( 'user=', 'u', 'Username to use vor RestAuth server' ),
+		( 'password=', 'p', 'Password to use vor RestAuth server' ),
+		( 'host=', 'h', 'URL of the RestAuth server (ex: http://auth.example.com)') ]
+	
+
+	def initialize_options( self ): 
+		self.user = 'vowi'
+		self.passwd = 'vowi'
+		self.host = 'http://localhost:8000'
+		self.dir = 'doc/coverage'
+
+	def finalize_options( self ): pass
 
 
+	def run( self ):
+		try:
+			import coverage
+		except ImportError:
+			print( "You need coverage.py installed." )
+			return
+
+		if not os.path.exists( self.dir ):
+			os.makedirs( self.dir )
+
+		cov = coverage.coverage( )
+		cov.start()
+		run_test_suite( self.host, self.user, self.passwd )
+		cov.stop()
+		cov.html_report( directory=self.dir, omit_prefixes=['tests', 'setup', '/usr'] )
+		cov.report()
 
 setup(
 	name=name,
@@ -112,5 +161,5 @@ setup(
 	url = url,
 	packages=['RestAuthClient'],
 	cmdclass = { 'build_doc': build_doc, 'clean': clean, 'version': version,
-		'test': test }
+		'test': test, 'coverage': coverage }
 )
