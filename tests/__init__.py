@@ -1,1 +1,1 @@
-__all__ = ['users', 'groups' ]
+__all__ = ['users', 'groups', 'connection' ]
