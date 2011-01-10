@@ -41,55 +41,12 @@ except ImportError:
 	print( "Error: The RestAuthCommon library is not installed." )
 	sys.exit(1)
 
-class RestAuthCookie:
-	def __init__( self, raw_value ):
-		self.creation = time.time()
-		self.items = {}
-
-		items = raw_value.split( ';' )
-		items = [ item.strip() for item in items ]
-
-		# parse key/value pairs:
-		for item in items:
-			key, value = item.split( '=', 1 )
-			self.items[key.strip().lower()] = value.strip()
-		
-		if 'expires' in self.items:
-			try:
-				raw = self.items['expires']
-				self.items['expires'] = time.mktime(
-					time.strptime( raw, '%a, %d-%b-%Y %H:%M:%S %Z' ) )
-			except Exception:
-				pass # don't fail on this
-
-		if 'max-age' in self.items:
-			try:
-				val = int( self.items['max-age'] )
-				self.items['expires'] = self.creation + raw
-			except Exception:
-				pass # don't fail on this
-	
-	def valid( self ):
-		if not 'sessionid' in self.items:
-			return False # no sessionid
-
-		if 'expires' in self.items and self.items['expires'] < time.time():
-			return False # cookie has expired
-
-		return True
-
-	def get_value( self ):
-		return 'sessionid=%s'%(self.items['sessionid'])
-
-	def get_session( self ):
-		return self.items['sessionid']
-
 class RestAuthConnection:
 	"""
 	An instance of this class represents a connection to a RestAuth service.
 	"""
 	
-	def __init__( self, host, user, passwd, use_cookies=True, content_handler='application/json' ):
+	def __init__( self, host, user, passwd, content_handler='application/json' ):
 		"""
 		Initialize a new connection to a RestAuth service. 
 		
@@ -106,17 +63,10 @@ class RestAuthConnection:
 		@param passwd: The password to use for authenticating with
 			RestAuth (passed to L{set_credentials}).
 		@type  passwd: str
-		@param use_cookies: Wether or not to use cookies. Using cookies
-			is faster when doing multiple requests, but may not work
-			on all server configurations.
-		@type  use_cookies: bool
 		@param content_handler: Directly passed to L{set_content_handler}.
 		@type  content_handler: str or subclass of 
 			RestAuthCommon.handlers.content_handler.
 		"""
-		self.cookie = None
-		self.use_cookies = use_cookies
-
 		parseresult = urlparse( host )
 		if parseresult.scheme == 'https':
 			self.use_ssl = True
@@ -141,12 +91,9 @@ class RestAuthConnection:
 		@param passwd: The password to use
 		@type  passwd: str
 		"""
-		if user and passwd:
-			raw_credentials = '%s:%s'%( user, passwd )
-			enc_credentials = base64.b64encode( raw_credentials.encode( 'utf-8' ) )
-			self.auth_header = "Basic %s"%(enc_credentials.decode( 'ascii' ) )
-		else:
-			self.auth_header = None
+		raw_credentials = '%s:%s'%( user, passwd )
+		enc_credentials = base64.b64encode( raw_credentials )
+		self.auth_header = "Basic %s"%(enc_credentials )
 
 	def set_content_handler( self, content_handler='application/json' ):
 		"""
@@ -205,11 +152,7 @@ class RestAuthConnection:
 		@raise InternalServerError: When the server has some internal
 			error.
 		"""
-		if self.use_cookies and self.cookie and self.cookie.valid():
-			headers['Cookie'] = self.cookie.get_value()
-		elif self.auth_header:
-			headers['Authorization'] = self.auth_header
-
+		headers['Authorization'] = self.auth_header
 		headers['Accept'] = self.content_handler.mime
 	
 		if self.use_ssl:
@@ -219,14 +162,6 @@ class RestAuthConnection:
 
 		conn.request( method, url, body, headers )
 		response = conn.getresponse()
-
-		# handle cookie:
-		try:
-			raw_header = response.getheader( 'Set-Cookie', None )
-		except TypeError:
-			raw_header = None
-		if raw_header and (not self.cookie or not self.cookie.valid()):
-			self.cookie = RestAuthCookie( raw_header )
 
 		if response.status == 401:
 			raise Unauthorized( response )
