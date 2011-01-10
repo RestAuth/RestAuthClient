@@ -233,8 +233,6 @@ class RestAuthConnection:
 		elif response.status == 406:
 			raise NotAcceptable( response )
 		elif response.status == 500:
-			body = response.read()
-			print( body.decode('utf-8').replace( '\n', "\n") )
 			raise InternalServerError( response )
 		else:
 			return response
@@ -327,8 +325,6 @@ class RestAuthConnection:
 		response = self.send( 'POST', url, body, headers )
 		if response.status == 400:
 			raise BadRequest( response )
-		elif response.status == 411:
-			raise RuntimeError( "Request did not send a Content-Length header!" )
 		elif response.status == 415:
 			raise UnsupportedMediaType( response )
 
@@ -370,8 +366,6 @@ class RestAuthConnection:
 		response = self.send( 'PUT', url, body, headers )
 		if response.status == 400:
 			raise BadRequest( response )
-		elif response.status == 411:
-			raise RuntimeError( "Request did not send a Content-Length header!" )
 		elif response.status == 415:
 			raise UnsupportedMediaType( response )
 		return response
