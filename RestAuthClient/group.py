@@ -289,7 +289,10 @@ class Group( common.RestAuthResource ):
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		@todo: It should be possible that user is a str.
 		"""
-		path = '/%s/users/%s/'%(self.name, user.name)
+		if user.__class__ == restauth_user.User:
+			user = user.name
+
+		path = '/%s/users/%s/'%(self.name, user)
 		resp = self._delete( path )
 		if resp.status == 204:
 			return
