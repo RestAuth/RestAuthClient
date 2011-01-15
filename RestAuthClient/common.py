@@ -176,6 +176,14 @@ class RestAuthConnection:
 		"""
 		@todo: replace still necessary?
 		"""
+		if sys.version_info < (3, 0):
+			for key, value in params.iteritems():
+				if key.__class__ == unicode:
+					key = key.encode( 'utf-8' )
+				if value.__class__ == unicode:
+					value = value.encode( 'utf-8' )
+				params[key] = value
+
 		return urlencode( params ).replace( '+', '%20' )
 		
 	def _sanitize_url( self, url ):
@@ -218,9 +226,8 @@ class RestAuthConnection:
 			error.
 		"""
 		url = self._sanitize_url( url )
-		qs = self._sanitize_qs( params )
-		if qs:
-			url = '%s?%s'%( url, qs )
+		if params:
+			url = '%s?%s'%( url, self._sanitize_qs( params ) )
 
 		return self.send( 'GET', url, headers=headers )
 
