@@ -88,7 +88,7 @@ class version( Command ):
 
 def run_test_suite( host, user, passwd ):
 	import unittest
-	from tests import users, groups, connection
+	from tests import connection, users, groups
 
 	for mod in [ connection, users, groups ]:
 		mod.rest_host = host
