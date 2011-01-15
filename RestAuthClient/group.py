@@ -16,6 +16,8 @@
 """
 Module handling code relevant to group handling.
 """
+
+import sys
 try:
 	from RestAuthClient import common, restauth_user
 	from RestAuthClient.errors import *
@@ -69,6 +71,9 @@ def get_all( conn, user=None ):
 	"""
 	params = {}
 	if user:
+		if user.__class__ == restauth_user.User:
+			user = user.name
+
 		params['user'] = user
 
 	resp = conn.get( Group.prefix, params )
@@ -76,6 +81,8 @@ def get_all( conn, user=None ):
 		body = resp.read().decode( 'utf-8' )
 		names = conn.content_handler.unmarshal_list( body )
 		return [ Group( conn, name ) for name in names ]
+	elif resp.status == 404:
+		raise ResourceNotFound( resp )
 	else:
 		raise UnknownStatus( resp )
 
