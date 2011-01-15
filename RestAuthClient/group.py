@@ -50,6 +50,7 @@ def create( conn, name ):
 		L{set_content_handler
 		<common.RestAuthConnection.set_content_handler>}).
 	@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+	@raise UnknownStatus: If the response status is unknown.
 	"""
 	resp = conn.post( Group.prefix, { 'group': name } )
 	if resp.status == 201:
@@ -74,12 +75,13 @@ def get_all( conn, user=None ):
 	@rtype: List of L{groups<Group>}
 
 	@raise Unauthorized: When the connection uses wrong credentials.
+	@raise ResourceNotFound: When the given user does not exist.
 	@raise NotAcceptable: When the server cannot generate a response
 		in the content type used by this connection (see also:
 		L{set_content_handler
 		<common.RestAuthConnection.set_content_handler>}).
 	@raise InternalServerError: When the RestAuth service returns HTTP status code 500
-	@raise ResourceNotFound: When the given user does not exist.
+	@raise UnknownStatus: If the response status is unknown.
 	"""
 	params = {}
 	if user:
@@ -114,6 +116,7 @@ def get( conn, name ):
 	@raise Unauthorized: When the connection uses wrong credentials.
 	@raise ResourceNotFound: If the group does not exist.
 	@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+	@raise UnknownStatus: If the response status is unknown.
 	"""
 	resp = conn.get( '%s%s'%(Group.prefix, name) )
 	if resp.status == 204:
@@ -149,6 +152,7 @@ class Group( common.RestAuthResource ):
 			L{set_content_handler
 			<common.RestAuthConnection.set_content_handler>}).
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise UnknownStatus: If the response status is unknown.
 		"""
 		params = {}
 
@@ -180,6 +184,7 @@ class Group( common.RestAuthResource ):
 			L{set_content_handler
 			<common.RestAuthConnection.set_content_handler>}).
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise UnknownStatus: If the response status is unknown.
 		"""
 		if user.__class__ == restauth_user.User:
 			user = user.name
@@ -208,7 +213,7 @@ class Group( common.RestAuthResource ):
 			L{set_content_handler
 			<common.RestAuthConnection.set_content_handler>}).
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
-		@todo: It should be possible that group is a str.
+		@raise UnknownStatus: If the response status is unknown.
 		"""
 		if group.__class__ == Group:
 			group = group.name
@@ -235,6 +240,7 @@ class Group( common.RestAuthResource ):
 			L{set_content_handler
 			<common.RestAuthConnection.set_content_handler>}).
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise UnknownStatus: If the response status is unknown.
 		"""
 		path = '/%s/groups/'%(self.name)
 		resp = self._get( path )
@@ -258,6 +264,7 @@ class Group( common.RestAuthResource ):
 		@raise Unauthorized: When the connection uses wrong credentials.
 		@raise ResourceNotFound: If the sub- or meta-group not exist.
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise UnknownStatus: If the response status is unknown.
 		"""
 		if group.__class__ == Group:
 			group = group.name
@@ -278,6 +285,7 @@ class Group( common.RestAuthResource ):
 		@raise Unauthorized: When the connection uses wrong credentials.
 		@raise ResourceNotFound: If the group does not exist.
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		@raise UnknownStatus: If the response status is unknown.
 		"""
 		resp = self._delete( self.name )
 		if resp.status == 204:
@@ -299,8 +307,7 @@ class Group( common.RestAuthResource ):
 		@raise Unauthorized: When the connection uses wrong credentials.
 		@raise ResourceNotFound: If the group or user does not exist.
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
-		@todo: It should be possible that user is a str.
-		@todo: this code looks really wrong: a Post to where?
+		@raise UnknownStatus: If the response status is unknown.
 		"""
 		if user.__class__ == restauth_user.User:
 			user = user.name
@@ -324,7 +331,7 @@ class Group( common.RestAuthResource ):
 		@raise Unauthorized: When the connection uses wrong credentials.
 		@raise ResourceNotFound: If the group or user does not exist.
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
-		@todo: It should be possible that user is a str.
+		@raise UnknownStatus: If the response status is unknown.
 		"""
 		if user.__class__ == restauth_user.User:
 			user = user.name
