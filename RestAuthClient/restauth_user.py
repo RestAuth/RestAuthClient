@@ -303,14 +303,14 @@ class User( common.RestAuthResource ):
 	def get_groups( self ):
 		try:
 			from RestAuthClient import group
-		except:
+		except ImportError:
 			import group
 		return group.get_all( self.conn, self )
 
 	def in_group( self, grp ):
 		try:
 			from RestAuthClient import group
-		except:
+		except ImportError:
 			import group
 		if grp.__class__ == str or (sys.version_info < (3, 0) and grp.__class__ == unicode):
 			grp = group.Group( self.conn, grp )
@@ -319,7 +319,7 @@ class User( common.RestAuthResource ):
 	def add_group( self, grp ):
 		try:
 			from RestAuthClient import group
-		except:
+		except ImportError:
 			import group
 		if grp.__class__ == str or (sys.version_info < (3, 0) and grp.__class__ == unicode):
 			grp = group.Group( self.conn, grp )
@@ -328,7 +328,7 @@ class User( common.RestAuthResource ):
 	def remove_group( self, grp ):
 		try:
 			from RestAuthClient import group
-		except:
+		except ImportError:
 			import group
 		if grp.__class__ == str or (sys.version_info < (3, 0) and grp.__class__ == unicode):
 			grp = group.Group( self.conn, grp )
