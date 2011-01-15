@@ -50,8 +50,15 @@ def create( conn, name, pwd ):
 	@type  pwd: str
 	@return: The user object representing the user just created.
 	@rtype: L{User}
+
+	@raise BadRequest: If the server was unable to parse the request body.
+	@raise Unauthorized: When the connection uses wrong credentials.
 	@raise UserExists: If the user already exists.
 	@raise PreconditionFailed: When username or password is invalid.
+	@raise UnsupportedMediaType: The server does not support the
+		content type used by this connection (see also: 
+		L{set_content_handler
+		<common.RestAuthConnection.set_content_handler>}).
 	@raise InternalServerError: When the RestAuth service returns HTTP
 		status code 500
 	@raise UnknownStatus: If the response status is unknown.
@@ -79,6 +86,8 @@ def get( conn, name ):
 	@type  name: str
 	@return: The user object representing the user just created.
 	@rtype: L{User}
+
+	@raise Unauthorized: When the connection uses wrong credentials.
 	@raise ResourceNotFound: If the user does not exist in RestAuth.
 	@raise InternalServerError: When the RestAuth service returns
 		HTTP status code 500
@@ -102,6 +111,12 @@ def get_all( conn ):
 	@type  conn: L{RestAuthConnection}
 	@return: A list of User objects
 	@rtype: List of L{users<User>}
+
+	@raise Unauthorized: When the connection uses wrong credentials.
+	@raise NotAcceptable: When the server cannot generate a response in the
+		content type used by this connection (see also: 
+		L{set_content_handler
+		<common.RestAuthConnection.set_content_handler>}).
 	@raise InternalServerError: When the RestAuth service returns HTTP
 		status code 500
 	@raise UnknownStatus: If the response status is unknown.
@@ -119,15 +134,18 @@ class User( common.RestAuthResource ):
 	"""
 	This class acts as a frontend for actions related to users.
 	"""
-
-	#: Prefix used for queries, not used by property related functions
-	prefix = '/users/'
+	prefix = '/users/' #: Prefix used for HTTP query methods inherited from base class
 
 	def __init__( self, conn, name ):
 		"""
 		Constructor that initializes an object representing a user in
 		RestAuth. The constructor B{does not} verify if the user exists,
 		use L{get} or L{get_all} if you wan't to be sure it exists.
+
+		@param conn: The connection to the RestAuthServer.
+		@type  conn: L{RestAuthConnection}
+		@param name: The name of this user.
+		@type  name: str
 		"""
 		self.conn = conn
 		self.name = name
@@ -136,9 +154,16 @@ class User( common.RestAuthResource ):
 		"""
 		Set the password of this user.
 
+		@raise BadRequest: If the server was unable to parse the request
+			body.
+		@raise Unauthorized: When the connection uses wrong credentials.
 		@raise ResourceNotFound: If the user does not exist in RestAuth.
 		@raise InternalServerError: When the RestAuth service returns
 			HTTP status code 500
+		@raise UnsupportedMediaType: The server does not support the
+			content type used by this connection (see also: 
+			L{set_content_handler
+			<common.RestAuthConnection.set_content_handler>}).
 		@raise UnknownStatus: If the response status is unknown.
 		@raise PreconditionFailed: When the password is invalid.
 		"""
@@ -160,7 +185,15 @@ class User( common.RestAuthResource ):
 		@type  password: str
 		@return: True if the password is correct, False if the password
 			is wrong or the user does not exist.
-		@rtype: boolean
+		@rtype: bool
+
+		@raise BadRequest: If the server was unable to parse the request
+			body.
+		@raise Unauthorized: When the connection uses wrong credentials.
+		@raise UnsupportedMediaType: The server does not support the
+			content type used by this connection (see also: 
+			L{set_content_handler
+			<common.RestAuthConnection.set_content_handler>}).
 		@raise InternalServerError: When the RestAuth service returns
 			HTTP status code 500
 		@raise UnknownStatus: If the response status is unknown.
@@ -177,6 +210,7 @@ class User( common.RestAuthResource ):
 		"""
 		Remove this user.
 
+		@raise Unauthorized: When the connection uses wrong credentials.
 		@raise ResourceNotFound: If the user does not exist in RestAuth.
 		@raise InternalServerError: When the RestAuth service returns
 			HTTP status code 500
@@ -196,6 +230,12 @@ class User( common.RestAuthResource ):
 
 		@return: A key/value array of the properties defined for this user.
 		@rtype: dict
+
+		@raise Unauthorized: When the connection uses wrong credentials.
+		@raise NotAcceptable: When the server cannot generate a response
+			in the content type used by this connection (see also: 
+			L{set_content_handler
+			<common.RestAuthConnection.set_content_handler>}).
 		@raise ResourceNotFound: If the user does not exist in RestAuth.
 		@raise InternalServerError: When the RestAuth service returns
 			HTTP status code 500
@@ -220,8 +260,16 @@ class User( common.RestAuthResource ):
 		@type  prop: str
 		@param value: The new value of the property
 		@type  value: str
+
+		@raise BadRequest: If the server was unable to parse the request
+			body.
+		@raise Unauthorized: When the connection uses wrong credentials.
 		@raise ResourceNotFound: If the user does not exist in RestAuth.
 		@raise PropertyExists: When the property already exists
+		@raise UnsupportedMediaType: The server does not support the
+			content type used by this connection (see also: 
+			L{set_content_handler
+			<common.RestAuthConnection.set_content_handler>}).
 		@raise InternalServerError: When the RestAuth service returns
 			HTTP status code 500
 		@raise UnknownStatus: If the response status is unknown.
@@ -246,7 +294,19 @@ class User( common.RestAuthResource ):
 		@type  prop: str
 		@param value: The new value of the property
 		@type  value: str
+
+		@raise BadRequest: If the server was unable to parse the request
+			body.
+		@raise Unauthorized: When the connection uses wrong credentials.
 		@raise ResourceNotFound: If the user does not exist in RestAuth.
+		@raise NotAcceptable: When the server cannot generate a response
+			in the content type used by this connection (see also: 
+			L{set_content_handler
+			<common.RestAuthConnection.set_content_handler>}).
+		@raise UnsupportedMediaType: The server does not support the
+			content type used by this connection (see also: 
+			L{set_content_handler
+			<common.RestAuthConnection.set_content_handler>}).
 		@raise InternalServerError: When the RestAuth service returns
 			HTTP status code 500
 		@raise UnknownStatus: If the response status is unknown.
@@ -269,7 +329,13 @@ class User( common.RestAuthResource ):
 
 		@return: The value of the property.
 		@rtype: str
+
+		@raise Unauthorized: When the connection uses wrong credentials.
 		@raise ResourceNotFound: If the user or property does not exist.
+		@raise NotAcceptable: When the server cannot generate a response
+			in the content type used by this connection (see also: 
+			L{set_content_handler
+			<common.RestAuthConnection.set_content_handler>}).
 		@raise InternalServerError: When the RestAuth service returns
 			HTTP status code 500
 		@raise UnknownStatus: If the response status is unknown.
@@ -287,6 +353,7 @@ class User( common.RestAuthResource ):
 		"""
 		Delete the given property.
 
+		@raise Unauthorized: When the connection uses wrong credentials.
 		@raise ResourceNotFound: If the user or property does not exist.
 		@raise InternalServerError: When the RestAuth service returns
 			HTTP status code 500
@@ -301,6 +368,20 @@ class User( common.RestAuthResource ):
 			raise UnknownStatus( resp )
 
 	def get_groups( self ):
+		"""
+		Get all groups that this user is a member of.
+	
+		This method is just a shortcut for L{group.get_all}.
+
+		@return: All groups that the user is a member of.
+		@rtype: list of L{groups<Group>}
+
+		@raise Unauthorized: When the connection uses wrong credentials.
+		@raise ResourceNotFound: If the user does not exist.
+		@raise InternalServerError: When the RestAuth service returns
+			HTTP status code 500
+		@raise UnknownStatus: If the response status is unknown.
+		"""
 		try:
 			from RestAuthClient import group
 		except ImportError:
@@ -308,6 +389,22 @@ class User( common.RestAuthResource ):
 		return group.get_all( self.conn, self )
 
 	def in_group( self, grp ):
+		"""
+		Check if the user is a member in the given group.
+
+		This method is just a shortcut for L{Group.is_member<group.Group.is_member>}.
+
+		@param grp: The group of interest.
+		@type  grp: str or L{Group}
+		@return: True if this user is a member, False otherwise.
+		@rtype: bool
+		
+		@raise Unauthorized: When the connection uses wrong credentials.
+		@raise ResourceNotFound: If the user or group does not exist.
+		@raise InternalServerError: When the RestAuth service returns
+			HTTP status code 500
+		@raise UnknownStatus: If the response status is unknown.
+		"""
 		try:
 			from RestAuthClient import group
 		except ImportError:
@@ -317,6 +414,23 @@ class User( common.RestAuthResource ):
 		return grp.is_member( self.name )
 
 	def add_group( self, grp ):
+		"""
+		Make this user a member if the given group.
+
+		This method is just a shortcut for
+		L{Group.add_user<group.Group.add_user>}.
+		
+		@param grp: The group of interest.
+		@type  grp: str or L{Group}
+		
+		@raise BadRequest: If the server was unable to parse the request
+			body.
+		@raise Unauthorized: When the connection uses wrong credentials.
+		@raise ResourceNotFound: If the user or group does not exist.
+		@raise InternalServerError: When the RestAuth service returns
+			HTTP status code 500
+		@raise UnknownStatus: If the response status is unknown.
+		"""
 		try:
 			from RestAuthClient import group
 		except ImportError:
@@ -326,6 +440,21 @@ class User( common.RestAuthResource ):
 		grp.add_user( self.name )
 
 	def remove_group( self, grp ):
+		"""
+		Remove the users membership from the given group.
+
+		This method is just a shortcut for 
+		L{Group.remove_user<group.Group.remove_user>}.
+
+		@param grp: The group of interest.
+		@type  grp: str or L{Group}
+		
+		@raise Unauthorized: When the connection uses wrong credentials.
+		@raise ResourceNotFound: If the user or group does not exist.
+		@raise InternalServerError: When the RestAuth service returns
+			HTTP status code 500
+		@raise UnknownStatus: If the response status is unknown.
+		"""
 		try:
 			from RestAuthClient import group
 		except ImportError:

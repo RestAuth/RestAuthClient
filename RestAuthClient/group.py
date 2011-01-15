@@ -41,8 +41,14 @@ def create( conn, name ):
 	@type  name: str
 	@return: The group object representing the group just created.
 	@rtype: Group
+
+	@raise BadRequest: If the server was unable to parse the request body.
+	@raise Unauthorized: When the connection uses wrong credentials.
 	@raise GroupExists: When the user already exists.
-	@raise BadRequest: When the RestAuth service returns HTTP status code 400
+	@raise UnsupportedMediaType: The server does not support the
+		content type used by this connection (see also: 
+		L{set_content_handler
+		<common.RestAuthConnection.set_content_handler>}).
 	@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 	"""
 	resp = conn.post( Group.prefix, { 'group': name } )
@@ -66,8 +72,14 @@ def get_all( conn, user=None ):
 	@type  user: str
 	@return: A list of Group objects
 	@rtype: List of L{groups<Group>}
-	@raise BadRequest: When the RestAuth service returns HTTP status code 400
+
+	@raise Unauthorized: When the connection uses wrong credentials.
+	@raise NotAcceptable: When the server cannot generate a response
+		in the content type used by this connection (see also:
+		L{set_content_handler
+		<common.RestAuthConnection.set_content_handler>}).
 	@raise InternalServerError: When the RestAuth service returns HTTP status code 500
+	@raise ResourceNotFound: When the given user does not exist.
 	"""
 	params = {}
 	if user:
@@ -98,8 +110,9 @@ def get( conn, name ):
 	@type  name: str
 	@return: The group object representing the group in RestAuth.
 	@rtype: L{Group}
+
+	@raise Unauthorized: When the connection uses wrong credentials.
 	@raise ResourceNotFound: If the group does not exist.
-	@raise BadRequest: When the RestAuth service returns HTTP status code 400
 	@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 	"""
 	resp = conn.get( '%s%s'%(Group.prefix, name) )
@@ -128,8 +141,13 @@ class Group( common.RestAuthResource ):
 		
 		@return: A list of L{users<User>}.
 		@rtype: list
+
+		@raise Unauthorized: When the connection uses wrong credentials.
 		@raise ResourceNotFound: If the group does not exist.
-		@raise BadRequest: When the RestAuth service returns HTTP status code 400
+		@raise NotAcceptable: When the server cannot generate a response
+			in the content type used by this connection (see also:
+			L{set_content_handler
+			<common.RestAuthConnection.set_content_handler>}).
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		"""
 		params = {}
@@ -152,8 +170,15 @@ class Group( common.RestAuthResource ):
 
 		@param user: The user the name of the user to add.
 		@type  user: L{user} or str
+
+		@raise BadRequest: If the server was unable to parse the request
+			body.
+		@raise Unauthorized: When the connection uses wrong credentials.
 		@raise ResourceNotFound: If the group or user does not exist.
-		@raise BadRequest: When the RestAuth service returns HTTP status code 400
+		@raise UnsupportedMediaType: The server does not support the
+			content type used by this connection (see also: 
+			L{set_content_handler
+			<common.RestAuthConnection.set_content_handler>}).
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		"""
 		if user.__class__ == restauth_user.User:
@@ -173,8 +198,15 @@ class Group( common.RestAuthResource ):
 		
 		@param group: The group or the name of the group to add.
 		@type  group: L{Group} or str
+
+		@raise BadRequest: If the server was unable to parse the request
+			body.
+		@raise Unauthorized: When the connection uses wrong credentials.
 		@raise ResourceNotFound: If the group or user does not exist.
-		@raise BadRequest: When the RestAuth service returns HTTP status code 400
+		@raise UnsupportedMediaType: The server does not support the
+			content type used by this connection (see also: 
+			L{set_content_handler
+			<common.RestAuthConnection.set_content_handler>}).
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		@todo: It should be possible that group is a str.
 		"""
@@ -196,8 +228,12 @@ class Group( common.RestAuthResource ):
 		"""
 		Get a list of sub-groups of this group.
 
+		@raise Unauthorized: When the connection uses wrong credentials.
 		@raise ResourceNotFound: If the sub- or meta-group not exist.
-		@raise BadRequest: When the RestAuth service returns HTTP status code 400
+		@raise NotAcceptable: When the server cannot generate a response
+			in the content type used by this connection (see also:
+			L{set_content_handler
+			<common.RestAuthConnection.set_content_handler>}).
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		"""
 		path = '/%s/groups/'%(self.name)
@@ -218,8 +254,9 @@ class Group( common.RestAuthResource ):
 		
 		@param group: The group or the name of the group to remmove.
 		@type  group: L{Group} or str
+
+		@raise Unauthorized: When the connection uses wrong credentials.
 		@raise ResourceNotFound: If the sub- or meta-group not exist.
-		@raise BadRequest: When the RestAuth service returns HTTP status code 400
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		"""
 		if group.__class__ == Group:
@@ -238,8 +275,8 @@ class Group( common.RestAuthResource ):
 		"""
 		Delete this group.
 		
+		@raise Unauthorized: When the connection uses wrong credentials.
 		@raise ResourceNotFound: If the group does not exist.
-		@raise BadRequest: When the RestAuth service returns HTTP status code 400
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		"""
 		resp = self._delete( self.name )
@@ -259,8 +296,8 @@ class Group( common.RestAuthResource ):
 		@return: True if the user is a member, False if not.
 		@rtype: bool
 
+		@raise Unauthorized: When the connection uses wrong credentials.
 		@raise ResourceNotFound: If the group or user does not exist.
-		@raise BadRequest: When the RestAuth service returns HTTP status code 400
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		@todo: It should be possible that user is a str.
 		@todo: this code looks really wrong: a Post to where?
@@ -284,8 +321,8 @@ class Group( common.RestAuthResource ):
 		"""
 		Remove the given user from the group.
 
+		@raise Unauthorized: When the connection uses wrong credentials.
 		@raise ResourceNotFound: If the group or user does not exist.
-		@raise BadRequest: When the RestAuth service returns HTTP status code 400
 		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
 		@todo: It should be possible that user is a str.
 		"""
