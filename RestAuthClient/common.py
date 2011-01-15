@@ -92,8 +92,8 @@ class RestAuthConnection:
 		@type  passwd: str
 		"""
 		raw_credentials = '%s:%s'%( user, passwd )
-		enc_credentials = base64.b64encode( raw_credentials )
-		self.auth_header = "Basic %s"%(enc_credentials )
+		enc_credentials = base64.b64encode( raw_credentials.encode() )
+		self.auth_header = "Basic %s"%(enc_credentials.decode() )
 
 	def set_content_handler( self, content_handler='application/json' ):
 		"""
