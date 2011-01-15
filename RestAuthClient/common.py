@@ -106,7 +106,7 @@ class RestAuthConnection:
 			RestAuthCommon.handlers.content_handler or a str
 			str, in which case the str suffixed with '_handler'
 			must give a class found in RestAuthCommon.handlers.
-		@type  content_handler: str or subclass of 
+		@type  content_handler: str or 
 			RestAuthCommon.handlers.content_handler.
 
 		"""
