@@ -17,6 +17,7 @@
 Module handling code relevant to user authentication and property management.
 """
 
+import sys
 try:
 	from RestAuthClient import common
 	from RestAuthClient.errors import *
@@ -299,6 +300,41 @@ class User( common.RestAuthResource ):
 		else:
 			raise UnknownStatus( resp )
 
+	def get_groups( self ):
+		try:
+			from RestAuthClient import group
+		except:
+			import group
+		return group.get_all( self.conn, self )
+
+	def in_group( self, grp ):
+		try:
+			from RestAuthClient import group
+		except:
+			import group
+		if grp.__class__ == str or (sys.version_info < (3, 0) and grp.__class__ == unicode):
+			grp = group.Group( self.conn, grp )
+		return grp.is_member( self.name )
+
+	def add_group( self, grp ):
+		try:
+			from RestAuthClient import group
+		except:
+			import group
+		if grp.__class__ == str or (sys.version_info < (3, 0) and grp.__class__ == unicode):
+			grp = group.Group( self.conn, grp )
+		grp.add_user( self.name )
+
+	def remove_group( self, grp ):
+		try:
+			from RestAuthClient import group
+		except:
+			import group
+		if grp.__class__ == str or (sys.version_info < (3, 0) and grp.__class__ == unicode):
+			grp = group.Group( self.conn, grp )
+		grp.remove_user( self.name )
+
+
 	def __eq__( self, other ):
 		"""
 		Two instances of the class User evaluate as equal if their name
@@ -310,7 +346,6 @@ class User( common.RestAuthResource ):
 		return hash( self.name )
 
 	def __repr__( self ):
-		import sys
 		if sys.version_info < (3, 0) and self.name.__class__ == unicode:
 			return '<User: {0}>'.format(self.name.encode( 'utf-8' ))
 		else:
