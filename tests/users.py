@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 import sys, unittest
 from RestAuthClient.errors import *
 from RestAuthClient.common import RestAuthConnection
-from RestAuthClient import restauth_user
+from RestAuthClient import restauth_user, group
 
 rest_host = 'http://localhost:8000'
 rest_user = 'vowi'
@@ -15,6 +15,8 @@ username = "mati \u6110"
 password = "mati \u6111"
 propKey = "mati \u6112"
 propVal = "mati \u6113"
+
+groupname = "group \u6114"
 
 class BasicTests( unittest.TestCase ):
 	def setUp( self ):
@@ -259,6 +261,55 @@ class PropertyTests( unittest.TestCase ):
 
 		try:
 			user.get_properties()
+			self.fail()
+		except ResourceNotFound as e:
+			self.assertEqual( "user", e.get_type() )
+
+class SimpleUserGroupTests( unittest.TestCase ):
+	def setUp( self ):
+		self.conn = RestAuthConnection( rest_host, rest_user, rest_passwd )
+		if restauth_user.get_all( self.conn ):
+			raise RuntimeError( "Found leftover users." )
+		if group.get_all( self.conn ):
+			raise RuntimeError( "Found leftover groups." )
+
+		self.user = restauth_user.create( self.conn, username, password )
+		self.group = group.create( self.conn, groupname )
+
+	def tearDown( self ):
+		for user in restauth_user.get_all( self.conn ):
+			user.remove()
+		for grp in group.get_all( self.conn ):
+			grp.remove()
+
+	def test_addGroup( self ):
+		self.user.add_group( groupname )
+		self.assertEqual( [self.group], self.user.get_groups() )
+		self.assertEqual( [self.group], 
+			group.get_all( self.conn, self.user ) )
+
+	def test_inGroup( self ):
+		self.assertFalse( self.user.in_group( groupname ) )
+		self.user.add_group( groupname )
+		self.assertTrue( self.user.in_group( groupname ) )
+
+	def test_removeGroup( self ):
+		self.assertFalse( self.user.in_group( groupname ) )
+		self.assertEqual( [], self.user.get_groups() )
+
+		self.user.add_group( groupname )
+		self.assertTrue( self.user.in_group( groupname ) )
+		self.assertEqual( [self.group], 
+			group.get_all( self.conn, self.user ) )
+
+		self.user.remove_group( groupname )
+		self.assertFalse( self.user.in_group( groupname ) )
+		self.assertEqual( [], self.user.get_groups() )
+
+	def test_getGroupsInvalidUser( self ):
+		user = restauth_user.User( self.conn, "foobar" )
+		try:
+			user.get_groups()
 			self.fail()
 		except ResourceNotFound as e:
 			self.assertEqual( "user", e.get_type() )
