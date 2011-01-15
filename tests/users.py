@@ -54,9 +54,11 @@ class BasicTests( unittest.TestCase ):
 		user = restauth_user.create( self.conn, "mati", "password" )
 		try:
 			restauth_user.create( self.conn, "mati", "new password" )
+			self.fail()
 		except restauth_user.UserExists as e:
 			self.assertEqual( [user], restauth_user.get_all( self.conn ) )
 			self.assertTrue( user.verify_password( "password" ) )
+			self.assertFalse( user.verify_password( "new password" ) )
 
 	def test_verifyPassword( self ):
 		user = restauth_user.create( self.conn, username, password )
@@ -90,6 +92,7 @@ class BasicTests( unittest.TestCase ):
 		user = restauth_user.create( self.conn, username, password )
 		try:
 			user.set_password( "x" )
+			self.fail()
 		except PreconditionFailed:
 			self.assertTrue( user.verify_password( password ) )
 			self.assertFalse( user.verify_password( "x" ) )
@@ -97,6 +100,7 @@ class BasicTests( unittest.TestCase ):
 	def test_getInvalidUser( self ):
 		try:
 			restauth_user.get( self.conn, "invalid" )
+			self.fail()
 		except ResourceNotFound as e:
 			self.assertEqual( "user", e.get_type() )
 
@@ -115,6 +119,7 @@ class BasicTests( unittest.TestCase ):
 		user = restauth_user.User( self.conn, "invalid" )
 		try:
 			user.remove()
+			self.fail()
 		except ResourceNotFound as e:
 			self.assertEqual( "user", e.get_type() )
 
@@ -217,6 +222,7 @@ class PropertyTests( unittest.TestCase ):
 
 		try:
 			user.remove_property( "foobar" )
+			self.fail()
 		except ResourceNotFound as e:
 			self.assertEqual( "user", e.get_type() )
 
@@ -232,6 +238,7 @@ class PropertyTests( unittest.TestCase ):
 
 		try:
 			user_2.remove_property( propKey )
+			self.fail()
 		except ResourceNotFound as e:
 			self.assertEqual( "property", e.get_type() )
 
@@ -243,6 +250,7 @@ class PropertyTests( unittest.TestCase ):
 	def test_getInvalidProperty( self ):
 		try:
 			self.user.get_property( "foobar" )
+			self.fail()
 		except ResourceNotFound as e:
 			self.assertEqual( "property", e.get_type() )
 
