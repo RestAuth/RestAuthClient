@@ -25,6 +25,11 @@ except ImportError:
 	from errors import *
 	import common
 
+if sys.version_info < (3, 0):
+	import httplib as http
+else:
+	from http import client as http
+
 class UserExists( ResourceConflict):
 	"""
 	Thrown when a L{User} that already exists should be created.
@@ -65,11 +70,11 @@ def create( conn, name, pwd ):
 	"""
 	params = { 'user': name, 'password': pwd }
 	resp = conn.post( User.prefix, params )
-	if resp.status == 201:
+	if resp.status == http.CREATED:
 		return User( conn, name )
-	elif resp.status == 409:
+	elif resp.status == http.CONFLICT:
 		raise UserExists( name )
-	elif resp.status == 412:
+	elif resp.status == http.PRECONDITION_FAILED:
 		raise PreconditionFailed( resp.read() )
 	else:
 		raise UnknownStatus( resp )
@@ -96,9 +101,9 @@ def get( conn, name ):
 	# this just verify that the user exists in RestAuth:
 	resp = conn.get( '/users/%s/'%(name) )
 
-	if resp.status == 204:
+	if resp.status == http.NO_CONTENT:
 		return User( conn, name )
-	elif resp.status == 404:
+	elif resp.status == http.NOT_FOUND:
 		raise ResourceNotFound( resp )
 	else:
 		raise UnknownStatus( resp )
@@ -123,7 +128,7 @@ def get_all( conn ):
 	"""
 	resp = conn.get( User.prefix )
 		
-	if resp.status == 200:
+	if resp.status == http.OK:
 		body = resp.read().decode( 'utf-8' )
 		usernames = conn.content_handler.unmarshal_list( body )
 		return [ User( conn, name ) for name in usernames ]
@@ -168,11 +173,11 @@ class User( common.RestAuthResource ):
 		@raise PreconditionFailed: When the password is invalid.
 		"""
 		resp = self._put( self.name, { 'password': password } )
-		if resp.status == 204:
+		if resp.status == http.NO_CONTENT:
 			return
-		elif resp.status == 404:
+		elif resp.status == http.NOT_FOUND:
 			raise ResourceNotFound( resp )
-		elif resp.status == 412:
+		elif resp.status == http.PRECONDITION_FAILED:
 			raise PreconditionFailed( resp.read() )
 		else:
 			raise UnknownStatus( resp )
@@ -199,9 +204,9 @@ class User( common.RestAuthResource ):
 		@raise UnknownStatus: If the response status is unknown.
 		"""
 		resp = self._post( self.name, { 'password': password } )
-		if resp.status == 204:
+		if resp.status == http.NO_CONTENT:
 			return True
-		elif resp.status == 404:
+		elif resp.status == http.NOT_FOUND:
 			return False
 		else:
 			raise UnknownStatus( resp )
@@ -217,9 +222,9 @@ class User( common.RestAuthResource ):
 		@raise UnknownStatus: If the response status is unknown.
 		"""
 		resp = self._delete( self.name )
-		if resp.status == 204:
+		if resp.status == http.NO_CONTENT:
 			return
-		if resp.status == 404:
+		if resp.status == http.NOT_FOUND:
 			raise ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
@@ -242,10 +247,10 @@ class User( common.RestAuthResource ):
 		@raise UnknownStatus: If the response status is unknown.
 		"""
 		resp = self._get( '%s/props/'%(self.name) )
-		if resp.status == 200:
+		if resp.status == http.OK:
 			body = resp.read().decode( 'utf-8' )
 			return self.conn.content_handler.unmarshal_dict( body )
-		elif resp.status == 404:
+		elif resp.status == http.NOT_FOUND:
 			raise ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
@@ -276,11 +281,11 @@ class User( common.RestAuthResource ):
 		"""
 		params = { 'prop': prop, 'value': value }
 		resp = self._post( '%s/props/'%(self.name), params=params )
-		if resp.status == 201:
+		if resp.status == http.CREATED:
 			return
-		elif resp.status == 404:
+		elif resp.status == http.NOT_FOUND:
 			raise ResourceNotFound( resp )
-		elif resp.status == 409:
+		elif resp.status == http.CONFLICT:
 			raise PropertyExists( resp )
 		else:
 			raise UnknownStatus( resp )
@@ -313,12 +318,12 @@ class User( common.RestAuthResource ):
 		"""
 		url = '%s/props/%s/'%( self.name, prop )
 		resp = self._put( url, params={'value': value} )
-		if resp.status == 200:
+		if resp.status == http.OK:
 			body = resp.read().decode( 'utf-8' )
 			return self.conn.content_handler.unmarshal_str( body )
-		if resp.status == 201:
+		if resp.status == http.CREATED:
 			return
-		elif resp.status == 404:
+		elif resp.status == http.NOT_FOUND:
 			raise ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
@@ -341,10 +346,10 @@ class User( common.RestAuthResource ):
 		@raise UnknownStatus: If the response status is unknown.
 		"""
 		resp = self._get( '%s/props/%s'%( self.name, prop ) )
-		if resp.status == 200:
+		if resp.status == http.OK:
 			body = resp.read().decode( 'utf-8' )
 			return self.conn.content_handler.unmarshal_str( body )
-		elif resp.status == 404:
+		elif resp.status == http.NOT_FOUND:
 			raise ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
@@ -360,9 +365,9 @@ class User( common.RestAuthResource ):
 		@raise UnknownStatus: If the response status is unknown.
 		"""
 		resp = self._delete( '%s/props/%s'%(self.name, prop) )
-		if resp.status == 204:
+		if resp.status == http.NO_CONTENT:
 			return
-		elif resp.status == 404:
+		elif resp.status == http.NOT_FOUND:
 			raise ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
@@ -427,7 +432,7 @@ class User( common.RestAuthResource ):
 			body.
 		@raise Unauthorized: When the connection uses wrong credentials.
 		@raise ResourceNotFound: If the user or group does not exist.
-		@raise InternalServerError: When the RestAuth service returns
+		@raise InternalServerError: When the RestAuth server returns
 			HTTP status code 500
 		@raise UnknownStatus: If the response status is unknown.
 		"""

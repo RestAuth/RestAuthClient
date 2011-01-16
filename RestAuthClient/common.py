@@ -163,11 +163,11 @@ class RestAuthConnection:
 		conn.request( method, url, body, headers )
 		response = conn.getresponse()
 
-		if response.status == 401:
+		if response.status == client.UNAUTHORIZED:
 			raise Unauthorized( response )
-		elif response.status == 406:
+		elif response.status == client.NOT_ACCEPTABLE:
 			raise NotAcceptable( response )
-		elif response.status == 500:
+		elif response.status == client.INTERNAL_SERVER_ERROR:
 			raise InternalServerError( response )
 		else:
 			return response
@@ -265,9 +265,9 @@ class RestAuthConnection:
 		body = self.content_handler.marshal_dict( params )
 		url = self._sanitize_url( url )
 		response = self.send( 'POST', url, body, headers )
-		if response.status == 400:
+		if response.status == client.BAD_REQUEST:
 			raise BadRequest( response )
-		elif response.status == 415:
+		elif response.status == client.UNSUPPORTED_MEDIA_TYPE:
 			raise UnsupportedMediaType( response )
 
 		return response
@@ -306,9 +306,9 @@ class RestAuthConnection:
 		body = self.content_handler.marshal_dict( params )
 		url = self._sanitize_url( url )
 		response = self.send( 'PUT', url, body, headers )
-		if response.status == 400:
+		if response.status == client.BAD_REQUEST:
 			raise BadRequest( response )
-		elif response.status == 415:
+		elif response.status == client.UNSUPPORTED_MEDIA_TYPE:
 			raise UnsupportedMediaType( response )
 		return response
 

@@ -25,6 +25,11 @@ except ImportError:
 	import common, restauth_user
 	from errors import *
 
+if sys.version_info < (3, 0):
+	import httplib as http
+else:
+	from http import client as http
+
 class GroupExists( ResourceConflict ):
 	"""
 	Thrown when a L{Group} that already exists should be created.
@@ -53,11 +58,11 @@ def create( conn, name ):
 	@raise UnknownStatus: If the response status is unknown.
 	"""
 	resp = conn.post( Group.prefix, { 'group': name } )
-	if resp.status == 201:
+	if resp.status == http.CREATED:
 		return Group( conn, name )
-	elif resp.status == 409:
+	elif resp.status == http.CONFLICT:
 		raise GroupExists( "Conflict." )
-	elif resp.status == 412:
+	elif resp.status == http.PRECONDITION_FAILED:
 		raise PreconditionFailed( resp )
 	else:
 		raise UnknownStatus( resp )
@@ -91,11 +96,11 @@ def get_all( conn, user=None ):
 		params['user'] = user
 
 	resp = conn.get( Group.prefix, params )
-	if resp.status == 200:
+	if resp.status == http.OK:
 		body = resp.read().decode( 'utf-8' )
 		names = conn.content_handler.unmarshal_list( body )
 		return [ Group( conn, name ) for name in names ]
-	elif resp.status == 404:
+	elif resp.status == http.NOT_FOUND:
 		raise ResourceNotFound( resp )
 	else:
 		raise UnknownStatus( resp )
@@ -119,9 +124,9 @@ def get( conn, name ):
 	@raise UnknownStatus: If the response status is unknown.
 	"""
 	resp = conn.get( '%s%s'%(Group.prefix, name) )
-	if resp.status == 204:
+	if resp.status == http.NO_CONTENT:
 		return Group( conn, name )
-	elif resp.status == 404:
+	elif resp.status == http.NOT_FOUND:
 		raise ResourceNotFound( resp )
 	else:
 		raise UnknownStatus( resp )
@@ -157,13 +162,13 @@ class Group( common.RestAuthResource ):
 		params = {}
 
 		resp = self._get( '/%s/users/'%(self.name), params )
-		if resp.status == 200:
+		if resp.status == http.OK:
 			# parse user-list:
 			body = resp.read().decode( 'utf-8' )
 			names = self.conn.content_handler.unmarshal_list( body )
 			users = [ restauth_user.User( self.conn, name ) for name in names ]
 			return users
-		elif resp.status == 404:
+		elif resp.status == http.NOT_FOUND:
 			raise ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
@@ -190,9 +195,9 @@ class Group( common.RestAuthResource ):
 			user = user.name
 		params = { 'user': user }
 		resp = self._post( '/%s/users/'%(self.name), params )
-		if resp.status == 204:
+		if resp.status == http.NO_CONTENT:
 			return
-		elif resp.status == 404:
+		elif resp.status == http.NOT_FOUND:
 			raise ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
@@ -222,9 +227,9 @@ class Group( common.RestAuthResource ):
 		path = '/%s/groups/'%(self.name)
 		
 		resp = self._post( path, params )
-		if resp.status == 204:
+		if resp.status == http.NO_CONTENT:
 			return
-		elif resp.status == 404:
+		elif resp.status == http.NOT_FOUND:
 			raise ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
@@ -244,11 +249,11 @@ class Group( common.RestAuthResource ):
 		"""
 		path = '/%s/groups/'%(self.name)
 		resp = self._get( path )
-		if resp.status == 200:
+		if resp.status == http.OK:
 			body = resp.read().decode( 'utf-8' )
 			names = self.conn.content_handler.unmarshal_list( body )
 			return [ Group( self.conn, name ) for name in names ]
-		elif resp.status == 404:
+		elif resp.status == http.NOT_FOUND:
 			raise ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
@@ -271,9 +276,9 @@ class Group( common.RestAuthResource ):
 
 		path = '/%s/groups/%s/'%(self.name, group)
 		resp = self._delete( path )
-		if resp.status == 204:
+		if resp.status == http.NO_CONTENT:
 			return
-		elif resp.status == 404:
+		elif resp.status == http.NOT_FOUND:
 			raise ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
@@ -288,9 +293,9 @@ class Group( common.RestAuthResource ):
 		@raise UnknownStatus: If the response status is unknown.
 		"""
 		resp = self._delete( self.name )
-		if resp.status == 204:
+		if resp.status == http.NO_CONTENT:
 			return
-		elif resp.status == 404:
+		elif resp.status == http.NOT_FOUND:
 			raise ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
@@ -314,9 +319,9 @@ class Group( common.RestAuthResource ):
 
 		path = '/%s/users/%s/'%(self.name, user)
 		resp = self._get( path )
-		if resp.status == 204:
+		if resp.status == http.NO_CONTENT:
 			return True
-		elif resp.status == 404:
+		elif resp.status == http.NOT_FOUND:
 			if resp.getheader( 'Resource-Type' ) == 'user':
 				return False
 			else:
@@ -338,9 +343,9 @@ class Group( common.RestAuthResource ):
 
 		path = '/%s/users/%s/'%(self.name, user)
 		resp = self._delete( path )
-		if resp.status == 204:
+		if resp.status == http.NO_CONTENT:
 			return
-		elif resp.status == 404:
+		elif resp.status == http.NOT_FOUND:
 			raise ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
