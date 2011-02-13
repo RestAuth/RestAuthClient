@@ -66,16 +66,13 @@ class clean( _clean ):
 def get_version():
 	version = '0.1'
 	if exists( '.version' ):
-		print( 'get version from file...' )
 		version = open( '.version' ).readlines()[0]
-	elif exists( '.svn' ):
-		cmd = [ 'svn', 'info' ]
+	elif os.path.exists( '.git' ): # get from git
+		date = time.strftime( '%Y.%m.%d' )
+		cmd = [ 'git', 'describe' ]
 		p = Popen( cmd, stdout=PIPE )
-		stdin, stderr = p.communicate()
-		lines = stdin.decode( "utf-8" ).split( "\n" )
-		line = [ line for line in lines if line.startswith( 'Revision' ) ][0]
-		version = '0.0-' + line.split( ': ' )[1].strip()
-	return version
+		version = p.communicate()[0].decode( 'utf-8' )
+	return version.strip()
 
 class version( Command ):
 	description = "Print version and exit."
