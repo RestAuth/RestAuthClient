@@ -107,7 +107,7 @@ class test( Command ):
 	def initialize_options( self ): 
 		self.user = 'vowi'
 		self.passwd = 'vowi'
-		self.host = 'http://localhost:8000'
+		self.host = 'http://[::1]:8000'
 
 	def finalize_options( self ): pass
 
@@ -126,7 +126,7 @@ class coverage( Command ):
 	def initialize_options( self ): 
 		self.user = 'vowi'
 		self.passwd = 'vowi'
-		self.host = 'http://localhost:8000'
+		self.host = 'http://[::1]:8000'
 		self.dir = 'doc/coverage'
 
 	def finalize_options( self ): pass

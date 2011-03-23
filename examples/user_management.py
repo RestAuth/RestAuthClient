@@ -11,7 +11,7 @@ sys.path.append( os.getcwd() ) # so we can import RestAuthClient
 # specific code:
 from RestAuthClient import common, restauth_user
 
-conn = common.RestAuthConnection( 'localhost', 8000, 'vowi', 'vowi', False )
+conn = common.RestAuthConnection( '::1', 8000, 'vowi', 'vowi', False )
 
 # create a new user. the standard configuration does not allow spaces in the
 # username, because this does not work on XMPP, email, ...

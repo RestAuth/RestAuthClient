@@ -9,7 +9,7 @@ from RestAuthClient import restauth_user
 
 from RestAuthCommon.handlers import content_handler
 
-rest_host = 'http://localhost:8000'
+rest_host = 'http://[:11]:8000'
 rest_user = 'vowi'
 rest_passwd = 'vowi'
 

@@ -9,7 +9,7 @@ from RestAuthClient.errors import *
 from RestAuthClient.common import RestAuthConnection
 from RestAuthClient import restauth_user, group
 
-rest_host = 'http://localhost:8000'
+rest_host = 'http://[::1]:8000'
 rest_user = 'vowi'
 rest_passwd = 'vowi'
 
