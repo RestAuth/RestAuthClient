@@ -124,7 +124,7 @@ class BasicTests( unittest.TestCase ):
 		grp = group.create( self.conn, groupname_1 )
 		grp.add_user( self.users[0] )
 		grp.add_user( self.users[1] )
-		self.assertEqual( self.users[0:2], grp.get_members() )
+		self.assertEqual( sorted(self.users[0:2]), sorted(grp.get_members()) )
 
 		grp.remove_user( self.users[0] )
 		self.assertEqual( [self.users[1]], grp.get_members() )
