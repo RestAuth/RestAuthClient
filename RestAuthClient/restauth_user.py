@@ -475,6 +475,9 @@ class User( common.RestAuthResource ):
 		and connection evaluate as equal.
 		"""
 		return self.name == other.name and self.conn == other.conn
+
+	def __lt__( self, other ):
+		return self.name < other.name
 	
 	def __hash__( self ):
 		return hash( self.name )
