@@ -42,7 +42,7 @@ class PropertyExists( ResourceConflict ):
 	"""
 	pass
 
-def create( conn, name, pwd ):
+def create( conn, name, password=None ):
 	"""
 	Factory method that creates a I{new} user in the RestAuth
 	database.
@@ -51,8 +51,9 @@ def create( conn, name, pwd ):
 	@type  conn: L{RestAuthConnection}
 	@param name: Name of the user to get
 	@type  name: str
-	@param pwd: Password for the new user
-	@type  pwd: str
+	@param password: Password for the new user. If None or an empty string, the user is effectively
+		disabled.
+	@type  password: str
 	@return: The user object representing the user just created.
 	@rtype: L{User}
 
@@ -68,7 +69,10 @@ def create( conn, name, pwd ):
 		status code 500
 	@raise UnknownStatus: If the response status is unknown.
 	"""
-	params = { 'user': name, 'password': pwd }
+	params = { 'user': name }
+	if password:
+		params['password'] = password
+		
 	resp = conn.post( User.prefix, params )
 	if resp.status == http.CREATED:
 		return User( conn, name )
@@ -155,9 +159,13 @@ class User( common.RestAuthResource ):
 		self.conn = conn
 		self.name = name
 
-	def set_password( self, password ):
+	def set_password( self, password=None ):
 		"""
 		Set the password of this user.
+		
+		@param password: The new password of the user. If None or an empty string, the
+			user is effectively disabled.
+		@type  password: str
 
 		@raise BadRequest: If the server was unable to parse the request
 			body.
@@ -172,7 +180,10 @@ class User( common.RestAuthResource ):
 		@raise UnknownStatus: If the response status is unknown.
 		@raise PreconditionFailed: When the password is invalid.
 		"""
-		resp = self._put( self.name, { 'password': password } )
+		params = {}
+		if password:
+			params['password'] = password
+		resp = self._put( self.name, params )
 		if resp.status == http.NO_CONTENT:
 			return
 		elif resp.status == http.NOT_FOUND:

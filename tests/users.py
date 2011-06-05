@@ -45,6 +45,24 @@ class BasicTests( unittest.TestCase ):
 
 		self.assertEqual( [user], restauth_user.get_all( self.conn ) )
 		self.assertEqual( user, restauth_user.get( self.conn, username ) )
+		
+	def test_createUserWithNoPassword( self ):
+		user1 = restauth_user.create( self.conn, username )
+		self.assertEqual( [user1], restauth_user.get_all( self.conn ) )
+		self.assertEqual( user1, restauth_user.get( self.conn, username ) )
+		# check that no password verifies as correct
+		self.assertFalse( user1.verify_password( '' ) )
+		self.assertFalse( user1.verify_password( None ) )
+		self.assertFalse( user1.verify_password( password ) )
+		
+		# use empty string instead:
+		user2 = restauth_user.create( self.conn, username + '1', '' )
+		self.assertEqual( [user1, user2], restauth_user.get_all( self.conn ) )
+		self.assertEqual( user2, restauth_user.get( self.conn, username +'1' ) )
+		# check that no password verifies as correct
+		self.assertFalse( user2.verify_password( '' ) )
+		self.assertFalse( user2.verify_password( None ) )
+		self.assertFalse( user2.verify_password( password ) )
 	
 	def test_createInvalidUser( self ):
 		args = [self.conn, "foo/bar", "password"]
@@ -81,6 +99,18 @@ class BasicTests( unittest.TestCase ):
 		user.set_password( "new " + password )
 		self.assertFalse( user.verify_password( password ) )
 		self.assertTrue( user.verify_password( newpass ) )
+		
+	def test_disableUser( self ):
+		newpass = "new " + password
+		user = restauth_user.create( self.conn, username, password )
+		self.assertTrue( user.verify_password( password ) )
+		self.assertFalse( user.verify_password( newpass ) )
+
+		user.set_password()
+		self.assertFalse( user.verify_password( password ) )
+		self.assertFalse( user.verify_password( newpass ) )
+		self.assertFalse( user.verify_password( '' ) )
+		self.assertFalse( user.verify_password( None ) )
 
 	def test_setPasswordInvalidUser( self ):
 		user = restauth_user.User( self.conn, username )
