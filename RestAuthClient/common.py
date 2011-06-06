@@ -15,6 +15,8 @@
 
 """
 Central code for handling connections to a RestAuth service.
+
+.. moduleauthor:: Mathias Ertl <mati@fsinf.at>
 """
 try:
 	from http import client
