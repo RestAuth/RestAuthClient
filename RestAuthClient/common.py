@@ -44,28 +44,31 @@ except ImportError:
 class RestAuthConnection:
 	"""
 	An instance of this class represents a connection to a RestAuth service.
+
+	Note that the constructor does not verify that the connection actually
+	works. Since HTTP is stateless, there is no way of knowing if a
+	connection working now will still work 0.2 seconds from now. 		
+	
+	:param host: The hostname of the RestAuth service
+	:type  host: str
+	:param host: The hostname of the RestAuth service
+	:type  host: str
+	:param user: The service name to use for authenticating with 
+		RestAuth (passed to :py:meth:`.set_credentials`).
+	:type  user: str
+	:param passwd: The password to use for authenticating with
+		RestAuth (passed to :py:meth:`.set_credentials`).
+	:type  passwd: str
+	:param content_handler: Directly passed to :py:meth:`.set_content_handler`}.
+	:type  content_handler: str or subclass of 
+		RestAuthCommon.handlers.content_handler.
 	"""
 	
 	def __init__( self, host, user, passwd, content_handler='application/json' ):
 		"""
 		Initialize a new connection to a RestAuth service. 
 		
-		Note that the constructor does not verify that the connection
-		actually works. Since HTTP is stateless, there is no way of
-		knowing if a connection working now will still work 0.2 seconds
-		from now. 		
 
-		@param host: The hostname of the RestAuth service
-		@type  host: str
-		@param user: The service name to use for authenticating with 
-			RestAuth (passed to L{set_credentials}).
-		@type  user: str
-		@param passwd: The password to use for authenticating with
-			RestAuth (passed to L{set_credentials}).
-		@type  passwd: str
-		@param content_handler: Directly passed to L{set_content_handler}.
-		@type  content_handler: str or subclass of 
-			RestAuthCommon.handlers.content_handler.
 		"""
 		parseresult = urlparse( host )
 		if parseresult.scheme == 'https':
@@ -86,10 +89,10 @@ class RestAuthConnection:
 		Set the password for the given user. This method is also
 		automatically called by the constructor.
 
-		@param user: The user for whom the password should be changed.
-		@type  user: str
-		@param passwd: The password to use
-		@type  passwd: str
+		:param user: The user for whom the password should be changed.
+		:type  user: str
+		:param passwd: The password to use
+		:type  passwd: str
 		"""
 		raw_credentials = '%s:%s'%( user, passwd )
 		enc_credentials = base64.b64encode( raw_credentials.encode() )
@@ -101,12 +104,12 @@ class RestAuthConnection:
 		is 'json', which is supported by the reference server
 		implementation.
 
-		@param content_handler: Either a self-implemented handler, which
+		:param content_handler: Either a self-implemented handler, which
 			must be a subclass of
 			RestAuthCommon.handlers.content_handler or a str
 			str, in which case the str suffixed with '_handler'
 			must give a class found in RestAuthCommon.handlers.
-		@type  content_handler: str or 
+		:type  content_handler: str or 
 			RestAuthCommon.handlers.content_handler.
 
 		"""
@@ -124,32 +127,35 @@ class RestAuthConnection:
 	def send( self, method, url, body=None, headers={} ):
 		"""
 		Send an HTTP request to the RestAuth service. This method is
-		called by the L{get}, L{post}, L{put} and L{delete} methods. 
-		This method takes care of service authentication, encryption
-		and sets Content-Type and Accept headers.
+		called by the :py:meth:`.get`, :py:meth:`.post`, :py:meth:`.put`
+		and :py:meth:`.delete` methods. This method takes care of
+		service authentication, encryption and sets Content-Type and
+		Accept headers.
+		:py:class:`http.client.HTTPResponse`
 
-		@param method: The HTTP method to use. Must be either "GET",
+		:param method: The HTTP method to use. Must be either "GET",
 			"POST", "PUT" or "DELETE".
-		@type  method: str
-		@param    url: The URL to request. This does not include the
-			URL, which is passed by the L{constructor<__init__>}.
-			The url is assumed to be URL escaped.
-		@type     url: str
-		@param   body: The request body. This (should) only be used by
+		:type  method: str
+		:param    url: The URL path of the request. This does not
+			include the domain, which is configured by the 
+			:py:class:`constructor <.RestAuthConnection>`.
+			The path is assumed to be URL escaped.
+		:type     url: str
+		:param   body: The request body. This (should) only be used by
 			POST and PUT requests. The body is assumed to be URL
 			escaped.
-		@type    body: str
-		@param headers: A dictionary of key/value pairs of headers to set.
-		@param headers: dict
+		:type    body: str
+		:param headers: A dictionary of key/value pairs of headers to set.
+		:param headers: dict
 
-		@return: The response to the request
-		@rtype: U{HTTPResponse<http://docs.python.org/py3k/library/http.client.html#httpresponse-objects>}
+		:return: The response to the request
+		:rtype: :py:class:`http.client.HTTPResponse`
 
-		@raise Unauthorized: When the connection uses wrong credentials.
-		@raise NotAcceptable: When the server cannot generate a response
+		:raise Unauthorized: When the connection uses wrong credentials.
+		:raise NotAcceptable: When the server cannot generate a response
 			in the content type used by this connection (see also:
-			L{set_content_handler}).
-		@raise InternalServerError: When the server has some internal
+			:py:meth:`.set_content_handler`).
+		:raise InternalServerError: When the server has some internal
 			error.
 		"""
 		headers['Authorization'] = self.auth_header
@@ -202,27 +208,27 @@ class RestAuthConnection:
 		"""
 		Perform a GET request on the connection. This method takes care
 		of escaping parameters and assembling the correct URL. This
-		method internally calls the L{send} function to perform service
+		method internally calls the :py:meth:`.send` function to perform service
 		authentication.
 
-		@param url: The URL to perform the GET request on. The URL
+		:param url: The URL to perform the GET request on. The URL
 			must not include a query string.
-		@type  url: str
-		@param params: The query parameters for this request. A
+		:type  url: str
+		:param params: The query parameters for this request. A
 			dictionary of key/value pairs that is passed to
-			U{quote<http://docs.python.org/py3k/library/urllib.parse.html#urllib.parse.quote>}.
-		@type  params: dict
-		@param headers: Additional headers to send with this request.
-		@type  headers: dict
+			:py:func:`urllib.parse.quote`.
+		:type  params: dict
+		:param headers: Additional headers to send with this request.
+		:type  headers: dict
 		
-		@return: The response to the request
-		@rtype: U{HTTPResponse<http://docs.python.org/py3k/library/http.client.html#httpresponse-objects>}
+		:return: The response to the request
+		:rtype: :py:class:`http.client.HTTPResponse`
 
-		@raise Unauthorized: When the connection uses wrong credentials.
-		@raise NotAcceptable: When the server cannot generate a response
+		:raise Unauthorized: When the connection uses wrong credentials.
+		:raise NotAcceptable: When the server cannot generate a response
 			in the content type used by this connection (see also:
-			L{set_content_handler}).
-		@raise InternalServerError: When the server has some internal
+			:py:meth:`.set_content_handler`).
+		:raise InternalServerError: When the server has some internal
 			error.
 		"""
 		url = self._sanitize_url( url )
@@ -235,30 +241,30 @@ class RestAuthConnection:
 		"""
 		Perform a POST request on the connection. This method takes care
 		of escaping parameters and assembling the correct URL. This
-		method internally calls the L{send} function to perform service
+		method internally calls the :py:meth:`.send` function to perform service
 		authentication.
 
-		@param url: The URL to perform the GET request on. The URL
+		:param url: The URL to perform the GET request on. The URL
 			must not include a query string.
-		@type  url: str
-		@param params: A dictionary that will be wrapped into the
+		:type  url: str
+		:param params: A dictionary that will be wrapped into the
 			request body.
-		@type  params: dict
-		@param headers: Additional headers to send with this request.
-		@type  headers: dict
+		:type  params: dict
+		:param headers: Additional headers to send with this request.
+		:type  headers: dict
 
-		@return: The response to the request
-		@rtype: U{HTTPResponse<http://docs.python.org/py3k/library/http.client.html#httpresponse-objects>}
+		:return: The response to the request
+		:rtype: :py:class:`http.client.HTTPResponse`
 
-		@raise BadRequest: If the server was unable to parse the request
+		:raise BadRequest: If the server was unable to parse the request
 			body.
-		@raise Unauthorized: When the connection uses wrong credentials.
-		@raise NotAcceptable: When the server cannot generate a response
+		:raise Unauthorized: When the connection uses wrong credentials.
+		:raise NotAcceptable: When the server cannot generate a response
 			in the content type used by this connection (see also:
-			L{set_content_handler}).
-		@raise UnsupportedMediaType: The server does not support the
+			:py:meth:`.set_content_handler`).
+		:raise UnsupportedMediaType: The server does not support the
 			content type used by this connection.
-		@raise InternalServerError: When the server has some internal
+		:raise InternalServerError: When the server has some internal
 			error.
 		"""
 		headers['Content-Type'] = self.content_handler.mime
@@ -276,30 +282,30 @@ class RestAuthConnection:
 		"""
 		Perform a PUT request on the connection. This method takes care
 		of escaping parameters and assembling the correct URL. This
-		method internally calls the L{send} function to perform service
+		method internally calls the :py:meth:`.send`} function to perform service
 		authentication.
 
-		@param url: The URL to perform the GET request on. The URL
+		:param url: The URL to perform the GET request on. The URL
 			must not include a query string.
-		@type  url: str
-		@param params: A dictionary that will be wrapped into the
+		:type  url: str
+		:param params: A dictionary that will be wrapped into the
 			request body.
-		@type  params: dict
-		@param headers: Additional headers to send with this request.
-		@type  headers: dict
+		:type  params: dict
+		:param headers: Additional headers to send with this request.
+		:type  headers: dict
 
-		@return: The response to the request
-		@rtype: U{HTTPResponse<http://docs.python.org/py3k/library/http.client.html#httpresponse-objects>}
+		:return: The response to the request
+		:rtype: :py:class:`http.client.HTTPResponse`
 
-		@raise BadRequest: If the server was unable to parse the request
+		:raise BadRequest: If the server was unable to parse the request
 			body.
-		@raise Unauthorized: When the connection uses wrong credentials.
-		@raise NotAcceptable: When the server cannot generate a response
+		:raise Unauthorized: When the connection uses wrong credentials.
+		:raise NotAcceptable: When the server cannot generate a response
 			in the content type used by this connection (see also:
-			L{set_content_handler}).
-		@raise UnsupportedMediaType: The server does not support the
+			:py:meth:`.set_content_handler`).
+		:raise UnsupportedMediaType: The server does not support the
 			content type used by this connection.
-		@raise InternalServerError: When the server has some internal
+		:raise InternalServerError: When the server has some internal
 			error.
 		"""
 		headers['Content-Type'] = self.content_handler.mime
@@ -315,23 +321,20 @@ class RestAuthConnection:
 	def delete( self, url, headers={} ):
 		"""
 		Perform a GET request on the connection. This method internally
-		calls the L{send} function to perform service authentication.
+		calls the :py:meth:`.send` function to perform service authentication.
 
-		@param url: The URL to perform the GET request on. The URL
-			must not include a query string.
-		@type  url: str
-		@param headers: Additional headers to send with this request.
-		@type  headers: dict
-
-		@return: The response to the request
-		@rtype: U{HTTPResponse<http://docs.python.org/py3k/library/http.client.html#httpresponse-objects>}
-
-		@raise Unauthorized: When the connection uses wrong credentials.
-		@raise NotAcceptable: When the server cannot generate a response
-			in the content type used by this connection (see also:
-			L{set_content_handler}).
-		@raise InternalServerError: When the server has some internal
-			error.
+		:param url: The URL to perform the GET request on. The URL must
+			not include a query string.
+		:type  url: str
+		:param headers: Additional headers to send with this request.
+		:type  headers: dict
+		:return: The response to the request
+		:rtype: :py:class:`httplib.HTTPResponse`
+		:raise Unauthorized: When the connection uses wrong credentials.
+		:raise NotAcceptable: When the server cannot generate a response
+			in the content type used by this connection (see also: 
+			:py:meth:`.set_content_handler` ).
+		:raise InternalServerError: When the server has some internal error.
 		"""
 		url = self._sanitize_url( url )
 		return self.send( 'DELETE', url, headers=headers )
@@ -342,7 +345,7 @@ class RestAuthConnection:
 
 class RestAuthResource:
 	"""
-	Superclass for L{user<user.User>} and L{group<group.Group>} objects.
+	Superclass for :py:class:`~.User` and :py:class:`~.Group` objects.
 	The private methods of this class do nothing but prefix all request URLs
 	with the prefix of that class (i.e. /users/).
 	"""
@@ -350,7 +353,7 @@ class RestAuthResource:
 	def _get( self, url, params={}, headers={} ):
 		"""
 		Internal method that prefixes a GET request with the resource
-		name and passes the request to L{get}.
+		name and passes the request to :py:meth:`RestAuthConnection.get`.
 		"""
 		url = '%s%s'%( self.__class__.prefix, url )
 		return self.conn.get( url, params, headers )
@@ -358,7 +361,7 @@ class RestAuthResource:
 	def _post( self, url, params={}, headers={} ):
 		"""
 		Internal method that prefixes a POST request with the resources
-		name and passes the request to L{post}.
+		name and passes the request to :py:meth:`RestAuthConnection.post`.
 		
 		"""
 		url = '%s%s'%( self.__class__.prefix, url )
@@ -367,7 +370,7 @@ class RestAuthResource:
 	def _put( self, url, params={}, headers={} ):
 		"""
 		Internal method that prefixes a PUT request with the resources
-		name and passes the request to L{put}.
+		name and passes the request to :py:meth:`RestAuthConnection.put`.
 		
 		"""
 		url = '%s%s'%( self.__class__.prefix, url )
@@ -376,7 +379,7 @@ class RestAuthResource:
 	def _delete( self, url, headers={} ):
 		"""
 		Internal method that prefixes a DELETE request with the
-		resources name and passes the request to L{delete}.
+		resources name and passes the request to :py:meth:`RestAuthConnection.delete`.
 		
 		"""
 		url = '%s%s'%( self.__class__.prefix, url )

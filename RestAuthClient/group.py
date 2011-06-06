@@ -32,30 +32,29 @@ else:
 
 class GroupExists( ResourceConflict ):
 	"""
-	Thrown when a L{Group} that already exists should be created.
+	Thrown when a :py:class:`.Group` that already exists should be created.
 	"""
 	pass
 
 def create( conn, name ):
 	"""
-	Factory method that creates a I{new} group in RestAuth.
+	Factory method that creates a *new* group in RestAuth.
 
-	@param conn: A connection to a RestAuth service.
-	@type  conn: L{RestAuthConnection}
-	@param name: The name of the group to create
-	@type  name: str
-	@return: The group object representing the group just created.
-	@rtype: Group
+	:param conn: A connection to a RestAuth service.
+	:type  conn: :py:class:`.RestAuthConnection`
+	:param name: The name of the group to create
+	:type  name: str
+	:return: The group object representing the group just created.
+	:rtype: Group
 
-	@raise BadRequest: If the server was unable to parse the request body.
-	@raise Unauthorized: When the connection uses wrong credentials.
-	@raise GroupExists: When the user already exists.
-	@raise UnsupportedMediaType: The server does not support the
+	:raise BadRequest: If the server was unable to parse the request body.
+	:raise Unauthorized: When the connection uses wrong credentials.
+	:raise GroupExists: When the user already exists.
+	:raise UnsupportedMediaType: The server does not support the
 		content type used by this connection (see also: 
-		L{set_content_handler
-		<common.RestAuthConnection.set_content_handler>}).
-	@raise InternalServerError: When the RestAuth service returns HTTP status code 500
-	@raise UnknownStatus: If the response status is unknown.
+		:py:meth:`~.RestAuthConnection.set_content_handler`).
+	:raise InternalServerError: When the RestAuth service returns HTTP status code 500
+	:raise UnknownStatus: If the response status is unknown.
 	"""
 	resp = conn.post( Group.prefix, { 'group': name } )
 	if resp.status == http.CREATED:
@@ -72,21 +71,20 @@ def get_all( conn, user=None ):
 	Factory method that gets all groups for this service known to
 	RestAuth.
 
-	@param conn: A connection to a RestAuth service.
-	@type  conn: L{RestAuthConnection}
-	@param user: Only return groups where the named user is a member
-	@type  user: str
-	@return: A list of Group objects
-	@rtype: List of L{groups<Group>}
+	:param conn: A connection to a RestAuth service.
+	:type  conn: :py:class:`.RestAuthConnection`
+	:param user: Only return groups where the named user is a member
+	:type  user: str
+	:return: A list of Group objects
+	:rtype: List of :py:class:`groups <.Group>`
 
-	@raise Unauthorized: When the connection uses wrong credentials.
-	@raise ResourceNotFound: When the given user does not exist.
-	@raise NotAcceptable: When the server cannot generate a response
+	:raise Unauthorized: When the connection uses wrong credentials.
+	:raise ResourceNotFound: When the given user does not exist.
+	:raise NotAcceptable: When the server cannot generate a response
 		in the content type used by this connection (see also:
-		L{set_content_handler
-		<common.RestAuthConnection.set_content_handler>}).
-	@raise InternalServerError: When the RestAuth service returns HTTP status code 500
-	@raise UnknownStatus: If the response status is unknown.
+		:py:meth:`~.RestAuthConnection.set_content_handler`).
+	:raise InternalServerError: When the RestAuth service returns HTTP status code 500
+	:raise UnknownStatus: If the response status is unknown.
 	"""
 	params = {}
 	if user:
@@ -107,21 +105,21 @@ def get_all( conn, user=None ):
 
 def get( conn, name ):
 	"""
-	Factory method that gets an I{existing} user from RestAuth. This
+	Factory method that gets an *existing* user from RestAuth. This
 	method verifies that the user exists in the RestAuth and throws
-	L{ResourceNotFound} if not. 
+	:py:exc:`.ResourceNotFound` if not. 
 
-	@param conn: A connection to a RestAuth service.
-	@type  conn: L{RestAuthConnection}
-	@param name: The name of the group to get
-	@type  name: str
-	@return: The group object representing the group in RestAuth.
-	@rtype: L{Group}
+	:param conn: A connection to a RestAuth service.
+	:type  conn: :py:class:`.RestAuthConnection`
+	:param name: The name of the group to get
+	:type  name: str
+	:return: The group object representing the group in RestAuth.
+	:rtype: :py:class:`.Group`
 
-	@raise Unauthorized: When the connection uses wrong credentials.
-	@raise ResourceNotFound: If the group does not exist.
-	@raise InternalServerError: When the RestAuth service returns HTTP status code 500
-	@raise UnknownStatus: If the response status is unknown.
+	:raise Unauthorized: When the connection uses wrong credentials.
+	:raise ResourceNotFound: If the group does not exist.
+	:raise InternalServerError: When the RestAuth service returns HTTP status code 500
+	:raise UnknownStatus: If the response status is unknown.
 	"""
 	resp = conn.get( '%s%s'%(Group.prefix, name) )
 	if resp.status == http.NO_CONTENT:
@@ -132,14 +130,23 @@ def get( conn, name ):
 		raise UnknownStatus( resp )
 
 class Group( common.RestAuthResource ):
+	"""
+	An instance of this class represents a group in RestAuth.
+
+	*Note:* The constructor *does not* verify that the group actually exists.
+	This has the advantage of saving one request to the RestAuth service.
+	If you want to be sure that a user exists, use :py:func:`get` or
+	:py:func:`get_all`.
+	
+	:param conn: The connection to the RestAuthServer.
+	:type  conn: :py:class:`.RestAuthConnection`
+	:param name: The name of this user.
+	:type  name: str
+	"""
+
 	prefix = '/groups/'
 
 	def __init__( self, conn, name ):
-		"""
-		Constructor that initializes an object representing a group in
-		RestAuth. The constructor B{does not} verify if the group exists,
-		use L{get} or L{get_all} if you wan't to be sure it exists.
-		"""
 		self.conn = conn
 		self.name = name
 
@@ -147,17 +154,16 @@ class Group( common.RestAuthResource ):
 		"""
 		Get all members of this group.
 		
-		@return: A list of L{users<User>}.
-		@rtype: list
+		:return: A list of :py:class:`users <.User>`.
+		:rtype: list
 
-		@raise Unauthorized: When the connection uses wrong credentials.
-		@raise ResourceNotFound: If the group does not exist.
-		@raise NotAcceptable: When the server cannot generate a response
+		:raise Unauthorized: When the connection uses wrong credentials.
+		:raise ResourceNotFound: If the group does not exist.
+		:raise NotAcceptable: When the server cannot generate a response
 			in the content type used by this connection (see also:
-			L{set_content_handler
-			<common.RestAuthConnection.set_content_handler>}).
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
-		@raise UnknownStatus: If the response status is unknown.
+			:py:meth:`~.RestAuthConnection.set_content_handler`).
+		:raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		:raise UnknownStatus: If the response status is unknown.
 		"""
 		params = {}
 
@@ -177,19 +183,18 @@ class Group( common.RestAuthResource ):
 		"""
 		Add a user to this group.
 
-		@param user: The user the name of the user to add.
-		@type  user: L{user} or str
+		:param user: The user or the name of the user to add.
+		:type  user: :py:class:`.User` or str
 
-		@raise BadRequest: If the server was unable to parse the request
+		:raise BadRequest: If the server was unable to parse the request
 			body.
-		@raise Unauthorized: When the connection uses wrong credentials.
-		@raise ResourceNotFound: If the group or user does not exist.
-		@raise UnsupportedMediaType: The server does not support the
+		:raise Unauthorized: When the connection uses wrong credentials.
+		:raise ResourceNotFound: If the group or user does not exist.
+		:raise UnsupportedMediaType: The server does not support the
 			content type used by this connection (see also: 
-			L{set_content_handler
-			<common.RestAuthConnection.set_content_handler>}).
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
-		@raise UnknownStatus: If the response status is unknown.
+			:py:meth:`~.RestAuthConnection.set_content_handler`).
+		:raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		:raise UnknownStatus: If the response status is unknown.
 		"""
 		if user.__class__ == restauth_user.User:
 			user = user.name
@@ -206,19 +211,18 @@ class Group( common.RestAuthResource ):
 		"""
 		Add a group to this group.
 		
-		@param group: The group or the name of the group to add.
-		@type  group: L{Group} or str
+		:param group: The group or the name of the group to add.
+		:type  group: :py:class:`.Group` or str
 
-		@raise BadRequest: If the server was unable to parse the request
+		:raise BadRequest: If the server was unable to parse the request
 			body.
-		@raise Unauthorized: When the connection uses wrong credentials.
-		@raise ResourceNotFound: If the group or user does not exist.
-		@raise UnsupportedMediaType: The server does not support the
+		:raise Unauthorized: When the connection uses wrong credentials.
+		:raise ResourceNotFound: If the group or user does not exist.
+		:raise UnsupportedMediaType: The server does not support the
 			content type used by this connection (see also: 
-			L{set_content_handler
-			<common.RestAuthConnection.set_content_handler>}).
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
-		@raise UnknownStatus: If the response status is unknown.
+			:py:meth:`~.RestAuthConnection.set_content_handler`).
+		:raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		:raise UnknownStatus: If the response status is unknown.
 		"""
 		if group.__class__ == Group:
 			group = group.name
@@ -238,14 +242,13 @@ class Group( common.RestAuthResource ):
 		"""
 		Get a list of sub-groups of this group.
 
-		@raise Unauthorized: When the connection uses wrong credentials.
-		@raise ResourceNotFound: If the sub- or meta-group not exist.
-		@raise NotAcceptable: When the server cannot generate a response
+		:raise Unauthorized: When the connection uses wrong credentials.
+		:raise ResourceNotFound: If the sub- or meta-group not exist.
+		:raise NotAcceptable: When the server cannot generate a response
 			in the content type used by this connection (see also:
-			L{set_content_handler
-			<common.RestAuthConnection.set_content_handler>}).
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
-		@raise UnknownStatus: If the response status is unknown.
+			:py:meth:`~.RestAuthConnection.set_content_handler`).
+		:raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		:raise UnknownStatus: If the response status is unknown.
 		"""
 		path = '/%s/groups/'%(self.name)
 		resp = self._get( path )
@@ -261,15 +264,14 @@ class Group( common.RestAuthResource ):
 	def remove_group( self, group ):
 		"""
 		Remove a sub-group from this group.
-		path = '/%s/groups/%s/'%(self.name, group.name)
 		
-		@param group: The group or the name of the group to remmove.
-		@type  group: L{Group} or str
+		:param group: The group or the name of the group to remmove.
+		:type  group: :py:class:`.Group` or str
 
-		@raise Unauthorized: When the connection uses wrong credentials.
-		@raise ResourceNotFound: If the sub- or meta-group not exist.
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
-		@raise UnknownStatus: If the response status is unknown.
+		:raise Unauthorized: When the connection uses wrong credentials.
+		:raise ResourceNotFound: If the sub- or meta-group not exist.
+		:raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		:raise UnknownStatus: If the response status is unknown.
 		"""
 		if group.__class__ == Group:
 			group = group.name
@@ -287,10 +289,10 @@ class Group( common.RestAuthResource ):
 		"""
 		Delete this group.
 		
-		@raise Unauthorized: When the connection uses wrong credentials.
-		@raise ResourceNotFound: If the group does not exist.
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
-		@raise UnknownStatus: If the response status is unknown.
+		:raise Unauthorized: When the connection uses wrong credentials.
+		:raise ResourceNotFound: If the group does not exist.
+		:raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		:raise UnknownStatus: If the response status is unknown.
 		"""
 		resp = self._delete( self.name )
 		if resp.status == http.NO_CONTENT:
@@ -304,15 +306,15 @@ class Group( common.RestAuthResource ):
 		"""
 		Check if the named user is a member.
 		
-		@param user: The user or the name of a user in question.
-		@type  user: L{User} or str
-		@return: True if the user is a member, False if not.
-		@rtype: bool
+		:param user: The user or the name of a user in question.
+		:type  user: :py:class:`.User` or str
+		:return: True if the user is a member, False if not.
+		:rtype: bool
 
-		@raise Unauthorized: When the connection uses wrong credentials.
-		@raise ResourceNotFound: If the group or user does not exist.
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
-		@raise UnknownStatus: If the response status is unknown.
+		:raise Unauthorized: When the connection uses wrong credentials.
+		:raise ResourceNotFound: If the group or user does not exist.
+		:raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		:raise UnknownStatus: If the response status is unknown.
 		"""
 		if user.__class__ == restauth_user.User:
 			user = user.name
@@ -333,10 +335,10 @@ class Group( common.RestAuthResource ):
 		"""
 		Remove the given user from the group.
 
-		@raise Unauthorized: When the connection uses wrong credentials.
-		@raise ResourceNotFound: If the group or user does not exist.
-		@raise InternalServerError: When the RestAuth service returns HTTP status code 500
-		@raise UnknownStatus: If the response status is unknown.
+		:raise Unauthorized: When the connection uses wrong credentials.
+		:raise ResourceNotFound: If the group or user does not exist.
+		:raise InternalServerError: When the RestAuth service returns HTTP status code 500
+		:raise UnknownStatus: If the response status is unknown.
 		"""
 		if user.__class__ == restauth_user.User:
 			user = user.name

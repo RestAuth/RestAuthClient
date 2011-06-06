@@ -32,42 +32,41 @@ else:
 
 class UserExists( ResourceConflict):
 	"""
-	Thrown when a L{User} that already exists should be created.
+	Thrown when attempting to create a :py:class:`User` that already exists.
 	"""
 	pass
 
 class PropertyExists( ResourceConflict ):
 	"""
-	Thrown when trying to create a property that already exists.
+	Thrown when attempting to create a property that already exists.
 	"""
 	pass
 
 def create( conn, name, password=None ):
 	"""
-	Factory method that creates a I{new} user in the RestAuth
+	Factory method that creates a *new* user in the RestAuth
 	database.
 	
-	@param conn: A connection to a RestAuth service.
-	@type  conn: L{RestAuthConnection}
-	@param name: Name of the user to get
-	@type  name: str
-	@param password: Password for the new user. If None or an empty string, the user is effectively
+	:param conn: A connection to a RestAuth service.
+	:type  conn: :py:class:`.RestAuthConnection`
+	:param name: Name of the user to get
+	:type  name: str
+	:param password: Password for the new user. If None or an empty string, the user is effectively
 		disabled.
-	@type  password: str
-	@return: The user object representing the user just created.
-	@rtype: L{User}
+	:type  password: str
+	:return: The user object representing the user just created.
+	:rtype: :py:class:`User`
 
-	@raise BadRequest: If the server was unable to parse the request body.
-	@raise Unauthorized: When the connection uses wrong credentials.
-	@raise UserExists: If the user already exists.
-	@raise PreconditionFailed: When username or password is invalid.
-	@raise UnsupportedMediaType: The server does not support the
+	:raise BadRequest: If the server was unable to parse the request body.
+	:raise Unauthorized: When the connection uses wrong credentials.
+	:raise UserExists: If the user already exists.
+	:raise PreconditionFailed: When username or password is invalid.
+	:raise UnsupportedMediaType: The server does not support the
 		content type used by this connection (see also: 
-		L{set_content_handler
-		<common.RestAuthConnection.set_content_handler>}).
-	@raise InternalServerError: When the RestAuth service returns HTTP
+		:py:meth:`~.RestAuthConnection.set_content_handler`).
+	:raise InternalServerError: When the RestAuth service returns HTTP
 		status code 500
-	@raise UnknownStatus: If the response status is unknown.
+	:raise UnknownStatus: If the response status is unknown.
 	"""
 	params = { 'user': name }
 	if password:
@@ -85,22 +84,22 @@ def create( conn, name, password=None ):
 
 def get( conn, name ):
 	"""
-	Factory method that gets an I{existing} user from RestAuth. This
-	method verifies that the user exists in the RestAuth and throws
-	L{ResourceNotFound} if not. 
+	Factory method that gets an *existing* user from RestAuth. This
+	method verifies that the user exists in RestAuth and throws
+	:py:class:`.ResourceNotFound` if not. 
 
-	@param conn: A connection to a RestAuth service.
-	@type  conn: L{RestAuthConnection}
-	@param name: Name of the user to get
-	@type  name: str
-	@return: The user object representing the user just created.
-	@rtype: L{User}
+	:param conn: A connection to a RestAuth service.
+	:type  conn: :py:class:`.RestAuthConnection`
+	:param name: Name of the user to get
+	:type  name: str
+	:return: The user object representing the user just created.
+	:rtype: :py:class:`User`
 
-	@raise Unauthorized: When the connection uses wrong credentials.
-	@raise ResourceNotFound: If the user does not exist in RestAuth.
-	@raise InternalServerError: When the RestAuth service returns
+	:raise Unauthorized: When the connection uses wrong credentials.
+	:raise ResourceNotFound: If the user does not exist in RestAuth.
+	:raise InternalServerError: When the RestAuth service returns
 		HTTP status code 500
-	@raise UnknownStatus: If the response status is unknown.
+	:raise UnknownStatus: If the response status is unknown.
 	"""
 	# this just verify that the user exists in RestAuth:
 	resp = conn.get( '/users/%s/'%(name) )
@@ -116,19 +115,18 @@ def get_all( conn ):
 	"""
 	Factory method that gets all users known to RestAuth.
 
-	@param conn: A connection to a RestAuth service.
-	@type  conn: L{RestAuthConnection}
-	@return: A list of User objects
-	@rtype: List of L{users<User>}
+	:param conn: A connection to a RestAuth service.
+	:type  conn: :py:class:`.RestAuthConnection`
+	:return: A list of User objects
+	:rtype: List of :py:class:`users <.User>`
 
-	@raise Unauthorized: When the connection uses wrong credentials.
-	@raise NotAcceptable: When the server cannot generate a response in the
+	:raise Unauthorized: When the connection uses wrong credentials.
+	:raise NotAcceptable: When the server cannot generate a response in the
 		content type used by this connection (see also: 
-		L{set_content_handler
-		<common.RestAuthConnection.set_content_handler>}).
-	@raise InternalServerError: When the RestAuth service returns HTTP
+		:py:meth:`~.RestAuthConnection.set_content_handler`).
+	:raise InternalServerError: When the RestAuth service returns HTTP
 		status code 500
-	@raise UnknownStatus: If the response status is unknown.
+	:raise UnknownStatus: If the response status is unknown.
 	"""
 	resp = conn.get( User.prefix )
 		
@@ -141,21 +139,21 @@ def get_all( conn ):
 
 class User( common.RestAuthResource ):
 	"""
-	This class acts as a frontend for actions related to users.
+	An instance of this class represents a user in RestAuth.
+
+	*Note:* The constructor *does not* verify that the user actually exists.
+	This has the advantage of saving one request to the RestAuth service.
+	If you want to be sure that a user exists, use :py:func:`get` or
+	:py:func:`get_all`.
+
+	:param conn: The connection to the RestAuthServer.
+	:type  conn: :py:class:`.RestAuthConnection`
+	:param name: The name of this user.
+	:type  name: str
 	"""
 	prefix = '/users/' #: Prefix used for HTTP query methods inherited from base class
 
 	def __init__( self, conn, name ):
-		"""
-		Constructor that initializes an object representing a user in
-		RestAuth. The constructor B{does not} verify if the user exists,
-		use L{get} or L{get_all} if you wan't to be sure it exists.
-
-		@param conn: The connection to the RestAuthServer.
-		@type  conn: L{RestAuthConnection}
-		@param name: The name of this user.
-		@type  name: str
-		"""
 		self.conn = conn
 		self.name = name
 
@@ -163,22 +161,21 @@ class User( common.RestAuthResource ):
 		"""
 		Set the password of this user.
 		
-		@param password: The new password of the user. If None or an empty string, the
+		:param password: The new password of the user. If None or an empty string, the
 			user is effectively disabled.
-		@type  password: str
+		:type  password: str
 
-		@raise BadRequest: If the server was unable to parse the request
+		:raise BadRequest: If the server was unable to parse the request
 			body.
-		@raise Unauthorized: When the connection uses wrong credentials.
-		@raise ResourceNotFound: If the user does not exist in RestAuth.
-		@raise InternalServerError: When the RestAuth service returns
+		:raise Unauthorized: When the connection uses wrong credentials.
+		:raise ResourceNotFound: If the user does not exist in RestAuth.
+		:raise InternalServerError: When the RestAuth service returns
 			HTTP status code 500
-		@raise UnsupportedMediaType: The server does not support the
+		:raise UnsupportedMediaType: The server does not support the
 			content type used by this connection (see also: 
-			L{set_content_handler
-			<common.RestAuthConnection.set_content_handler>}).
-		@raise UnknownStatus: If the response status is unknown.
-		@raise PreconditionFailed: When the password is invalid.
+			:py:meth:`~.RestAuthConnection.set_content_handler`).
+		:raise UnknownStatus: If the response status is unknown.
+		:raise PreconditionFailed: When the password is invalid.
 		"""
 		params = {}
 		if password:
@@ -197,22 +194,21 @@ class User( common.RestAuthResource ):
 		"""
 		Verify the given password.
 
-		@param password: The password to verify.
-		@type  password: str
-		@return: True if the password is correct, False if the password
+		:param password: The password to verify.
+		:type  password: str
+		:return: True if the password is correct, False if the password
 			is wrong or the user does not exist.
-		@rtype: bool
+		:rtype: bool
 
-		@raise BadRequest: If the server was unable to parse the request
+		:raise BadRequest: If the server was unable to parse the request
 			body.
-		@raise Unauthorized: When the connection uses wrong credentials.
-		@raise UnsupportedMediaType: The server does not support the
+		:raise Unauthorized: When the connection uses wrong credentials.
+		:raise UnsupportedMediaType: The server does not support the
 			content type used by this connection (see also: 
-			L{set_content_handler
-			<common.RestAuthConnection.set_content_handler>}).
-		@raise InternalServerError: When the RestAuth service returns
+			:py:meth:`~.RestAuthConnection.set_content_handler`).
+		:raise InternalServerError: When the RestAuth service returns
 			HTTP status code 500
-		@raise UnknownStatus: If the response status is unknown.
+		:raise UnknownStatus: If the response status is unknown.
 		"""
 		resp = self._post( self.name, { 'password': password } )
 		if resp.status == http.NO_CONTENT:
@@ -226,11 +222,11 @@ class User( common.RestAuthResource ):
 		"""
 		Remove this user.
 
-		@raise Unauthorized: When the connection uses wrong credentials.
-		@raise ResourceNotFound: If the user does not exist in RestAuth.
-		@raise InternalServerError: When the RestAuth service returns
+		:raise Unauthorized: When the connection uses wrong credentials.
+		:raise ResourceNotFound: If the user does not exist in RestAuth.
+		:raise InternalServerError: When the RestAuth service returns
 			HTTP status code 500
-		@raise UnknownStatus: If the response status is unknown.
+		:raise UnknownStatus: If the response status is unknown.
 		"""
 		resp = self._delete( self.name )
 		if resp.status == http.NO_CONTENT:
@@ -244,18 +240,17 @@ class User( common.RestAuthResource ):
 		"""
 		Get all properties defined for this user.
 
-		@return: A key/value array of the properties defined for this user.
-		@rtype: dict
+		:return: A key/value array of the properties defined for this user.
+		:rtype: dict
 
-		@raise Unauthorized: When the connection uses wrong credentials.
-		@raise NotAcceptable: When the server cannot generate a response
+		:raise Unauthorized: When the connection uses wrong credentials.
+		:raise NotAcceptable: When the server cannot generate a response
 			in the content type used by this connection (see also: 
-			L{set_content_handler
-			<common.RestAuthConnection.set_content_handler>}).
-		@raise ResourceNotFound: If the user does not exist in RestAuth.
-		@raise InternalServerError: When the RestAuth service returns
+			:py:meth:`~.RestAuthConnection.set_content_handler`).
+		:raise ResourceNotFound: If the user does not exist in RestAuth.
+		:raise InternalServerError: When the RestAuth service returns
 			HTTP status code 500
-		@raise UnknownStatus: If the response status is unknown.
+		:raise UnknownStatus: If the response status is unknown.
 		"""
 		resp = self._get( '%s/props/'%(self.name) )
 		if resp.status == http.OK:
@@ -269,26 +264,25 @@ class User( common.RestAuthResource ):
 	def create_property( self, prop, value ):
 		"""
 		Create a new property for this user. This method fails if the
-		property already existed. Use L{set_property} if you do not care
-		if the property already exists.
+		property already exists. Use :py:meth:`set_property` if you do
+		not care if the property already exists.
 
-		@param prop: The property to set.
-		@type  prop: str
-		@param value: The new value of the property
-		@type  value: str
+		:param prop: The property to set.
+		:type  prop: str
+		:param value: The new value of the property
+		:type  value: str
 
-		@raise BadRequest: If the server was unable to parse the request
+		:raise BadRequest: If the server was unable to parse the request
 			body.
-		@raise Unauthorized: When the connection uses wrong credentials.
-		@raise ResourceNotFound: If the user does not exist in RestAuth.
-		@raise PropertyExists: When the property already exists
-		@raise UnsupportedMediaType: The server does not support the
+		:raise Unauthorized: When the connection uses wrong credentials.
+		:raise ResourceNotFound: If the user does not exist in RestAuth.
+		:raise PropertyExists: When the property already exists
+		:raise UnsupportedMediaType: The server does not support the
 			content type used by this connection (see also: 
-			L{set_content_handler
-			<common.RestAuthConnection.set_content_handler>}).
-		@raise InternalServerError: When the RestAuth service returns
+			:py:meth:`~.RestAuthConnection.set_content_handler`).
+		:raise InternalServerError: When the RestAuth service returns
 			HTTP status code 500
-		@raise UnknownStatus: If the response status is unknown.
+		:raise UnknownStatus: If the response status is unknown.
 		"""
 		params = { 'prop': prop, 'value': value }
 		resp = self._post( '%s/props/'%(self.name), params=params )
@@ -306,26 +300,24 @@ class User( common.RestAuthResource ):
 		Set a property for this user. This method overwrites any
 		previous entry.
 
-		@param prop: The property to set.
-		@type  prop: str
-		@param value: The new value of the property
-		@type  value: str
+		:param prop: The property to set.
+		:type  prop: str
+		:param value: The new value of the property
+		:type  value: str
 
-		@raise BadRequest: If the server was unable to parse the request
+		:raise BadRequest: If the server was unable to parse the request
 			body.
-		@raise Unauthorized: When the connection uses wrong credentials.
-		@raise ResourceNotFound: If the user does not exist in RestAuth.
-		@raise NotAcceptable: When the server cannot generate a response
+		:raise Unauthorized: When the connection uses wrong credentials.
+		:raise ResourceNotFound: If the user does not exist in RestAuth.
+		:raise NotAcceptable: When the server cannot generate a response
 			in the content type used by this connection (see also: 
-			L{set_content_handler
-			<common.RestAuthConnection.set_content_handler>}).
-		@raise UnsupportedMediaType: The server does not support the
+			:py:meth:`~.RestAuthConnection.set_content_handler`).
+		:raise UnsupportedMediaType: The server does not support the
 			content type used by this connection (see also: 
-			L{set_content_handler
-			<common.RestAuthConnection.set_content_handler>}).
-		@raise InternalServerError: When the RestAuth service returns
+			:py:meth:`~.RestAuthConnection.set_content_handler`).
+		:raise InternalServerError: When the RestAuth service returns
 			HTTP status code 500
-		@raise UnknownStatus: If the response status is unknown.
+		:raise UnknownStatus: If the response status is unknown.
 		"""
 		url = '%s/props/%s/'%( self.name, prop )
 		resp = self._put( url, params={'value': value} )
@@ -343,18 +335,17 @@ class User( common.RestAuthResource ):
 		"""
 		Get the given property for this user.
 
-		@return: The value of the property.
-		@rtype: str
+		:return: The value of the property.
+		:rtype: str
 
-		@raise Unauthorized: When the connection uses wrong credentials.
-		@raise ResourceNotFound: If the user or property does not exist.
-		@raise NotAcceptable: When the server cannot generate a response
+		:raise Unauthorized: When the connection uses wrong credentials.
+		:raise ResourceNotFound: If the user or property does not exist.
+		:raise NotAcceptable: When the server cannot generate a response
 			in the content type used by this connection (see also: 
-			L{set_content_handler
-			<common.RestAuthConnection.set_content_handler>}).
-		@raise InternalServerError: When the RestAuth service returns
+			:py:meth:`~.RestAuthConnection.set_content_handler`).
+		:raise InternalServerError: When the RestAuth service returns
 			HTTP status code 500
-		@raise UnknownStatus: If the response status is unknown.
+		:raise UnknownStatus: If the response status is unknown.
 		"""
 		resp = self._get( '%s/props/%s'%( self.name, prop ) )
 		if resp.status == http.OK:
@@ -369,11 +360,11 @@ class User( common.RestAuthResource ):
 		"""
 		Delete the given property.
 
-		@raise Unauthorized: When the connection uses wrong credentials.
-		@raise ResourceNotFound: If the user or property does not exist.
-		@raise InternalServerError: When the RestAuth service returns
+		:raise Unauthorized: When the connection uses wrong credentials.
+		:raise ResourceNotFound: If the user or property does not exist.
+		:raise InternalServerError: When the RestAuth service returns
 			HTTP status code 500
-		@raise UnknownStatus: If the response status is unknown.
+		:raise UnknownStatus: If the response status is unknown.
 		"""
 		resp = self._delete( '%s/props/%s'%(self.name, prop) )
 		if resp.status == http.NO_CONTENT:
@@ -387,16 +378,16 @@ class User( common.RestAuthResource ):
 		"""
 		Get all groups that this user is a member of.
 	
-		This method is just a shortcut for L{group.get_all}.
+		This method is just a shortcut for :py:func:`.group.get_all`.
 
-		@return: All groups that the user is a member of.
-		@rtype: list of L{groups<Group>}
+		:return: All groups that the user is a member of.
+		:rtype: list of :py:class:`groups <.Group>`
 
-		@raise Unauthorized: When the connection uses wrong credentials.
-		@raise ResourceNotFound: If the user does not exist.
-		@raise InternalServerError: When the RestAuth service returns
+		:raise Unauthorized: When the connection uses wrong credentials.
+		:raise ResourceNotFound: If the user does not exist.
+		:raise InternalServerError: When the RestAuth service returns
 			HTTP status code 500
-		@raise UnknownStatus: If the response status is unknown.
+		:raise UnknownStatus: If the response status is unknown.
 		"""
 		try:
 			from RestAuthClient import group
@@ -408,18 +399,18 @@ class User( common.RestAuthResource ):
 		"""
 		Check if the user is a member in the given group.
 
-		This method is just a shortcut for L{Group.is_member<group.Group.is_member>}.
+		This method is just a shortcut for :py:meth:`.Group.is_member`.
 
-		@param grp: The group of interest.
-		@type  grp: str or L{Group}
-		@return: True if this user is a member, False otherwise.
-		@rtype: bool
+		:param grp: The group of interest.
+		:type  grp: :py:class:`str` or :py:class:`.Group`
+		:return: True if this user is a member, False otherwise.
+		:rtype: bool
 		
-		@raise Unauthorized: When the connection uses wrong credentials.
-		@raise ResourceNotFound: If the user or group does not exist.
-		@raise InternalServerError: When the RestAuth service returns
+		:raise Unauthorized: When the connection uses wrong credentials.
+		:raise ResourceNotFound: If the user or group does not exist.
+		:raise InternalServerError: When the RestAuth service returns
 			HTTP status code 500
-		@raise UnknownStatus: If the response status is unknown.
+		:raise UnknownStatus: If the response status is unknown.
 		"""
 		try:
 			from RestAuthClient import group
@@ -433,19 +424,18 @@ class User( common.RestAuthResource ):
 		"""
 		Make this user a member if the given group.
 
-		This method is just a shortcut for
-		L{Group.add_user<group.Group.add_user>}.
+		This method is just a shortcut for :py:meth:`.Group.add_user`.
 		
-		@param grp: The group of interest.
-		@type  grp: str or L{Group}
+		:param grp: The group of interest.
+		:type  grp: :py:class:`str` or :py:class:`.Group`
 		
-		@raise BadRequest: If the server was unable to parse the request
+		:raise BadRequest: If the server was unable to parse the request
 			body.
-		@raise Unauthorized: When the connection uses wrong credentials.
-		@raise ResourceNotFound: If the user or group does not exist.
-		@raise InternalServerError: When the RestAuth server returns
+		:raise Unauthorized: When the connection uses wrong credentials.
+		:raise ResourceNotFound: If the user or group does not exist.
+		:raise InternalServerError: When the RestAuth server returns
 			HTTP status code 500
-		@raise UnknownStatus: If the response status is unknown.
+		:raise UnknownStatus: If the response status is unknown.
 		"""
 		try:
 			from RestAuthClient import group
@@ -459,17 +449,16 @@ class User( common.RestAuthResource ):
 		"""
 		Remove the users membership from the given group.
 
-		This method is just a shortcut for 
-		L{Group.remove_user<group.Group.remove_user>}.
+		This method is just a shortcut for :py:meth:`.Group.remove_user`.
 
-		@param grp: The group of interest.
-		@type  grp: str or L{Group}
+		:param grp: The group of interest.
+		:type  grp: :py:class:`str` or :py:class:`.Group`
 		
-		@raise Unauthorized: When the connection uses wrong credentials.
-		@raise ResourceNotFound: If the user or group does not exist.
-		@raise InternalServerError: When the RestAuth service returns
+		:raise Unauthorized: When the connection uses wrong credentials.
+		:raise ResourceNotFound: If the user or group does not exist.
+		:raise InternalServerError: When the RestAuth service returns
 			HTTP status code 500
-		@raise UnknownStatus: If the response status is unknown.
+		:raise UnknownStatus: If the response status is unknown.
 		"""
 		try:
 			from RestAuthClient import group

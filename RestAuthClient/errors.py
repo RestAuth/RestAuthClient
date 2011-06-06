@@ -41,6 +41,9 @@ class RestAuthInternalException( RestAuthException ):
 	def __init__( self, response ):
 		self.response = response
 
+	def __str__( self ):
+		return repr( self.value )
+
 class BadRequest( RestAuthInternalException ):
 	"""
 	Thrown when RestAuth was unable to parse/find the required request
@@ -103,7 +106,7 @@ class ResourceNotFound( RestAuthException ):
 		"""
 		Get the type of the queried resource that wasn't found.
 
-		See the U{specification<http://fs.fsinf.at/wiki/RestAuth/Specification#Resource-Type_header>}
+		See the `specification <https://fs.fsinf.at/wiki/RestAuth/Specification#Resource-Type_header>`_
 		for possible values.
 		"""
 		return self.response.getheader( 'Resource-Type' )
