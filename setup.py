@@ -24,31 +24,17 @@ name = 'RestAuthClient'
 url = 'https://fs.fsinf.at/wiki/RestAuth/Python'
 
 class build_doc( Command ):
-	description = "Build epydoc documentation."
-	user_options = [('dest=', None, 'Output directory of documentation' )]
+	description = "Build documentation."
+	user_options = []
 
 	def initialize_options( self ):
-		self.dest = 'doc'
+		pass
 
 	def finalize_options( self ):
 		command = self.get_command_name()
 		options = self.distribution.command_options[ command ]
 
-		if 'dest' in options:
-			self.dest = options['dest'][1]
-
 	def run( self ):
-		try:
-			# check for epydoc
-			import epydoc
-		except ImportError:
-			print( "Error: epydoc is not installed." )
-			sys.exit(1)
-
-		html_dest = self.dest + '/html'
-		if not os.path.exists( html_dest ):
-			os.makedirs( html_dest )
-
 		cmd = [ 'make', '-C', 'doc', 'html' ]
 		p = Popen( cmd )
 		p.communicate()
@@ -57,6 +43,7 @@ class clean( _clean ):
 	def run( self ):
 		if os.path.exists( 'build' ):
 			shutil.rmtree( 'build' )
+
 		cmd = [ 'make', '-C', 'doc', 'clean' ]
 		p = Popen( cmd )
 		p.communicate()
