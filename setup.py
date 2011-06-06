@@ -49,17 +49,17 @@ class build_doc( Command ):
 		if not os.path.exists( html_dest ):
 			os.makedirs( html_dest )
 
-		cmd = [ 'epydoc', '-v', '--html', '--name', name, '-o',
-			html_dest, '--no-private', '-u', url, 
-			'RestAuthClient' ]
+		cmd = [ 'make', '-C', 'doc', 'html' ]
 		p = Popen( cmd )
 		p.communicate()
 
 class clean( _clean ):
 	def run( self ):
-		for directory in [ 'doc', 'build' ]:
-			if os.path.exists( directory ):
-				shutil.rmtree( directory )
+		if os.path.exists( 'build' ):
+			shutil.rmtree( 'build' )
+		cmd = [ 'make', '-C', 'doc', 'clean' ]
+		p = Popen( cmd )
+		p.communicate()
 
 		_clean.run( self )
 
