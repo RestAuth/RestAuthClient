@@ -29,24 +29,20 @@ class RestAuthException( Exception ):
 	def __str__(self):
 		return repr(self.value)
 
-class Unauthorized( RestAuthException ):
-	"""
-	Thrown when service authentication failed.
-	"""
-	pass
 
-class RestAuthInternalException( RestAuthException ):
+
+class RestAuthImplementationException( RestAuthException ):
 	"""
-	Base class for errors internal to RestAuth and where the error is not
-	related to user input.
+	Base class for errors that should not occur in a production environment. If you ever catch
+	such an exception, it is most likely due to a buggy server implementation.
 	"""
 	def __init__( self, response ):
 		self.response = response
 
 	def __str__( self ):
 		return repr( self.value )
-
-class BadRequest( RestAuthInternalException ):
+		
+class BadRequest( RestAuthImplementationException ):
 	"""
 	Thrown when RestAuth was unable to parse/find the required request
 	parameters.
@@ -55,17 +51,7 @@ class BadRequest( RestAuthInternalException ):
 	"""
 	pass
 
-class InternalServerError( RestAuthInternalException ):
-	"""
-	Thrown when the RestAuth service has an Internal Server Error (HTTP
-	status code 500). 
-	
-	This exception can be thrown by every method that interacts with the
-	RestAuth service.
-	"""
-	pass
-
-class UnknownStatus( RestAuthInternalException ):
+class UnknownStatus( RestAuthImplementationException ):
 	"""
 	Thrown when a method returns an unexpected status.
 	
@@ -74,7 +60,22 @@ class UnknownStatus( RestAuthInternalException ):
 	"""
 	pass
 
-class ContentTypeException( RestAuthInternalException ):
+
+	
+class RestAuthSetupException( RestAuthException ):
+	"""
+	Base class for errors that should not occur in a production environment that is correctly
+	configured.
+	"""
+	pass
+
+class Unauthorized( RestAuthSetupException ):
+	"""
+	Thrown when service authentication failed.
+	"""
+	pass
+
+class ContentTypeException( RestAuthSetupException ):
 	"""
 	Meta-class for Content-Type related exceptions.
 	"""
@@ -97,7 +98,50 @@ class UnsupportedMediaType( ContentTypeException ):
 	"""
 	pass
 
-class ResourceNotFound( RestAuthException ):
+
+
+class RestAuthRuntimeException( RestAuthException ):
+	"""
+	Base class for exceptions that may occur at runtime but are not related to user input. Any
+	subclass of this exception may be thrown by every method that interacts with the RestAuth
+	service.
+	"""
+	pass
+
+class InternalServerError( RestAuthRuntimeException ):
+	"""
+	Thrown when the RestAuth service has an Internal Server Error (HTTP
+	status code 500). 
+	"""
+	pass
+
+class HttpException( RestAuthRuntimeException ):
+	"""
+	Thrown when the HTTP request throws an execption. This most likely means that the RestAuth
+	server is unreachable.
+	
+	:param Exception cause: The exception causing this exception to be created.
+	"""
+	def __init__( self, cause ):
+		self.cause = cause
+		self.value = str(cause)
+		
+	def get_cause( self ):
+		"""
+		Get the exception that caused this exception.
+		
+		:return: The exception that caused this exception
+		:rtype: Exception
+		"""
+		return self.cause
+
+class RestAuthError( RestAuthException ):
+	"""
+	Base class for exceptions related to input coming from the client application. 
+	"""
+	pass
+
+class ResourceNotFound( RestAuthError ):
 	"""
 	Thrown when a queried resource is not found.
 	"""
@@ -110,11 +154,14 @@ class ResourceNotFound( RestAuthException ):
 
 		See the `specification <https://fs.fsinf.at/wiki/RestAuth/Specification#Resource-Type_header>`_
 		for possible values.
+		
+		:return: The resource type that causes this exception.
+		:rtype: str
 		"""
 		return self.response.getheader( 'Resource-Type' )
 
 
-class ResourceConflict( RestAuthException ):
+class ResourceConflict( RestAuthError ):
 	"""
 	Thrown when trying to create a resource that already exists.
 
@@ -122,7 +169,7 @@ class ResourceConflict( RestAuthException ):
 	"""
 	pass
 
-class PreconditionFailed( RestAuthException ):
+class PreconditionFailed( RestAuthError ):
 	"""
 	Thrown when the submitted data was unacceptable to the system. This
 	usually occurs when the username is invalid or the password is to short.
