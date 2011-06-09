@@ -20,23 +20,29 @@ Module handling code relevant to user authentication and property management.
 import sys
 try:
 	from RestAuthClient import common
-	from RestAuthClient.errors import *
+	from RestAuthClient.error import *
 except ImportError:
-	from errors import *
+	from error import *
 	import common
+	
+try:
+	from RestAuthCommon import error
+except ImportError:
+	print( "Error: The RestAuthCommon library is not installed." )
+	sys.exit(1)
 
 if sys.version_info < (3, 0):
 	import httplib as http
 else:
 	from http import client as http
 
-class UserExists( ResourceConflict):
+class UserExists( error.ResourceConflict):
 	"""
 	Thrown when attempting to create a :py:class:`User` that already exists.
 	"""
 	pass
 
-class PropertyExists( ResourceConflict ):
+class PropertyExists( error.ResourceConflict ):
 	"""
 	Thrown when attempting to create a property that already exists.
 	"""
@@ -78,7 +84,7 @@ def create( conn, name, password=None ):
 	elif resp.status == http.CONFLICT:
 		raise UserExists( name )
 	elif resp.status == http.PRECONDITION_FAILED:
-		raise PreconditionFailed( resp.read() )
+		raise error.PreconditionFailed( resp.read() )
 	else:
 		raise UnknownStatus( resp )
 
@@ -107,7 +113,7 @@ def get( conn, name ):
 	if resp.status == http.NO_CONTENT:
 		return User( conn, name )
 	elif resp.status == http.NOT_FOUND:
-		raise ResourceNotFound( resp )
+		raise error.ResourceNotFound( resp )
 	else:
 		raise UnknownStatus( resp )
 	
@@ -184,9 +190,9 @@ class User( common.RestAuthResource ):
 		if resp.status == http.NO_CONTENT:
 			return
 		elif resp.status == http.NOT_FOUND:
-			raise ResourceNotFound( resp )
+			raise error.ResourceNotFound( resp )
 		elif resp.status == http.PRECONDITION_FAILED:
-			raise PreconditionFailed( resp.read() )
+			raise error.PreconditionFailed( resp.read() )
 		else:
 			raise UnknownStatus( resp )
 
@@ -232,7 +238,7 @@ class User( common.RestAuthResource ):
 		if resp.status == http.NO_CONTENT:
 			return
 		if resp.status == http.NOT_FOUND:
-			raise ResourceNotFound( resp )
+			raise error.ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
 
@@ -257,7 +263,7 @@ class User( common.RestAuthResource ):
 			body = resp.read().decode( 'utf-8' )
 			return self.conn.content_handler.unmarshal_dict( body )
 		elif resp.status == http.NOT_FOUND:
-			raise ResourceNotFound( resp )
+			raise error.ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
 
@@ -289,7 +295,7 @@ class User( common.RestAuthResource ):
 		if resp.status == http.CREATED:
 			return
 		elif resp.status == http.NOT_FOUND:
-			raise ResourceNotFound( resp )
+			raise error.ResourceNotFound( resp )
 		elif resp.status == http.CONFLICT:
 			raise PropertyExists( resp )
 		else:
@@ -327,7 +333,7 @@ class User( common.RestAuthResource ):
 		if resp.status == http.CREATED:
 			return
 		elif resp.status == http.NOT_FOUND:
-			raise ResourceNotFound( resp )
+			raise error.ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
 
@@ -352,7 +358,7 @@ class User( common.RestAuthResource ):
 			body = resp.read().decode( 'utf-8' )
 			return self.conn.content_handler.unmarshal_str( body )
 		elif resp.status == http.NOT_FOUND:
-			raise ResourceNotFound( resp )
+			raise error.ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
 
@@ -370,7 +376,7 @@ class User( common.RestAuthResource ):
 		if resp.status == http.NO_CONTENT:
 			return
 		elif resp.status == http.NOT_FOUND:
-			raise ResourceNotFound( resp )
+			raise error.ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
 

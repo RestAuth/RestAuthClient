@@ -22,17 +22,23 @@ Module handling code relevant to group handling.
 import sys
 try:
 	from RestAuthClient import common, restauth_user
-	from RestAuthClient.errors import *
+	from RestAuthClient.error import *
 except ImportError:
 	import common, restauth_user
-	from errors import *
+	from error import *
+	
+try:
+	from RestAuthCommon import error
+except ImportError:
+	print( "Error: The RestAuthCommon library is not installed." )
+	sys.exit(1)
 
 if sys.version_info < (3, 0):
 	import httplib as http
 else:
 	from http import client as http
 
-class GroupExists( ResourceConflict ):
+class GroupExists( error.ResourceConflict ):
 	"""
 	Thrown when a :py:class:`.Group` that already exists should be created.
 	"""
@@ -64,7 +70,7 @@ def create( conn, name ):
 	elif resp.status == http.CONFLICT:
 		raise GroupExists( "Conflict." )
 	elif resp.status == http.PRECONDITION_FAILED:
-		raise PreconditionFailed( resp )
+		raise error.PreconditionFailed( resp )
 	else:
 		raise UnknownStatus( resp )
 
@@ -101,7 +107,7 @@ def get_all( conn, user=None ):
 		names = conn.content_handler.unmarshal_list( body )
 		return [ Group( conn, name ) for name in names ]
 	elif resp.status == http.NOT_FOUND:
-		raise ResourceNotFound( resp )
+		raise error.ResourceNotFound( resp )
 	else:
 		raise UnknownStatus( resp )
 
@@ -127,7 +133,7 @@ def get( conn, name ):
 	if resp.status == http.NO_CONTENT:
 		return Group( conn, name )
 	elif resp.status == http.NOT_FOUND:
-		raise ResourceNotFound( resp )
+		raise error.ResourceNotFound( resp )
 	else:
 		raise UnknownStatus( resp )
 
@@ -177,7 +183,7 @@ class Group( common.RestAuthResource ):
 			users = [ restauth_user.User( self.conn, name ) for name in names ]
 			return users
 		elif resp.status == http.NOT_FOUND:
-			raise ResourceNotFound( resp )
+			raise error.ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
 
@@ -205,7 +211,7 @@ class Group( common.RestAuthResource ):
 		if resp.status == http.NO_CONTENT:
 			return
 		elif resp.status == http.NOT_FOUND:
-			raise ResourceNotFound( resp )
+			raise error.ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
 
@@ -236,7 +242,7 @@ class Group( common.RestAuthResource ):
 		if resp.status == http.NO_CONTENT:
 			return
 		elif resp.status == http.NOT_FOUND:
-			raise ResourceNotFound( resp )
+			raise error.ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
 
@@ -259,7 +265,7 @@ class Group( common.RestAuthResource ):
 			names = self.conn.content_handler.unmarshal_list( body )
 			return [ Group( self.conn, name ) for name in names ]
 		elif resp.status == http.NOT_FOUND:
-			raise ResourceNotFound( resp )
+			raise error.ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
 
@@ -283,7 +289,7 @@ class Group( common.RestAuthResource ):
 		if resp.status == http.NO_CONTENT:
 			return
 		elif resp.status == http.NOT_FOUND:
-			raise ResourceNotFound( resp )
+			raise error.ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
 		
@@ -300,7 +306,7 @@ class Group( common.RestAuthResource ):
 		if resp.status == http.NO_CONTENT:
 			return
 		elif resp.status == http.NOT_FOUND:
-			raise ResourceNotFound( resp )
+			raise error.ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
 
@@ -329,7 +335,7 @@ class Group( common.RestAuthResource ):
 			if resp.getheader( 'Resource-Type' ) == 'user':
 				return False
 			else:
-				raise ResourceNotFound( resp )
+				raise error.ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
 
@@ -350,7 +356,7 @@ class Group( common.RestAuthResource ):
 		if resp.status == http.NO_CONTENT:
 			return
 		elif resp.status == http.NOT_FOUND:
-			raise ResourceNotFound( resp )
+			raise error.ResourceNotFound( resp )
 		else:
 			raise UnknownStatus( resp )
 

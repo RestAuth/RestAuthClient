@@ -5,9 +5,11 @@ from __future__ import unicode_literals
 from operator import attrgetter
 
 import unittest
-from RestAuthClient.errors import *
+from RestAuthClient.error import *
 from RestAuthClient.common import RestAuthConnection
 from RestAuthClient import restauth_user, group
+
+from RestAuthCommon import error
 
 rest_host = 'http://[::1]:8000'
 rest_user = 'vowi'
@@ -60,7 +62,7 @@ class BasicTests( unittest.TestCase ):
 		try:
 			group.create( self.conn, "foo/bar" )
 			self.fail()
-		except PreconditionFailed as e:
+		except error.PreconditionFailed as e:
 			self.assertEqual( [], group.get_all( self.conn ) )
 
 	def test_addUser( self ):
@@ -89,7 +91,7 @@ class BasicTests( unittest.TestCase ):
 		try:
 			grp.add_user( user )
 			self.fail()
-		except ResourceNotFound as e:
+		except error.ResourceNotFound as e:
 			self.assertEqual( "user", e.get_type() )
 			users = restauth_user.get_all( self.conn )
 			self.assertEqual( self.users, restauth_user.get_all( self.conn ) )
@@ -99,7 +101,7 @@ class BasicTests( unittest.TestCase ):
 		try:
 			grp.add_user( self.users[0] )
 			self.fail()
-		except ResourceNotFound as e:
+		except error.ResourceNotFound as e:
 			self.assertEqual( "group", e.get_type() )
 			self.assertEqual( [], group.get_all( self.conn ) )
 
@@ -117,7 +119,7 @@ class BasicTests( unittest.TestCase ):
 		try:
 			grp.is_member( username_1 )
 			self.fail()
-		except ResourceNotFound as e:
+		except error.ResourceNotFound as e:
 			self.assertEqual( "group", e.get_type() )
 		
 	def test_removeUser( self ):
@@ -141,7 +143,7 @@ class BasicTests( unittest.TestCase ):
 		try:
 			grp.remove_user( self.users[0] )
 			self.fail()
-		except ResourceNotFound as e:
+		except error.ResourceNotFound as e:
 			self.assertEqual( "user", e.get_type() )
 			self.assertEqual( self.users[0], restauth_user.get( self.conn, username_1 ) )
 			self.assertEqual( self.users, restauth_user.get_all( self.conn ) )
@@ -152,7 +154,7 @@ class BasicTests( unittest.TestCase ):
 		try:
 			grp.remove_user( user )
 			self.fail()
-		except ResourceNotFound as e:
+		except error.ResourceNotFound as e:
 			self.assertEqual( "user", e.get_type() )
 			self.assertEqual( self.users[0], restauth_user.get( self.conn, username_1 ) )
 			self.assertEqual( self.users, restauth_user.get_all( self.conn ) )
@@ -163,7 +165,7 @@ class BasicTests( unittest.TestCase ):
 		try:
 			grp.remove_user( self.users[0] )
 			self.fail()
-		except ResourceNotFound as e:
+		except error.ResourceNotFound as e:
 			self.assertEqual( "group", e.get_type() )
 			self.assertEqual( self.users[0], restauth_user.get( self.conn, username_1 ) )
 			self.assertEqual( self.users, restauth_user.get_all( self.conn ) )
@@ -175,7 +177,7 @@ class BasicTests( unittest.TestCase ):
 		try:
 			grp.remove_user( user )
 			self.fail()
-		except ResourceNotFound as e:
+		except error.ResourceNotFound as e:
 			# spec mandates that Resource-Type header must be the
 			# first resource not found, in this case "group"
 			self.assertEqual( "group", e.get_type() )
@@ -187,7 +189,7 @@ class BasicTests( unittest.TestCase ):
 		try:
 			group.get( self.conn, groupname_1 )
 			self.fail()
-		except ResourceNotFound as e:
+		except error.ResourceNotFound as e:
 			self.assertEqual( "group", e.get_type() )
 
 	def test_removeInvalidGroup( self ):
@@ -196,21 +198,21 @@ class BasicTests( unittest.TestCase ):
 		try:
 			grp.remove()
 			self.fail()
-		except ResourceNotFound as e:
+		except error.ResourceNotFound as e:
 			self.assertEqual( "group", e.get_type() )
 			self.assertEqual( [], group.get_all( self.conn ) )
 
 		try:
 			group.get( self.conn, groupname_1 )
 			self.fail()
-		except ResourceNotFound as e:
+		except error.ResourceNotFound as e:
 			self.assertEqual( "group", e.get_type() )
 
 	def test_getInvalidGroup( self ):
 		try:
 			group.get( self.conn, groupname_1 )
 			self.fail()
-		except ResourceNotFound as e:
+		except error.ResourceNotFound as e:
 			self.assertEqual( "group", e.get_type() )
 	
 	def test_getMembersInvalidGroup( self ):
@@ -218,7 +220,7 @@ class BasicTests( unittest.TestCase ):
 		try:
 			grp.get_members()
 			self.fail()
-		except ResourceNotFound as e:
+		except error.ResourceNotFound as e:
 			self.assertEqual( "group", e.get_type() )
 
 class MetaGroupTests( unittest.TestCase ):
@@ -273,7 +275,7 @@ class MetaGroupTests( unittest.TestCase ):
 		try:
 			self.grp1.add_group( grp3 )
 			self.fail()
-		except ResourceNotFound as e:
+		except error.ResourceNotFound as e:
 			self.assertEqual( "group", e.get_type() )
 		self.assertEqual( [], self.grp1.get_groups() )
 
@@ -282,7 +284,7 @@ class MetaGroupTests( unittest.TestCase ):
 		try:
 			grp3.add_group( self.grp1 )
 			self.fail()
-		except ResourceNotFound as e:
+		except error.ResourceNotFound as e:
 			self.assertEqual( "group", e.get_type() )
 		self.assertEqual( [], self.grp1.get_groups() )
 
@@ -305,7 +307,7 @@ class MetaGroupTests( unittest.TestCase ):
 		try:
 			self.grp1.remove_group( self.grp2 )
 			self.fail()
-		except ResourceNotFound as e:
+		except error.ResourceNotFound as e:
 			self.assertEqual( "group", e.get_type() )
 
 	def test_removeInvalidGroup( self ):
@@ -314,12 +316,12 @@ class MetaGroupTests( unittest.TestCase ):
 		try:
 			self.grp1.remove_group( grp3 )
 			self.fail()
-		except ResourceNotFound as e:
+		except error.ResourceNotFound as e:
 			self.assertEqual( "group", e.get_type() )
 
 	def test_getGroupsInvalidGroup( self ):
 		grp3 = group.Group( self.conn, groupname_3 )
 		try:
 			grp3.get_groups()
-		except ResourceNotFound as e:
+		except error.ResourceNotFound as e:
 			self.assertEqual( "group", e.get_type() )

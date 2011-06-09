@@ -4,8 +4,9 @@ from __future__ import unicode_literals
 
 import sys, unittest
 from RestAuthClient.common import RestAuthConnection
-from RestAuthClient.errors import *
+from RestAuthClient.error import *
 from RestAuthClient import restauth_user
+from RestAuthCommon import error
 
 from RestAuthCommon.handlers import content_handler
 
@@ -40,14 +41,14 @@ class BasicTests( unittest.TestCase ):
 			try:
 				conn.get( path )
 				self.fail( msg="%s did not require authorization!"%path)
-			except Unauthorized as e:
+			except error.Unauthorized as e:
 				pass
 
 	def test_badRequestPost( self ):
 		try:
 			self.conn.post( paths[0], {'bad':'request'} )
 			self.fail()
-		except BadRequest:
+		except error.BadRequest:
 			pass
 
 	def test_badRequestPut( self ):
@@ -56,7 +57,7 @@ class BasicTests( unittest.TestCase ):
 		try:
 			self.conn.put( '/users/testuser/', {'bad':'request'} )
 			self.fail()
-		except BadRequest:
+		except error.BadRequest:
 			pass
 
 		user.remove()
@@ -67,7 +68,7 @@ class BasicTests( unittest.TestCase ):
 		try:
 			self.conn.get( '/users/' )
 			self.fail()
-		except NotAcceptable:
+		except error.NotAcceptable:
 			pass
 
 	def test_UnsupportedMediaTypePost( self ):
@@ -76,7 +77,7 @@ class BasicTests( unittest.TestCase ):
 		try:
 			self.conn.post( '/users/', {'foo': 'bar'} )
 			self.fail()
-		except UnsupportedMediaType:
+		except error.UnsupportedMediaType:
 			pass
 	
 	def test_UnsupportedMediaTypePut( self ):
@@ -87,7 +88,7 @@ class BasicTests( unittest.TestCase ):
 		try:
 			self.conn.put( '/users/testuser/', {'foo': 'bar'} )
 			self.fail()
-		except UnsupportedMediaType:
+		except error.UnsupportedMediaType:
 			pass
 		finally:
 			user.remove()

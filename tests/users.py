@@ -3,9 +3,10 @@
 from __future__ import unicode_literals
 
 import sys, unittest
-from RestAuthClient.errors import *
+from RestAuthClient.error import *
 from RestAuthClient.common import RestAuthConnection
 from RestAuthClient import restauth_user, group
+from RestAuthCommon import error
 
 rest_host = 'http://[::1]:8000'
 rest_user = 'vowi'
@@ -66,7 +67,7 @@ class BasicTests( unittest.TestCase ):
 	
 	def test_createInvalidUser( self ):
 		args = [self.conn, "foo/bar", "password"]
-		self.assertRaises( PreconditionFailed, restauth_user.create, *args )
+		self.assertRaises( error.PreconditionFailed, restauth_user.create, *args )
 
 		self.assertEqual( [], restauth_user.get_all( self.conn ) )
 
@@ -117,7 +118,7 @@ class BasicTests( unittest.TestCase ):
 		try:
 			user.set_password( password )
 			self.fail()
-		except ResourceNotFound as e:
+		except error.ResourceNotFound as e:
 			self.assertEqual( e.get_type(), "user" )
 	
 	def test_setTooShortPassword( self ):
@@ -125,7 +126,7 @@ class BasicTests( unittest.TestCase ):
 		try:
 			user.set_password( "x" )
 			self.fail()
-		except PreconditionFailed:
+		except error.PreconditionFailed:
 			self.assertTrue( user.verify_password( password ) )
 			self.assertFalse( user.verify_password( "x" ) )
 	
@@ -133,7 +134,7 @@ class BasicTests( unittest.TestCase ):
 		try:
 			restauth_user.get( self.conn, "invalid" )
 			self.fail()
-		except ResourceNotFound as e:
+		except error.ResourceNotFound as e:
 			self.assertEqual( "user", e.get_type() )
 
 	def test_removeUser( self ):
@@ -144,7 +145,7 @@ class BasicTests( unittest.TestCase ):
 		try:
 			restauth_user.get( self.conn, username )
 			self.fail()
-		except ResourceNotFound as e:
+		except error.ResourceNotFound as e:
 			self.assertEqual( "user", e.get_type() )
 
 	def test_removeInvalidUser( self ):
@@ -152,7 +153,7 @@ class BasicTests( unittest.TestCase ):
 		try:
 			user.remove()
 			self.fail()
-		except ResourceNotFound as e:
+		except error.ResourceNotFound as e:
 			self.assertEqual( "user", e.get_type() )
 
 
@@ -191,7 +192,7 @@ class PropertyTests( unittest.TestCase ):
 		try:
 			user.create_property( propKey, propVal )
 			self.fail()
-		except ResourceNotFound as e:
+		except error.ResourceNotFound as e:
 			self.assertEqual( "user", e.get_type() )
 
 			# verify that no user was created:
@@ -219,7 +220,7 @@ class PropertyTests( unittest.TestCase ):
 		try:
 			user.set_property( propKey, propVal )
 			self.fail()
-		except ResourceNotFound as e:
+		except error.ResourceNotFound as e:
 			self.assertEqual( "user", e.get_type() )
 
 			# verify that no user was created:
@@ -234,7 +235,7 @@ class PropertyTests( unittest.TestCase ):
 		try:
 			self.user.get_property( propKey )
 			self.fail()
-		except ResourceNotFound as e:
+		except error.ResourceNotFound as e:
 			self.assertEqual( "property", e.get_type() )
 	
 	def test_removeInvalidProperty( self ):
@@ -243,7 +244,7 @@ class PropertyTests( unittest.TestCase ):
 		try:
 			self.user.remove_property( propKey + " foo" )
 			self.fail()
-		except ResourceNotFound as e:
+		except error.ResourceNotFound as e:
 			self.assertEqual( "property", e.get_type() )
 			self.assertEqual( [ self.user ], restauth_user.get_all( self.conn ) )
 			self.assertEqual( {propKey:propVal}, self.user.get_properties() )
@@ -255,7 +256,7 @@ class PropertyTests( unittest.TestCase ):
 		try:
 			user.remove_property( "foobar" )
 			self.fail()
-		except ResourceNotFound as e:
+		except error.ResourceNotFound as e:
 			self.assertEqual( "user", e.get_type() )
 
 	def test_removePropertyFromWrongUser( self ):
@@ -271,7 +272,7 @@ class PropertyTests( unittest.TestCase ):
 		try:
 			user_2.remove_property( propKey )
 			self.fail()
-		except ResourceNotFound as e:
+		except error.ResourceNotFound as e:
 			self.assertEqual( "property", e.get_type() )
 
 		self.assertEqual( {}, user_2.get_properties() )
@@ -283,7 +284,7 @@ class PropertyTests( unittest.TestCase ):
 		try:
 			self.user.get_property( "foobar" )
 			self.fail()
-		except ResourceNotFound as e:
+		except error.ResourceNotFound as e:
 			self.assertEqual( "property", e.get_type() )
 
 	def test_getPropertiesInvalidUser( self ):
@@ -292,7 +293,7 @@ class PropertyTests( unittest.TestCase ):
 		try:
 			user.get_properties()
 			self.fail()
-		except ResourceNotFound as e:
+		except error.ResourceNotFound as e:
 			self.assertEqual( "user", e.get_type() )
 
 class SimpleUserGroupTests( unittest.TestCase ):
@@ -341,5 +342,5 @@ class SimpleUserGroupTests( unittest.TestCase ):
 		try:
 			user.get_groups()
 			self.fail()
-		except ResourceNotFound as e:
+		except error.ResourceNotFound as e:
 			self.assertEqual( "user", e.get_type() )

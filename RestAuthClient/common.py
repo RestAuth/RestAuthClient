@@ -26,9 +26,9 @@ except ImportError:
 
 import os, sys, base64, time
 try:
-	from RestAuthClient.errors import *
+	from RestAuthClient.error import *
 except ImportError:
-	from errors import *
+	from error import *
 
 try:
 	from urllib.parse import quote, urlencode, urlparse
@@ -39,6 +39,7 @@ except ImportError:
 
 try:
 	import RestAuthCommon
+	from RestAuthCommon import error
 except ImportError:
 	print( "Error: The RestAuthCommon library is not installed." )
 	sys.exit(1)
@@ -168,15 +169,18 @@ class RestAuthConnection:
 		else:
 			conn = client.HTTPConnection( self.host )
 
-		conn.request( method, url, body, headers )
-		response = conn.getresponse()
+		try:
+			conn.request( method, url, body, headers )
+			response = conn.getresponse()
+		except Exception as e:
+			raise HttpException( e )
 
 		if response.status == client.UNAUTHORIZED:
-			raise Unauthorized( response )
+			raise error.Unauthorized( response )
 		elif response.status == client.NOT_ACCEPTABLE:
-			raise NotAcceptable( response )
+			raise error.NotAcceptable( response )
 		elif response.status == client.INTERNAL_SERVER_ERROR:
-			raise InternalServerError( response )
+			raise error.InternalServerError( response )
 		else:
 			return response
 
@@ -274,9 +278,9 @@ class RestAuthConnection:
 		url = self._sanitize_url( url )
 		response = self.send( 'POST', url, body, headers )
 		if response.status == client.BAD_REQUEST:
-			raise BadRequest( response )
+			raise error.BadRequest( response )
 		elif response.status == client.UNSUPPORTED_MEDIA_TYPE:
-			raise UnsupportedMediaType( response )
+			raise error.UnsupportedMediaType( response )
 
 		return response
 
@@ -315,9 +319,9 @@ class RestAuthConnection:
 		url = self._sanitize_url( url )
 		response = self.send( 'PUT', url, body, headers )
 		if response.status == client.BAD_REQUEST:
-			raise BadRequest( response )
+			raise error.BadRequest( response )
 		elif response.status == client.UNSUPPORTED_MEDIA_TYPE:
-			raise UnsupportedMediaType( response )
+			raise error.UnsupportedMediaType( response )
 		return response
 
 	def delete( self, url, headers={} ):
