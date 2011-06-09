@@ -20,7 +20,7 @@ different (or all) RestAuth methods.
 .. moduleauthor:: Mathias Ertl <mati@fsinf.at>
 """
 
-from RestAuthCommon.error import RestAuthImplementationException, RestAuthRuntimeException
+from RestAuthCommon.error import RestAuthImplementationException, RestAuthRuntimeException, ResourceConflict
 
 class UnknownStatus( RestAuthImplementationException ):
 	"""
@@ -50,3 +50,21 @@ class HttpException( RestAuthRuntimeException ):
 		:rtype: Exception
 		"""
 		return self.cause
+
+class UserExists( ResourceConflict ):
+	"""
+	Thrown when attempting to create a :py:class:`User` that already exists.
+	"""
+	pass
+
+class PropertyExists( ResourceConflict ):
+	"""
+	Thrown when attempting to create a property that already exists.
+	"""
+	pass
+
+class GroupExists( ResourceConflict ):
+	"""
+	Thrown when a :py:class:`.Group` that already exists should be created.
+	"""
+	pass

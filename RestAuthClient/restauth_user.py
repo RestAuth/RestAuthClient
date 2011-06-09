@@ -36,18 +36,6 @@ if sys.version_info < (3, 0):
 else:
 	from http import client as http
 
-class UserExists( error.ResourceConflict):
-	"""
-	Thrown when attempting to create a :py:class:`User` that already exists.
-	"""
-	pass
-
-class PropertyExists( error.ResourceConflict ):
-	"""
-	Thrown when attempting to create a property that already exists.
-	"""
-	pass
-
 def create( conn, name, password=None ):
 	"""
 	Factory method that creates a *new* user in the RestAuth

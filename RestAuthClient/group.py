@@ -38,12 +38,6 @@ if sys.version_info < (3, 0):
 else:
 	from http import client as http
 
-class GroupExists( error.ResourceConflict ):
-	"""
-	Thrown when a :py:class:`.Group` that already exists should be created.
-	"""
-	pass
-
 def create( conn, name ):
 	"""
 	Factory method that creates a *new* group in RestAuth.
