@@ -17,14 +17,16 @@ the setup.py with python3:
 ===== On Debian/Ubuntu =====
 There is an APT repository providing debian packages for all restauth software.
 Please see
-        https://fs.fsinf.at/wiki/RestAuth/APT_repositories
+
+        https://redmine.fsinf.at/projects/restauth/wiki/APT_repositories
+
 for more information on how to add the repository to your system.
 
 The packages for this library are called python-restauth (for python2.6),
 python3-restauth and python-restauth-doc.
 
 === HOW TO USE ===
-The library includes extensive epydoc documentation. If you have epydoc
+The library includes extensive library documentation. If you have sphinx
 installed, you can generate it using setup.py:
 	
 	python setup.py build_doc
@@ -32,7 +34,7 @@ installed, you can generate it using setup.py:
 ... which will create the files in the doc directory. The documentation is also
 available online, please see:
 
-	http://fs.fsinf.at/wiki/RestAuthClient.py
+	http://fs.fsinf.at/doc/python-restauth
 
 The examples directory includes a few examples, which you need to invoke from
 the top-level directory.
