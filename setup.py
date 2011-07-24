@@ -21,7 +21,7 @@ from subprocess import Popen, PIPE
 from distutils.command.clean import clean as _clean
 
 name = 'RestAuthClient'
-url = 'https://fs.fsinf.at/wiki/RestAuth/Python'
+url = 'https://python.restauth.net'
 
 class build_doc( Command ):
 	description = "Build documentation."
