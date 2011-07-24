@@ -2,7 +2,7 @@ Welcome to RestAuthClient's documentation!
 ==========================================
 
 *RestAuthClient* is a client library for the `RestAuth protocol 
-<https://fs.fsinf.at/wiki/RestAuth/Specification>`_ and is the reference client implementation.
+<https://restauth.net>`_ and is the reference client implementation.
 
 This page serves as the API documentation for the library. For further information, please see:
 
@@ -14,6 +14,14 @@ This page serves as the API documentation for the library. For further informati
 
 * git repository: `<http://git.fsinf.at/restauth/python>`_
 
+Installation
+============
+
+.. toctree::
+   :maxdepth: 2
+
+   install/from-source
+   install/debian-ubuntu
 
 API documentation
 =================
