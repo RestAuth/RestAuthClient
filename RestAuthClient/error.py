@@ -1,17 +1,19 @@
-# This file is part of RestAuthClient.py.
+# -*- coding: utf-8 -*-
 #
-#    RestAuthClient.py is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
+# This file is part of RestAuthClient (https://python.restauth.net).
 #
-#    Foobar is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
+# RestAuth is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
-#    You should have received a copy of the GNU General Public License
-#    along with RestAuthClient.py.  If not, see <http://www.gnu.org/licenses/>.
+# RestAuth is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with RestAuth.  If not, see <http://www.gnu.org/licenses/>.
 
 """
 This module collects various general exceptions that might be thrown on many 
