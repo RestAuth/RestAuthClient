@@ -51,7 +51,7 @@ def create( conn, name, password=None ):
 		disabled.
 	:type  password: str
 	:return: The user object representing the user just created.
-	:rtype: :py:class:`User`
+	:rtype: :py:class:`~.restauth_user.User`
 
 	:raise BadRequest: If the server was unable to parse the request body.
 	:raise Unauthorized: When the connection uses wrong credentials.
@@ -89,7 +89,7 @@ def get( conn, name ):
 	:param name: Name of the user to get
 	:type  name: str
 	:return: The user object representing the user just created.
-	:rtype: :py:class:`User`
+	:rtype: :py:class:`~.restauth_user.User`
 
 	:raise Unauthorized: When the connection uses wrong credentials.
 	:raise ResourceNotFound: If the user does not exist in RestAuth.
@@ -114,7 +114,7 @@ def get_all( conn ):
 	:param conn: A connection to a RestAuth service.
 	:type  conn: :py:class:`.RestAuthConnection`
 	:return: A list of User objects
-	:rtype: List of :py:class:`users <.User>`
+	:rtype: [:py:class:`~.restauth_user.User`]
 
 	:raise Unauthorized: When the connection uses wrong credentials.
 	:raise NotAcceptable: When the server cannot generate a response in the
@@ -135,7 +135,7 @@ def get_all( conn ):
 
 class User( common.RestAuthResource ):
 	"""
-	An instance of this class represents a user in RestAuth.
+	An instance of this class is an object oriented abstraction of a user in a RestAuth server.
 
 	.. Warning:: The constructor *does not* verify that the user actually exists.
 	   This has the advantage of saving one request to the RestAuth service.
