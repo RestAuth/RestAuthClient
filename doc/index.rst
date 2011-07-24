@@ -21,16 +21,24 @@ Installation
 
    install/from-source
    install/debian-ubuntu
+   
+Guide
+=====
+
+.. toctree::
+   :maxdepth: 1
+
+   intro
 
 API documentation
 =================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
+   common
    restauth_user
    group
-   common
    errors
 
 
