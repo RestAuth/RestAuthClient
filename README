@@ -34,7 +34,7 @@ installed, you can generate it using setup.py:
 ... which will create the files in the doc directory. The documentation is also
 available online, please see:
 
-	http://fs.fsinf.at/doc/python-restauth
+	https://python.restauth.net
 
 The examples directory includes a few examples, which you need to invoke from
 the top-level directory.
