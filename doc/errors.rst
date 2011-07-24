@@ -1,4 +1,4 @@
 errors - RestAuth related errors
 ================================
-.. automodule:: RestAuthClient.errors
+.. automodule:: RestAuthClient.error
         :members:
