@@ -64,6 +64,14 @@ class BasicTests( unittest.TestCase ):
 		self.assertFalse( user2.verify_password( '' ) )
 		self.assertFalse( user2.verify_password( None ) )
 		self.assertFalse( user2.verify_password( password ) )
+		
+	def test_createUserWithProperty( self ):
+		properties = { propKey: propVal }
+		user = restauth_user.create( self.conn, username, password, properties )
+		
+		self.assertEqual( user, restauth_user.get( self.conn, username ) )
+		self.assertEqual( {propKey:propVal}, user.get_properties() )
+		
 	
 	def test_createInvalidUser( self ):
 		args = [self.conn, "foo/bar", "password"]

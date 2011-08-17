@@ -38,7 +38,7 @@ if sys.version_info < (3, 0):
 else:
 	from http import client as http
 
-def create( conn, name, password=None ):
+def create( conn, name, password=None, properties=None ):
 	"""
 	Factory method that creates a *new* user in the RestAuth
 	database.
@@ -67,6 +67,8 @@ def create( conn, name, password=None ):
 	params = { 'user': name }
 	if password:
 		params['password'] = password
+	if properties:
+		params['properties'] = properties
 		
 	resp = conn.post( User.prefix, params )
 	if resp.status == http.CREATED:
