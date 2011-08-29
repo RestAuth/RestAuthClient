@@ -325,3 +325,25 @@ class MetaGroupTests( unittest.TestCase ):
 			grp3.get_groups()
 		except error.ResourceNotFound as e:
 			self.assertEqual( "group", e.get_type() )
+
+class CreateTest( unittest.TestCase ):
+	def setUp( self ):
+		self.conn = RestAuthConnection( rest_host, rest_user, rest_passwd )
+		
+	def test_createGroup( self ):
+		self.assertTrue( group.create_test( self.conn, groupname_1 ) )
+		self.assertEquals( [], group.get_all( self.conn ) )
+				
+	def test_createExistingGroup( self ):
+		grp = group.create( self.conn, groupname_1 )
+		
+		try:
+			self.assertFalse( group.create_test( self.conn, groupname_1 ) )
+			self.assertEquals( [grp], group.get_all( self.conn ) )
+		finally:
+			grp.remove()
+		
+	def test_createInvalidGroup( self ):
+		self.assertFalse( group.create_test( self.conn, "foo:bar" ) )
+		self.assertEquals( [], group.get_all( self.conn ) )
+	

@@ -69,6 +69,13 @@ def create( conn, name ):
 		raise error.PreconditionFailed( resp )
 	else:
 		raise UnknownStatus( resp )
+		
+def create_test( conn, name ):
+	resp = conn.post( '/test/%s/'%Group.prefix, { 'group': name } )
+	if resp.status == http.CREATED:
+		return True
+	else:
+		return False
 
 def get_all( conn, user=None ):
 	"""

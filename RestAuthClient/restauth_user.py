@@ -79,6 +79,19 @@ def create( conn, name, password=None, properties=None ):
 		raise error.PreconditionFailed( resp.read() )
 	else:
 		raise UnknownStatus( resp )
+		
+def create_test( conn, name, password=None, properties=None ):
+	params = { 'user': name }
+	if password:
+		params['password'] = password
+	if properties:
+		params['properties'] = properties
+		
+	resp = conn.post( '/test/%s/'%User.prefix, params )
+	if resp.status == http.CREATED:
+		return True
+	else:
+		return False
 
 def get( conn, name ):
 	"""
@@ -292,6 +305,15 @@ class User( common.RestAuthResource ):
 			raise PropertyExists( resp )
 		else:
 			raise UnknownStatus( resp )
+			
+	def create_property_test( self, prop, value ):
+		params = { 'prop': prop, 'value': value }
+		resp = self.conn.post( '/test/users/%s/props/'%(self.name), params=params )
+		
+		if resp.status == http.CREATED:
+			return True
+		else:
+			return False
 
 	def set_property( self, prop, value ):
 		"""

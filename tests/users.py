@@ -71,7 +71,6 @@ class BasicTests( unittest.TestCase ):
 		
 		self.assertEqual( user, restauth_user.get( self.conn, username ) )
 		self.assertEqual( {propKey:propVal}, user.get_properties() )
-		
 	
 	def test_createInvalidUser( self ):
 		args = [self.conn, "foo/bar", "password"]
@@ -164,6 +163,47 @@ class BasicTests( unittest.TestCase ):
 		except error.ResourceNotFound as e:
 			self.assertEqual( "user", e.get_type() )
 
+class CreateUserTest( unittest.TestCase ):
+	def setUp( self ):
+		self.conn = RestAuthConnection( rest_host, rest_user, rest_passwd )
+			
+	def test_createUserTest( self ):
+		self.assertTrue( restauth_user.create_test( self.conn, username ) )
+		self.assertEqual( [], restauth_user.get_all( self.conn ) )
+		
+	def test_createUserTestWithPassword( self ):
+		self.assertTrue( restauth_user.create_test( self.conn, username, "password" ) )
+		self.assertEqual( [], restauth_user.get_all( self.conn ) )
+		
+	def test_createUserTestWithProperties( self ):
+		self.assertTrue( restauth_user.create_test( self.conn, username,
+			properties={'foo': 'bar'} ) )
+		self.assertEqual( [], restauth_user.get_all( self.conn ) )
+		
+	def test_createUserTestWithPasswordAndProperties( self ):
+		self.assertTrue( restauth_user.create_test( self.conn, username, "password",
+			properties={'foo': 'bar'} ) )
+		self.assertEqual( [], restauth_user.get_all( self.conn ) )
+	
+	def test_createUserTestWithTooShortUsername( self ):
+		self.assertFalse( restauth_user.create_test( self.conn, 'a' ) )
+		self.assertEqual( [], restauth_user.get_all( self.conn ) )
+		
+	def test_createUserTestWithTooShortPassword( self ):
+		self.assertFalse( restauth_user.create_test( self.conn, username, 'x' ) )
+		self.assertEqual( [], restauth_user.get_all( self.conn ) )
+		
+	def test_createUserTestWithInvalidUsername( self ):
+		self.assertFalse( restauth_user.create_test( self.conn, 'foo/bar' ) )
+		self.assertEqual( [], restauth_user.get_all( self.conn ) )
+		
+	def test_existingUser( self ):
+		user = restauth_user.create( self.conn, username )
+		
+		self.assertFalse( restauth_user.create_test( self.conn, username ) )
+		self.assertEqual( [user], restauth_user.get_all( self.conn ) )
+		
+		user.remove()
 
 class PropertyTests( unittest.TestCase ):
 	def setUp( self ):
@@ -352,3 +392,34 @@ class SimpleUserGroupTests( unittest.TestCase ):
 			self.fail()
 		except error.ResourceNotFound as e:
 			self.assertEqual( "user", e.get_type() )
+
+class CreatePropertyTest( unittest.TestCase ):
+	def setUp( self ):
+		self.conn = RestAuthConnection( rest_host, rest_user, rest_passwd )
+		self.user = restauth_user.create( self.conn, username, password )
+
+	def tearDown( self ):
+		self.user.remove()
+		
+	def test_createProperty( self ):
+		self.assertTrue( self.user.create_property_test( propKey, propVal ) )
+		self.assertEqual( {}, self.user.get_properties() )
+		
+	def test_createExistingProperty( self ):
+		self.user.create_property( propKey, propVal )
+		
+		self.assertFalse( self.user.create_property_test( propKey, "bar" ) )
+		self.assertEqual( {propKey: propVal}, self.user.get_properties() )
+		self.assertEqual( propVal, self.user.get_property(propKey) )
+	
+	def test_createInvalidProperty( self ):
+		self.assertFalse( self.user.create_property_test( "foo:bar", "bar" ) )
+		self.assertEqual( {}, self.user.get_properties() )
+	
+	def test_createPropertyForNonExistingUser( self ):
+		user = restauth_user.User( self.conn, 'foobar' )
+		self.assertFalse( user.create_property_test( propKey, propVal ) )
+	
+	def test_createPropertyForInvalidUser( self ):
+		user = restauth_user.User( self.conn, 'foo:bar' )
+		self.assertFalse( user.create_property_test( propKey, propVal ) )
