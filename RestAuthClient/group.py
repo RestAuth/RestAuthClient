@@ -18,7 +18,7 @@
 """
 Module handling code relevant to group handling.
 
-.. moduleauthor:: Mathias Ertl <mati@fsinf.at>
+.. moduleauthor:: Mathias Ertl <mati@restauth.net>
 """
 
 import sys

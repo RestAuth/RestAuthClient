@@ -19,7 +19,7 @@
 This module collects various general exceptions that might be thrown on many 
 different (or all) RestAuth methods.
 
-.. moduleauthor:: Mathias Ertl <mati@fsinf.at>
+.. moduleauthor:: Mathias Ertl <mati@restauth.net>
 """
 
 from RestAuthCommon.error import RestAuthImplementationException, RestAuthRuntimeException, ResourceConflict

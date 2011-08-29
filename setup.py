@@ -51,7 +51,7 @@ class clean( _clean ):
 		_clean.run( self )
 
 def get_version():
-	version = '0.1'
+	version = '0.5.0'
 	if exists( '.version' ):
 		version = open( '.version' ).readlines()[0]
 	elif os.path.exists( '.git' ): # get from git
@@ -149,7 +149,7 @@ setup(
 	version=get_version(),
 	description='RestAuth client library',
 	author='Mathias Ertl',
-	author_email='mati@fsinf.at',
+	author_email='mati@restauth.net',
 	url = url,
 	packages=['RestAuthClient'],
 	cmdclass = { 'build_doc': build_doc, 'clean': clean, 'version': version,
