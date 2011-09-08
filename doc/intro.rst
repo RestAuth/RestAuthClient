@@ -56,7 +56,9 @@ multi-leveled inheritance model. This allows you to handle problems with whateve
 want.
 
 Since the Python library is the reference implementation, many other libraries feature a similar or
-even identical Exception class-hierarchy. 
+even identical Exception class-hierarchy. Since both the `RestAuth server reference implementation
+<https://server.restauth.net`_ and RestAuthClient use the same exceptions for error handling, most
+exceptions are located in :py:mod:`RestAuthCommon.errors`.
 
 RestAuthException
 +++++++++++++++++
