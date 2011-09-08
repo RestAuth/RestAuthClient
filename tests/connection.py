@@ -10,7 +10,7 @@ from RestAuthCommon import error
 
 from RestAuthCommon.handlers import content_handler
 
-rest_host = 'http://[:11]:8000'
+rest_host = 'http://[:1]:8000'
 rest_user = 'vowi'
 rest_passwd = 'vowi'
 
@@ -18,7 +18,8 @@ rest_passwd = 'vowi'
 paths = [ '/users/', '/users/foo/', '/users/foo/props/', '/users/foo/props/bar',
 	'/groups/', '/groups/foo/', 
 	'/groups/foo/users/',  '/groups/foo/users/bar/', 
-	'/groups/foo/groups/', '/groups/foo/groups/bar' ]
+	'/groups/foo/groups/', '/groups/foo/groups/bar',
+	'/test/users/', '/test/users/foo/props/', '/test/groups/' ]
 
 class wrongContentHandler( content_handler ):
 	mime = 'wrong/mime'
@@ -43,6 +44,14 @@ class BasicTests( unittest.TestCase ):
 				self.fail( msg="%s did not require authorization!"%path)
 			except error.Unauthorized as e:
 				pass
+	
+	def test_wrongHost( self ):
+		conn = RestAuthConnection( 'http://[:2]:8003', 'wrong', 'credentials' )
+		try:
+			restauth_user.get( conn, 'foobar' )
+			self.fail()
+		except HttpException as e:
+			print e.get_cause()
 
 	def test_badRequestPost( self ):
 		try:
