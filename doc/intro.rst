@@ -57,75 +57,10 @@ want.
 
 Since the Python library is the reference implementation, many other libraries feature a similar or
 even identical Exception class-hierarchy. Since both the `RestAuth server reference implementation
-<https://server.restauth.net`_ and RestAuthClient use the same exceptions for error handling, most
-exceptions are located in :py:mod:`RestAuthCommon.errors`.
+<https://server.restauth.net>`_ and RestAuthClient use the same exceptions for error handling, most
+exceptions are located in :py:mod:`RestAuthCommon.error`. For an introduction on how to use those
+exceptions, please see the `error handling chapter <https://common.restauth.net/error.html>`_ in the
+RestAuthCommon documentation.
 
-RestAuthException
-+++++++++++++++++
-
-:py:class:`~.error.RestAuthException` is the base class for all exceptions related to RestAuth calls.
-If you just want to be sure that any exception is handled, you should catch this exception:
-
-.. code-block:: python
-
-   from RestAuthClient.common import RestAuthConnection
-   from RestAuthClient.restauth_user import user_get
-   from RestAuthClient.errors import RestAuthException
-
-   conn = new RestAuthConnection( "https://auth.example.com", "service", "password" )
-   try:
-       user = user_get( conn, "username" )
-       # ...
-   except RestAuthException:
-       print( "Some error related to RestAuth" )
-
-RestAuthImplementationException
-+++++++++++++++++++++++++++++++                         
-
-:py:class:`~.error.RestAuthImplementationException` is a superclass for all exceptions that should
-never occur in a production environment and generally hint at a bug in either the server or the
-client library. 
-
-RestAuthSetupException
-++++++++++++++++++++++
-
-A subclass of :py:class:`~.error.RestAuthSetupException` indicates a problem with either the client
-or server configuration and shouldn't happen if a working configuration hasn't changed. This usually
-means that the person running the library can and should do something about the problem.
-
-RestAuthError
-+++++++++++++
-
-A subclass of :py:class:`.error.RestAuthError` indicates a "normal" error that is bound to happen
-sooner or later. This includes setting properties for users that don't exist, removing users that
-don't exist and so on. Every client using this library should definetly handle this exception (or
-its subclasses).
-
-Summary
-+++++++
-
-The exception hierarchy basically means that you can catch exactly those exceptions that you want to
-handle. Finally, here is a more complex example:
-
-.. code-block:: python
-
-   from RestAuthClient.common import RestAuthConnection
-   from RestAuthClient.restauth_user import user_get
-   from RestAuthClient.errors import RestAuthException
-
-   conn = new RestAuthConnection( "https://auth.example.com", "user", "password" )
-   try:
-       user = user_get( conn, "username" )
-       # ...
-   except RestAuthImplementationException:
-       print( "You must be debugging a new server application?" )
-   except RestAuthRuntimeException:
-       print( "Some runtime error occured that the client can't do anything about." )
-   except Unauthorized: #actually a subclass of RestAuthSetupException below
-       print( "Failed to authenticate with the RestAuth server" )
-   except RestAuthSetupException:
-       print( "Have you setup your server correctly?" )
-   except RestAuthError:
-       print( "User with name username doesn't exist" )
-   except RestAuthException:
-       print( "This should never happen, everything is caught above" )
+RestAuthClient provides a view additional exceptions that only make sense at the client side. Please
+see the :py:mod:`error module <RestAuthClient.error>` for more documentation.

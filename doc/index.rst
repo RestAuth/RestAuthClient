@@ -41,6 +41,11 @@ API documentation
    group
    errors
 
+Further resources
+=================
+* `bugtracker <https://redmine.fsinf.at/projects/restauth-python>`_
+* `git repository <http://git.fsinf.at/restauth/python>`_
+* Jabber/XMPP chat: ``rest@conference.jabber.at``
 
 Indices and tables
 ==================
