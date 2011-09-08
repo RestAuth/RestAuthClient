@@ -338,12 +338,17 @@ class CreateTest( unittest.TestCase ):
 		grp = group.create( self.conn, groupname_1 )
 		
 		try:
-			self.assertFalse( group.create_test( self.conn, groupname_1 ) )
+			group.create_test( self.conn, groupname_1 )
+			self.fail()
+		except GroupExists:
 			self.assertEquals( [grp], group.get_all( self.conn ) )
 		finally:
 			grp.remove()
 		
 	def test_createInvalidGroup( self ):
-		self.assertFalse( group.create_test( self.conn, "foo:bar" ) )
-		self.assertEquals( [], group.get_all( self.conn ) )
+		try:
+			self.assertFalse( group.create_test( self.conn, "foo:bar" ) )
+			self.fail()
+		except error.PreconditionFailed:
+			self.assertEquals( [], group.get_all( self.conn ) )
 	

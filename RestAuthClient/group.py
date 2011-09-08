@@ -71,11 +71,23 @@ def create( conn, name ):
 		raise UnknownStatus( resp )
 		
 def create_test( conn, name ):
+	"""
+	Do a test-run on creating a new group (i.e. to test user input against the RestAuth server
+	configuration). This method throws the exact same Exceptions as :py:func:`create` but always
+	returns None instead of a :py:class:`Group` instance if the group could be created that way.
+	
+	.. NOTE:: Invoking this method cannot guarantee that actually creating this group
+	   will work in the future, i.e. it may have been created by another client in the meantime.
+	"""
 	resp = conn.post( '/test/%s/'%Group.prefix, { 'group': name } )
 	if resp.status == http.CREATED:
 		return True
+	elif resp.status == http.CONFLICT:
+		raise GroupExists( "Conflict." )
+	elif resp.status == http.PRECONDITION_FAILED:
+		raise error.PreconditionFailed( resp )
 	else:
-		return False
+		raise UnknownStatus( resp )
 
 def get_all( conn, user=None ):
 	"""

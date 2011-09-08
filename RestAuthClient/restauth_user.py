@@ -81,6 +81,14 @@ def create( conn, name, password=None, properties=None ):
 		raise UnknownStatus( resp )
 		
 def create_test( conn, name, password=None, properties=None ):
+	"""
+	Do a test-run on creating a new user (i.e. to test user input against the RestAuth server
+	configuration). This method throws the exact same Exceptions as :py:func:`create` but always
+	returns None instead of a :py:class:`User` instance if the user could be created that way.
+	
+	.. NOTE:: Invoking this method cannot guarantee that actually creating this user
+	   will work in the future, i.e. it may have been created by another client in the meantime.
+	"""
 	params = { 'user': name }
 	if password:
 		params['password'] = password
@@ -89,9 +97,13 @@ def create_test( conn, name, password=None, properties=None ):
 		
 	resp = conn.post( '/test/%s/'%User.prefix, params )
 	if resp.status == http.CREATED:
-		return True
+		return
+	elif resp.status == http.CONFLICT:
+		raise UserExists( name )
+	elif resp.status == http.PRECONDITION_FAILED:
+		raise error.PreconditionFailed( resp )
 	else:
-		return False
+		raise UnknownStatus( resp )
 
 def get( conn, name ):
 	"""
@@ -288,6 +300,7 @@ class User( common.RestAuthResource ):
 		:raise Unauthorized: When the connection uses wrong credentials.
 		:raise ResourceNotFound: If the user does not exist in RestAuth.
 		:raise PropertyExists: When the property already exists
+		:raise PreconditionFailed: When the propertyname contains invalid characters
 		:raise UnsupportedMediaType: The server does not support the
 			content type used by this connection (see also: 
 			:py:meth:`~.RestAuthConnection.set_content_handler`).
@@ -301,19 +314,37 @@ class User( common.RestAuthResource ):
 			return
 		elif resp.status == http.NOT_FOUND:
 			raise error.ResourceNotFound( resp )
+		elif resp.status == http.PRECONDITION_FAILED:
+			raise error.PreconditionFailed( resp )
 		elif resp.status == http.CONFLICT:
 			raise PropertyExists( resp )
 		else:
 			raise UnknownStatus( resp )
 			
 	def create_property_test( self, prop, value ):
+		"""
+		Do a test-run on creating a property (i.e. to test user input against the RestAuth
+		server configuration). This method throws the exact same Exceptions as
+		:py:func:`create_property` and also returns None if creating the property would
+		succeed.
+		
+		.. NOTE:: Invoking this method cannot guarantee that actually creating this
+		   property will work in the future, i.e. it may have been created by another client
+		   in the meantime.
+		"""
 		params = { 'prop': prop, 'value': value }
 		resp = self.conn.post( '/test/users/%s/props/'%(self.name), params=params )
 		
 		if resp.status == http.CREATED:
-			return True
+			return
+		elif resp.status == http.NOT_FOUND:
+			raise error.ResourceNotFound( resp )
+		elif resp.status == http.PRECONDITION_FAILED:
+			raise error.PreconditionFailed( resp )
+		elif resp.status == http.CONFLICT:
+			raise PropertyExists( resp )
 		else:
-			return False
+			raise UnknownStatus( resp )
 
 	def set_property( self, prop, value ):
 		"""
