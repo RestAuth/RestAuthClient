@@ -1,8 +1,7 @@
 Guide
 =====
 
-The **RestAuthClient** library primarily consists of four submodules, each containing one important
-class:
+The **RestAuthClient** library consists of four modules, each containing one important class:
 
 * :py:mod:`~RestAuthClient.common` contains :py:class:`~.common.RestAuthConnection` which represents
   a connection to a RestAuth service.
@@ -13,10 +12,10 @@ class:
 * :py:mod:`~RestAuthClient.error` is a collection of exceptions that may be thrown by the above
   modules and its member methods/classes.
   
-If you want to use RestAuth, you will always have to create a
-:py:class:`~.common.RestAuthConnection` first and then use it to get users or groups.
+To use RestAuth, you will always have to create a :py:class:`~.common.RestAuthConnection` first and
+then use it to get users or groups.
 
-The following example should give you a very idea of how the library handles, error handling is
+The following example should give you a very good idea of how the library handles, error handling is
 skipped for the sake of clarity. Please see the :ref:`guide_error-handling` section for the
 exceptions used in this library.
 
@@ -52,7 +51,7 @@ exceptions used in this library.
 Error handling
 --------------
 
-Like all client libraries, the python client library features many custom exceptions with a
+Like all RestAuth client libraries, the python client library features many custom exceptions with a
 multi-leveled inheritance model. This allows you to handle problems with whatever granularity you
 want.
 
