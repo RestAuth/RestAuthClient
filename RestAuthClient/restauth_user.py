@@ -109,7 +109,7 @@ def get( conn, name ):
 	"""
 	Factory method that gets an *existing* user from RestAuth. This
 	method verifies that the user exists in RestAuth and throws
-	:py:class:`.ResourceNotFound` if not. 
+	:py:exc:`~RestAuthCommon:RestAuthCommon.error.ResourceNotFound` if not.
 
 	:param conn: A connection to a RestAuth service.
 	:type  conn: :py:class:`.RestAuthConnection`

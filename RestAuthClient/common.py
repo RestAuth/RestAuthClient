@@ -65,7 +65,7 @@ class RestAuthConnection:
 	:param passwd: The password to use for authenticating with
 		RestAuth (passed to :py:meth:`.set_credentials`).
 	:type  passwd: str
-	:param content_handler: Directly passed to :py:meth:`.set_content_handler`}.
+	:param content_handler: Directly passed to :py:meth:`.set_content_handler`.
 	:type  content_handler: str or subclass of 
 		RestAuthCommon.handlers.content_handler.
 	"""
@@ -113,9 +113,10 @@ class RestAuthConnection:
 		implementation.
 
 		:param content_handler: Either a self-implemented handler, which must be a subclass
-			of RestAuthCommon.handlers.content_handler or a str, in which case the str
-			suffixed with '_handler' must give a class found in RestAuthCommon.handlers.
-		:type  content_handler: str or RestAuthCommon.handlers.content_handler.
+			of :py:class:`~RestAuthCommon:RestAuthCommon.handlers.content_handler` or a
+			str, which must be one of the MIME types specified in
+			:py:data:`~RestAuthCommon:RestAuthCommon.CONTENT_HANDLERS`.
+		:type  content_handler: str or :py:class:`~RestAuthCommon:RestAuthCommon.handlers.content_handler`
 
 		"""
 		if isinstance( content_handler, RestAuthCommon.handlers.content_handler ):
@@ -136,7 +137,6 @@ class RestAuthConnection:
 		and :py:meth:`.delete` methods. This method takes care of
 		service authentication, encryption and sets Content-Type and
 		Accept headers.
-		:py:class:`http.client.HTTPResponse`
 
 		:param method: The HTTP method to use. Must be either "GET",
 			"POST", "PUT" or "DELETE".
@@ -154,7 +154,7 @@ class RestAuthConnection:
 		:param headers: dict
 
 		:return: The response to the request
-		:rtype: :py:class:`http.client.HTTPResponse`
+		:rtype: :py:class:`~http.client.HTTPResponse`
 
 		:raise Unauthorized: When the connection uses wrong credentials.
 		:raise NotAcceptable: When the server cannot generate a response
@@ -230,7 +230,7 @@ class RestAuthConnection:
 		:type  headers: dict
 		
 		:return: The response to the request
-		:rtype: :py:class:`http.client.HTTPResponse`
+		:rtype: :py:class:`~http.client.HTTPResponse`
 
 		:raise Unauthorized: When the connection uses wrong credentials.
 		:raise NotAcceptable: When the server cannot generate a response
@@ -262,7 +262,7 @@ class RestAuthConnection:
 		:type  headers: dict
 
 		:return: The response to the request
-		:rtype: :py:class:`http.client.HTTPResponse`
+		:rtype: :py:class:`~http.client.HTTPResponse`
 
 		:raise BadRequest: If the server was unable to parse the request
 			body.
@@ -290,7 +290,7 @@ class RestAuthConnection:
 		"""
 		Perform a PUT request on the connection. This method takes care
 		of escaping parameters and assembling the correct URL. This
-		method internally calls the :py:meth:`.send`} function to perform service
+		method internally calls the :py:meth:`.send` function to perform service
 		authentication.
 
 		:param url: The URL to perform the GET request on. The URL
@@ -303,7 +303,7 @@ class RestAuthConnection:
 		:type  headers: dict
 
 		:return: The response to the request
-		:rtype: :py:class:`http.client.HTTPResponse`
+		:rtype: :py:class:`~http.client.HTTPResponse`
 
 		:raise BadRequest: If the server was unable to parse the request
 			body.
@@ -328,7 +328,7 @@ class RestAuthConnection:
 
 	def delete( self, url, headers={} ):
 		"""
-		Perform a GET request on the connection. This method internally
+		Perform a DELETE request on the connection. This method internally
 		calls the :py:meth:`.send` function to perform service authentication.
 
 		:param url: The URL to perform the GET request on. The URL must
@@ -337,7 +337,7 @@ class RestAuthConnection:
 		:param headers: Additional headers to send with this request.
 		:type  headers: dict
 		:return: The response to the request
-		:rtype: :py:class:`httplib.HTTPResponse`
+		:rtype: :py:class:`~http.client.HTTPResponse`
 		:raise Unauthorized: When the connection uses wrong credentials.
 		:raise NotAcceptable: When the server cannot generate a response
 			in the content type used by this connection (see also: 
