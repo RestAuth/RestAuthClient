@@ -5,6 +5,9 @@ RestAuthClient 0.5.1 ()
     their respective classes.
   * Added documentation to the test methods
   * create_property_test now also throws PreconditionFailed
+  * Improve test coverage
+  * RestAuthConnection.set_content_handler also accepts unicode
+  * Enable SSL certificate verification in python 3.2 or later
 
 RestAuthClient 0.5.0 (29 August 2011)
 

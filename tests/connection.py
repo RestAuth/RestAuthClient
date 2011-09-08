@@ -51,7 +51,14 @@ class BasicTests( unittest.TestCase ):
 			restauth_user.get( conn, 'foobar' )
 			self.fail()
 		except HttpException as e:
-			print e.get_cause()
+			e.get_cause()
+			
+	def test_set_wrong_content_handler( self ):
+		try:
+			self.conn.set_content_handler( 'foo/bar' )
+			self.fail()
+		except RuntimeError:
+			pass
 
 	def test_badRequestPost( self ):
 		try:

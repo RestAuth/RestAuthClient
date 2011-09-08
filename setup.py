@@ -139,6 +139,7 @@ class coverage( Command ):
 		cov.exclude( 'def __repr__' )
 		cov.exclude( 'def __hash__' )
 		cov.exclude( 'use_ssl' )
+		cov.exclude( 'from http import client as http' )
 		run_test_suite( self.host, self.user, self.passwd )
 		cov.stop()
 		cov.html_report( directory=self.dir, omit_prefixes=['tests', 'setup', '/usr'] )

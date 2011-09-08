@@ -45,17 +45,18 @@ try:
 except ImportError:
 	print( "Error: The RestAuthCommon library is not installed." )
 	sys.exit(1)
+	
+if sys.version_info >= (3, 2):
+	from ssl import SSLContext, CERT_REQUIRED
 
 class RestAuthConnection:
 	"""
 	An instance of this class represents a connection to a RestAuth service.
 
-	Note that the constructor does not verify that the connection actually
-	works. Since HTTP is stateless, there is no way of knowing if a
-	connection working now will still work 0.2 seconds from now. 		
+	.. NOTE: The constructor does not verify that the connection actually works. Since HTTP is
+	   stateless, there is no way of knowing if a connection working now will still work 0.2
+	   seconds from now.
 	
-	:param host: The hostname of the RestAuth service
-	:type  host: str
 	:param host: The hostname of the RestAuth service
 	:type  host: str
 	:param user: The service name to use for authenticating with 
@@ -72,8 +73,6 @@ class RestAuthConnection:
 	def __init__( self, host, user, passwd, content_handler='application/json' ):
 		"""
 		Initialize a new connection to a RestAuth service. 
-		
-
 		"""
 		parseresult = urlparse( host )
 		if parseresult.scheme == 'https':
@@ -88,6 +87,10 @@ class RestAuthConnection:
 	
 		# pre-calculate the auth-header so we only have to do this once:
 		self.set_credentials( user, passwd )
+		
+		if sys.version_info >= (3, 2) and self.use_ssl:
+			self.context = SSLContext()
+			self.context.verify_mode = CERT_REQUIRED
 
 	def set_credentials( self, user, passwd ):
 		"""
@@ -109,18 +112,15 @@ class RestAuthConnection:
 		is 'json', which is supported by the reference server
 		implementation.
 
-		:param content_handler: Either a self-implemented handler, which
-			must be a subclass of
-			RestAuthCommon.handlers.content_handler or a str
-			str, in which case the str suffixed with '_handler'
-			must give a class found in RestAuthCommon.handlers.
-		:type  content_handler: str or 
-			RestAuthCommon.handlers.content_handler.
+		:param content_handler: Either a self-implemented handler, which must be a subclass
+			of RestAuthCommon.handlers.content_handler or a str, in which case the str
+			suffixed with '_handler' must give a class found in RestAuthCommon.handlers.
+		:type  content_handler: str or RestAuthCommon.handlers.content_handler.
 
 		"""
 		if isinstance( content_handler, RestAuthCommon.handlers.content_handler ):
 			self.content_handler = content_handler
-		elif isinstance( content_handler, str ):
+		elif isinstance( content_handler, str ) or isinstance( content_handler, unicode ):
 			handler_dict = RestAuthCommon.CONTENT_HANDLERS
 			try:
 				cl = handler_dict[content_handler]
@@ -167,7 +167,10 @@ class RestAuthConnection:
 		headers['Accept'] = self.content_handler.mime
 	
 		if self.use_ssl:
-			conn = client.HTTPSConnection( self.host )
+			if sys.version_info >= (3, 2):
+				conn = client.HTTPSConnection( self.host, context=self.context )
+			else:
+				conn = client.HTTPSConnection( self.host )
 		else:
 			conn = client.HTTPConnection( self.host )
 
@@ -187,9 +190,6 @@ class RestAuthConnection:
 			return response
 
 	def _sanitize_qs( self, params ):
-		"""
-		@todo: replace still necessary?
-		"""
 		if sys.version_info < (3, 0):
 			for key, value in params.iteritems():
 				if key.__class__ == unicode:
