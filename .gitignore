@@ -3,3 +3,6 @@
 *.swo
 doc/_build
 doc/coverage/
+MANIFEST
+build/
+dist/
