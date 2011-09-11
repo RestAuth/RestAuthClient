@@ -19,6 +19,7 @@ from os.path import exists
 from distutils.core import setup, Command
 from subprocess import Popen, PIPE
 from distutils.command.clean import clean as _clean
+from distutils.command.build import build as _build
 
 name = 'RestAuthClient'
 url = 'https://python.restauth.net'
@@ -32,12 +33,15 @@ class build_doc( Command ):
 
 	def finalize_options( self ):
 		command = self.get_command_name()
-		options = self.distribution.command_options[ command ]
+#		options = self.distribution.command_options[ command ]
 
 	def run( self ):
 		cmd = [ 'make', '-C', 'doc', 'html' ]
 		p = Popen( cmd )
 		p.communicate()
+		
+class build( _build ):
+	sub_commands = [('build_doc', lambda self: True)] + _build.sub_commands
 
 class clean( _clean ):
 	def run( self ):
@@ -149,10 +153,30 @@ setup(
 	name=name,
 	version=get_version(),
 	description='RestAuth client library',
+	long_description = """RestAuthClient is the client reference implementation of the
+`RestAuth protocol <https://restauth.net/Specification>`_. RestAuth is a system providing shared
+authentication, authorization and preferences.
+""",
 	author='Mathias Ertl',
 	author_email='mati@restauth.net',
 	url = url,
+	download_url = 'https://python.restauth.net/download/',
 	packages=['RestAuthClient'],
-	cmdclass = { 'build_doc': build_doc, 'clean': clean, 'version': version,
-		'test': test, 'coverage': coverage }
+	cmdclass = { 'build': build, 'build_doc': build_doc, 'clean': clean, 'version': version,
+		'test': test, 'coverage': coverage },
+	license = "GNU General Public License (GPL) v3",
+	classifiers = [
+		"Programming Language :: Python",
+		"Programming Language :: Python :: 3",
+		"Operating System :: OS Independent",
+		"Environment :: Other Environment",
+		"Development Status :: 4 - Beta",
+		"License :: OSI Approved :: GNU General Public License (GPL)",
+		"Intended Audience :: Developers",
+		"Intended Audience :: System Administrators",
+		"Topic :: System :: Systems Administration :: Authentication/Directory",
+		"Topic :: Internet :: WWW/HTTP",
+		"Topic :: Software Development :: Libraries :: Python Modules",
+		"Environment :: Web Environment",
+	]
 )
