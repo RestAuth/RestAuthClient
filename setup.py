@@ -156,6 +156,11 @@ setup(
 	long_description = """RestAuthClient is the client reference implementation of the
 `RestAuth protocol <https://restauth.net/Specification>`_. RestAuth is a system providing shared
 authentication, authorization and preferences.
+
+This library requires `RestAuthCommon <https://common.restauth.net>`_
+(`PyPI <http://pypi.python.org/pypi/RestAuthCommon/>`_) which in turn also requires the `mimeparse
+module <https://code.google.com/p/mimeparse/>`_ (`PyPI
+<http://pypi.python.org/pypi/mimeparse/0.1.3>`_).
 """,
 	author='Mathias Ertl',
 	author_email='mati@restauth.net',
@@ -165,6 +170,7 @@ authentication, authorization and preferences.
 	cmdclass = { 'build': build, 'build_doc': build_doc, 'clean': clean, 'version': version,
 		'test': test, 'coverage': coverage },
 	license = "GNU General Public License (GPL) v3",
+	requires = ['RestAuthCommon', 'mimeparse', ],
 	classifiers = [
 		"Programming Language :: Python",
 		"Programming Language :: Python :: 3",
