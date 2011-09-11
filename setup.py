@@ -40,8 +40,8 @@ class build_doc( Command ):
 		p = Popen( cmd )
 		p.communicate()
 		
-class build( _build ):
-	sub_commands = [('build_doc', lambda self: True)] + _build.sub_commands
+#class build( _build ):
+#	sub_commands = [('build_doc', lambda self: True)] + _build.sub_commands
 
 class clean( _clean ):
 	def run( self ):
@@ -62,7 +62,7 @@ def get_version():
 		date = time.strftime( '%Y.%m.%d' )
 		cmd = [ 'git', 'describe' ]
 		p = Popen( cmd, stdout=PIPE )
-		version = p.communicate()[0].decode( 'utf-8' )
+		version = p.communicate()[0]
 	return version.strip()
 
 class version( Command ):
@@ -167,7 +167,7 @@ module <https://code.google.com/p/mimeparse/>`_ (`PyPI
 	url = url,
 	download_url = 'https://python.restauth.net/download/',
 	packages=['RestAuthClient'],
-	cmdclass = { 'build': build, 'build_doc': build_doc, 'clean': clean, 'version': version,
+	cmdclass = { 'build_doc': build_doc, 'clean': clean, 'version': version,
 		'test': test, 'coverage': coverage },
 	license = "GNU General Public License (GPL) v3",
 	requires = ['RestAuthCommon', 'mimeparse', ],
