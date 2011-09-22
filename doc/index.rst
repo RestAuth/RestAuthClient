@@ -20,6 +20,7 @@ Installation
    :maxdepth: 1
 
    install/from-source
+   install/with-pip
    install/debian-ubuntu
    
 Guide
