@@ -14,7 +14,7 @@
 #    along with RestAuthClient.py.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import os, sys, shutil, time
+import os, re, sys, shutil, time
 from os.path import exists
 from distutils.core import setup, Command
 from subprocess import Popen, PIPE
