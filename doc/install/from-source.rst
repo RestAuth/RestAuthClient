@@ -43,7 +43,7 @@ Official releases
 +++++++++++++++++
 
 You can download official releases of RestAuthClient `here <https://python.restauth.net/download>`_.
-The latest release is version 0.5.0.
+The latest release is version |latest-release|.
 
 .. _install_from-source_installation:
 

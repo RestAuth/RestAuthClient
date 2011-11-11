@@ -1,4 +1,5 @@
 RestAuthClient 0.5.1 ()
+  * handle version in a more centralized way
   * restauth_user.create_test, User.create_property_test and group.create_test
     now behave exactly like their non-test counterparts. The only difference
     is that user and group creation test methods do not return an instance of

@@ -24,6 +24,8 @@ from distutils.command.build import build as _build
 name = 'RestAuthClient'
 url = 'https://python.restauth.net'
 
+LATEST_RELEASE = '0.5.0'
+
 class build_doc( Command ):
 	description = "Build documentation."
 	user_options = []
@@ -36,6 +38,10 @@ class build_doc( Command ):
 #		options = self.distribution.command_options[ command ]
 
 	def run( self ):
+		version = get_version()
+		os.environ['SPHINXOPTS'] = '-D release=%s -D version=%s'%(version, version)
+		os.environ['LATEST_RELEASE'] = LATEST_RELEASE
+		
 		cmd = [ 'make', '-C', 'doc', 'html' ]
 		p = Popen( cmd )
 		p.communicate()
@@ -55,7 +61,7 @@ class clean( _clean ):
 		_clean.run( self )
 
 def get_version():
-	version = '0.5.0' 
+	version = LATEST_RELEASE
 	if exists( '.version' ):
 		version = open( '.version' ).readlines()[0]
 	elif os.path.exists( '.git' ): # get from git
