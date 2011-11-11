@@ -159,7 +159,7 @@ class coverage( Command ):
 
 setup(
 	name=name,
-	version=get_version(),
+	version=str(get_version()),
 	description='RestAuth client library',
 	long_description = """RestAuthClient is the client reference implementation of the
 `RestAuth protocol <https://restauth.net/Specification>`_. RestAuth is a system providing shared
