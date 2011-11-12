@@ -47,6 +47,13 @@ class clean( _clean ):
 	def run( self ):
 		if os.path.exists( 'build' ):
 			shutil.rmtree( 'build' )
+		if os.path.exists( 'dist' ):
+			shutil.rmtree( 'dist' )
+		coverage_path = os.path.join( 'doc', 'coverage' )
+		if os.path.exists( coverage_path ):
+			shutil.rmtree( coverage_path )
+		if os.path.exists( 'MANIFEST' ):
+			os.remove( 'MANIFEST' )
 
 		cmd = [ 'make', '-C', 'doc', 'clean' ]
 		p = Popen( cmd )

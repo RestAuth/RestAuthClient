@@ -5,6 +5,7 @@ RestAuthClient 0.5.1 ()
   * Adapt to changes in newest RestAuthCommon version
   * handle version in a more centralized way
   * RestAuthConnection.set_content_handler also accepts unicode
+  * 'clean' target now removes more generated files
   
   *_test functions:
   * restauth_user.create_test, User.create_property_test and group.create_test
