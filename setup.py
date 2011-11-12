@@ -117,6 +117,10 @@ class test( Command ):
 	def finalize_options( self ): pass
 
 	def run( self ):
+		common_path = os.path.join( '..', 'restauth-common', 'python' )
+		if os.path.exists( common_path ):
+			sys.path.insert( 0, common_path )
+			
 		run_test_suite( self.host, self.user, self.passwd )
 
 class coverage( Command ):

@@ -40,7 +40,7 @@ except ImportError:
 	from urlparse import urlparse
 
 try:
-	import RestAuthCommon
+	from RestAuthCommon import handlers
 	from RestAuthCommon import error
 except ImportError:
 	print( "Error: The RestAuthCommon library is not installed." )
@@ -115,14 +115,14 @@ class RestAuthConnection:
 		:param content_handler: Either a self-implemented handler, which must be a subclass
 			of :py:class:`~RestAuthCommon:RestAuthCommon.handlers.content_handler` or a
 			str, which must be one of the MIME types specified in
-			:py:data:`~RestAuthCommon:RestAuthCommon.CONTENT_HANDLERS`.
+			:py:data:`~RestAuthCommon:RestAuthCommon.handlers.CONTENT_HANDLERS`.
 		:type  content_handler: str or :py:class:`~RestAuthCommon:RestAuthCommon.handlers.content_handler`
 
 		"""
-		if isinstance( content_handler, RestAuthCommon.handlers.content_handler ):
+		if isinstance( content_handler, handlers.content_handler ):
 			self.content_handler = content_handler
 		elif isinstance( content_handler, str ) or isinstance( content_handler, unicode ):
-			handler_dict = RestAuthCommon.CONTENT_HANDLERS
+			handler_dict = handlers.CONTENT_HANDLERS
 			try:
 				cl = handler_dict[content_handler]
 			except KeyError:
