@@ -4,12 +4,14 @@ RestAuthClient 0.5.1 ()
   * remove false statement that this library depends on python-mimeparse
   * Adapt to changes in newest RestAuthCommon version
   * handle version in a more centralized way
+  * RestAuthConnection.set_content_handler also accepts unicode
+  
+  *_test functions:
   * restauth_user.create_test, User.create_property_test and group.create_test
     now behave exactly like their non-test counterparts. The only difference
     is that user and group creation test methods do not return an instance of
     their respective classes.
   * create_property_test now also throws PreconditionFailed
-  * RestAuthConnection.set_content_handler also accepts unicode
   * Added documentation to the test methods
   
   Python3:
