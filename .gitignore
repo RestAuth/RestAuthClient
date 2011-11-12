@@ -6,3 +6,4 @@ doc/coverage/
 MANIFEST
 build/
 dist/
+Makefile.local
