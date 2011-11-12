@@ -13,9 +13,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with RestAuthClient.py.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import os, re, sys, shutil, time
-from os.path import exists
 from distutils.core import setup, Command
 from subprocess import Popen, PIPE
 from distutils.command.clean import clean as _clean
@@ -35,7 +33,6 @@ class build_doc( Command ):
 
 	def finalize_options( self ):
 		command = self.get_command_name()
-#		options = self.distribution.command_options[ command ]
 
 	def run( self ):
 		version = get_version()
@@ -45,9 +42,6 @@ class build_doc( Command ):
 		cmd = [ 'make', '-C', 'doc', 'html' ]
 		p = Popen( cmd )
 		p.communicate()
-		
-#class build( _build ):
-#	sub_commands = [('build_doc', lambda self: True)] + _build.sub_commands
 
 class clean( _clean ):
 	def run( self ):
@@ -62,7 +56,7 @@ class clean( _clean ):
 
 def get_version():
 	version = LATEST_RELEASE
-	if exists( '.version' ):
+	if os.path.exists( '.version' ):
 		version = open( '.version' ).readlines()[0]
 	elif os.path.exists( '.git' ): # get from git
 		date = time.strftime( '%Y.%m.%d' )
