@@ -8,8 +8,7 @@ RestAuthClient is written as a *bleeding edge* project and thus requires relativ
 versions.
 
 * `Python 2.6 <http://www.python.org/>`_ or later
-* `RestAuthCommon <https://redmine.fsinf.at/projects/restauthcommon>`_
-* The `mimeparse <https://code.google.com/p/mimeparse/>`_ module is required by RestAuthCommon
+* `RestAuthCommon <https://common.restauth.net`_
 
 Get source
 ----------

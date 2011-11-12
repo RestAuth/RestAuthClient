@@ -176,9 +176,7 @@ setup(
 authentication, authorization and preferences.
 
 This library requires `RestAuthCommon <https://common.restauth.net>`_
-(`PyPI <http://pypi.python.org/pypi/RestAuthCommon/>`_) which in turn also requires the `mimeparse
-module <https://code.google.com/p/mimeparse/>`_ (`PyPI
-<http://pypi.python.org/pypi/mimeparse/0.1.3>`_).
+(`PyPI <http://pypi.python.org/pypi/RestAuthCommon/>`_).
 """,
 	author='Mathias Ertl',
 	author_email='mati@restauth.net',
@@ -188,7 +186,7 @@ module <https://code.google.com/p/mimeparse/>`_ (`PyPI
 	cmdclass = { 'build_doc': build_doc, 'clean': clean, 'version': version,
 		'test': test, 'coverage': coverage },
 	license = "GNU General Public License (GPL) v3",
-	requires = ['RestAuthCommon', 'mimeparse', ],
+	requires = ['RestAuthCommon', ],
 	classifiers = [
 		"Programming Language :: Python",
 		"Programming Language :: Python :: 3",

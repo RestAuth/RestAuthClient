@@ -1,14 +1,24 @@
 RestAuthClient 0.5.1 ()
+
+  General:
+  * remove false statement that this library depends on python-mimeparse
+  * Adapt to changes in newest RestAuthCommon version
   * handle version in a more centralized way
   * restauth_user.create_test, User.create_property_test and group.create_test
     now behave exactly like their non-test counterparts. The only difference
     is that user and group creation test methods do not return an instance of
     their respective classes.
-  * Added documentation to the test methods
   * create_property_test now also throws PreconditionFailed
-  * Improve test coverage
   * RestAuthConnection.set_content_handler also accepts unicode
+  * Added documentation to the test methods
+  
+  Python3:
   * Enable SSL certificate verification in python 3.2 or later
+  
+  Tests:
+  * Add restauth-common git-checkout to path, if its found in the same
+    directory as this directory.
+  * Improve test coverage
 
 RestAuthClient 0.5.0 (29 August 2011)
 
