@@ -22,6 +22,7 @@ RestAuthClient 0.5.1 ()
   * Add restauth-common git-checkout to path, if its found in the same
     directory as this directory.
   * Improve test coverage
+  * Switch to coverage 3.5
 
 RestAuthClient 0.5.0 (29 August 2011)
 

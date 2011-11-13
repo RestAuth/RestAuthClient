@@ -25,19 +25,19 @@ import sys
 try:
 	from RestAuthClient import common, restauth_user
 	from RestAuthClient.error import *
-except ImportError:
+except ImportError: # pragma: no cover
 	import common, restauth_user
 	from error import *
 	
 try:
 	from RestAuthCommon import error
-except ImportError:
+except ImportError: # pragma: no cover
 	print( "Error: The RestAuthCommon library is not installed." )
 	sys.exit(1)
 
 if sys.version_info < (3, 0):
 	import httplib as http
-else:
+else: # pragma: no cover
 	from http import client as http
 
 def create( conn, name ):
@@ -67,7 +67,7 @@ def create( conn, name ):
 		raise GroupExists( "Conflict." )
 	elif resp.status == http.PRECONDITION_FAILED:
 		raise error.PreconditionFailed( resp )
-	else:
+	else: # pragma: no cover
 		raise UnknownStatus( resp )
 		
 def create_test( conn, name ):
@@ -86,7 +86,7 @@ def create_test( conn, name ):
 		raise GroupExists( "Conflict." )
 	elif resp.status == http.PRECONDITION_FAILED:
 		raise error.PreconditionFailed( resp )
-	else:
+	else: # pragma: no cover
 		raise UnknownStatus( resp )
 
 def get_all( conn, user=None ):
@@ -123,7 +123,7 @@ def get_all( conn, user=None ):
 		return [ Group( conn, name ) for name in names ]
 	elif resp.status == http.NOT_FOUND:
 		raise error.ResourceNotFound( resp )
-	else:
+	else: # pragma: no cover
 		raise UnknownStatus( resp )
 
 def get( conn, name ):
@@ -149,7 +149,7 @@ def get( conn, name ):
 		return Group( conn, name )
 	elif resp.status == http.NOT_FOUND:
 		raise error.ResourceNotFound( resp )
-	else:
+	else: # pragma: no cover
 		raise UnknownStatus( resp )
 
 class Group( common.RestAuthResource ):
@@ -199,7 +199,7 @@ class Group( common.RestAuthResource ):
 			return users
 		elif resp.status == http.NOT_FOUND:
 			raise error.ResourceNotFound( resp )
-		else:
+		else: # pragma: no cover
 			raise UnknownStatus( resp )
 
 	def add_user( self, user ):
@@ -227,7 +227,7 @@ class Group( common.RestAuthResource ):
 			return
 		elif resp.status == http.NOT_FOUND:
 			raise error.ResourceNotFound( resp )
-		else:
+		else: # pragma: no cover
 			raise UnknownStatus( resp )
 
 	def add_group( self, group ):
@@ -258,7 +258,7 @@ class Group( common.RestAuthResource ):
 			return
 		elif resp.status == http.NOT_FOUND:
 			raise error.ResourceNotFound( resp )
-		else:
+		else: # pragma: no cover
 			raise UnknownStatus( resp )
 
 	def get_groups( self ):
@@ -281,7 +281,7 @@ class Group( common.RestAuthResource ):
 			return [ Group( self.conn, name ) for name in names ]
 		elif resp.status == http.NOT_FOUND:
 			raise error.ResourceNotFound( resp )
-		else:
+		else: # pragma: no cover
 			raise UnknownStatus( resp )
 
 	def remove_group( self, group ):
@@ -305,7 +305,7 @@ class Group( common.RestAuthResource ):
 			return
 		elif resp.status == http.NOT_FOUND:
 			raise error.ResourceNotFound( resp )
-		else:
+		else: # pragma: no cover
 			raise UnknownStatus( resp )
 		
 	def remove( self ):
@@ -322,7 +322,7 @@ class Group( common.RestAuthResource ):
 			return
 		elif resp.status == http.NOT_FOUND:
 			raise error.ResourceNotFound( resp )
-		else:
+		else: # pragma: no cover
 			raise UnknownStatus( resp )
 
 	def is_member( self, user ):
@@ -351,7 +351,7 @@ class Group( common.RestAuthResource ):
 				return False
 			else:
 				raise error.ResourceNotFound( resp )
-		else:
+		else: # pragma: no cover
 			raise UnknownStatus( resp )
 
 	def remove_user( self, user ):
@@ -372,7 +372,7 @@ class Group( common.RestAuthResource ):
 			return
 		elif resp.status == http.NOT_FOUND:
 			raise error.ResourceNotFound( resp )
-		else:
+		else: # pragma: no cover
 			raise UnknownStatus( resp )
 
 	def __eq__( self, other ):
@@ -382,7 +382,7 @@ class Group( common.RestAuthResource ):
 		"""
 		return self.name == other.name and self.conn == other.conn
 
-	def __repr__( self ):
+	def __repr__( self ): # pragma: no cover
 		import sys
 		if sys.version_info < (3, 0) and self.name.__class__ == unicode:
 			return '<Group: {0}>'.format(self.name.encode( 'utf-8' ))

@@ -148,24 +148,20 @@ class coverage( Command ):
 		except ImportError:
 			print( "You need coverage.py installed." )
 			return
+		common_path = os.path.join( '..', 'restauth-common', 'python' )
+		if os.path.exists( common_path ):
+			sys.path.insert( 0, common_path )
 
 		if not os.path.exists( self.dir ):
 			os.makedirs( self.dir )
 
 		exclude_list = [ 'raise UnknownStatus.*' ]
 
-		cov = coverage.coverage( )
+		cov = coverage.coverage( include='RestAuthClient/*' )
 		cov.start()
-		cov.exclude( 'raise UnknownStatus.*' )
-		cov.exclude( 'InternalServerError' )
-		cov.exclude( 'except ImportError' )
-		cov.exclude( 'def __repr__' )
-		cov.exclude( 'def __hash__' )
-		cov.exclude( 'use_ssl' )
-		cov.exclude( 'from http import client as http' )
 		run_test_suite( self.host, self.user, self.passwd )
 		cov.stop()
-		cov.html_report( directory=self.dir, omit_prefixes=['tests', 'setup', '/usr'] )
+		cov.html_report( directory=self.dir )
 		cov.report()
 
 setup(

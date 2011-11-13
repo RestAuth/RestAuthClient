@@ -23,19 +23,19 @@ import sys
 try:
 	from RestAuthClient import common
 	from RestAuthClient.error import *
-except ImportError:
+except ImportError: # pragma: no cover
 	from error import *
 	import common
 	
 try:
 	from RestAuthCommon import error
-except ImportError:
+except ImportError: # pragma: no cover
 	print( "Error: The RestAuthCommon library is not installed." )
 	sys.exit(1)
 
 if sys.version_info < (3, 0):
 	import httplib as http
-else:
+else: # pragma: no cover
 	from http import client as http
 
 def create( conn, name, password=None, properties=None ):
@@ -77,7 +77,7 @@ def create( conn, name, password=None, properties=None ):
 		raise UserExists( name )
 	elif resp.status == http.PRECONDITION_FAILED:
 		raise error.PreconditionFailed( resp.read() )
-	else:
+	else: # pragma: no cover
 		raise UnknownStatus( resp )
 		
 def create_test( conn, name, password=None, properties=None ):
@@ -102,7 +102,7 @@ def create_test( conn, name, password=None, properties=None ):
 		raise UserExists( name )
 	elif resp.status == http.PRECONDITION_FAILED:
 		raise error.PreconditionFailed( resp )
-	else:
+	else: # pragma: no cover
 		raise UnknownStatus( resp )
 
 def get( conn, name ):
@@ -131,7 +131,7 @@ def get( conn, name ):
 		return User( conn, name )
 	elif resp.status == http.NOT_FOUND:
 		raise error.ResourceNotFound( resp )
-	else:
+	else: # pragma: no cover
 		raise UnknownStatus( resp )
 	
 def get_all( conn ):
@@ -157,7 +157,7 @@ def get_all( conn ):
 		body = resp.read().decode( 'utf-8' )
 		usernames = conn.content_handler.unmarshal_list( body )
 		return [ User( conn, name ) for name in usernames ]
-	else:
+	else: # pragma: no cover
 		raise UnknownStatus( resp )
 
 class User( common.RestAuthResource ):
@@ -210,7 +210,7 @@ class User( common.RestAuthResource ):
 			raise error.ResourceNotFound( resp )
 		elif resp.status == http.PRECONDITION_FAILED:
 			raise error.PreconditionFailed( resp.read() )
-		else:
+		else: # pragma: no cover
 			raise UnknownStatus( resp )
 
 	def verify_password( self, password ):
@@ -238,7 +238,7 @@ class User( common.RestAuthResource ):
 			return True
 		elif resp.status == http.NOT_FOUND:
 			return False
-		else:
+		else: # pragma: no cover
 			raise UnknownStatus( resp )
 
 	def remove( self ):
@@ -256,7 +256,7 @@ class User( common.RestAuthResource ):
 			return
 		if resp.status == http.NOT_FOUND:
 			raise error.ResourceNotFound( resp )
-		else:
+		else: # pragma: no cover
 			raise UnknownStatus( resp )
 
 	def get_properties( self ):
@@ -281,7 +281,7 @@ class User( common.RestAuthResource ):
 			return self.conn.content_handler.unmarshal_dict( body )
 		elif resp.status == http.NOT_FOUND:
 			raise error.ResourceNotFound( resp )
-		else:
+		else: # pragma: no cover
 			raise UnknownStatus( resp )
 
 	def create_property( self, prop, value ):
@@ -318,7 +318,7 @@ class User( common.RestAuthResource ):
 			raise error.PreconditionFailed( resp )
 		elif resp.status == http.CONFLICT:
 			raise PropertyExists( resp )
-		else:
+		else: # pragma: no cover
 			raise UnknownStatus( resp )
 			
 	def create_property_test( self, prop, value ):
@@ -343,7 +343,7 @@ class User( common.RestAuthResource ):
 			raise error.PreconditionFailed( resp )
 		elif resp.status == http.CONFLICT:
 			raise PropertyExists( resp )
-		else:
+		else: # pragma: no cover
 			raise UnknownStatus( resp )
 
 	def set_property( self, prop, value ):
@@ -379,7 +379,7 @@ class User( common.RestAuthResource ):
 			return
 		elif resp.status == http.NOT_FOUND:
 			raise error.ResourceNotFound( resp )
-		else:
+		else: # pragma: no cover
 			raise UnknownStatus( resp )
 
 	def get_property( self, prop ):
@@ -404,7 +404,7 @@ class User( common.RestAuthResource ):
 			return self.conn.content_handler.unmarshal_str( body )
 		elif resp.status == http.NOT_FOUND:
 			raise error.ResourceNotFound( resp )
-		else:
+		else: # pragma: no cover
 			raise UnknownStatus( resp )
 
 	def remove_property( self, prop ):
@@ -422,7 +422,7 @@ class User( common.RestAuthResource ):
 			return
 		elif resp.status == http.NOT_FOUND:
 			raise error.ResourceNotFound( resp )
-		else:
+		else: # pragma: no cover
 			raise UnknownStatus( resp )
 
 	def get_groups( self ):
@@ -442,7 +442,7 @@ class User( common.RestAuthResource ):
 		"""
 		try:
 			from RestAuthClient import group
-		except ImportError:
+		except ImportError: # pragma: no cover
 			import group
 		return group.get_all( self.conn, self )
 
@@ -465,7 +465,7 @@ class User( common.RestAuthResource ):
 		"""
 		try:
 			from RestAuthClient import group
-		except ImportError:
+		except ImportError: # pragma: no cover
 			import group
 		if grp.__class__ == str or (sys.version_info < (3, 0) and grp.__class__ == unicode):
 			grp = group.Group( self.conn, grp )
@@ -490,7 +490,7 @@ class User( common.RestAuthResource ):
 		"""
 		try:
 			from RestAuthClient import group
-		except ImportError:
+		except ImportError: # pragma: no cover
 			import group
 		if grp.__class__ == str or (sys.version_info < (3, 0) and grp.__class__ == unicode):
 			grp = group.Group( self.conn, grp )
@@ -513,7 +513,7 @@ class User( common.RestAuthResource ):
 		"""
 		try:
 			from RestAuthClient import group
-		except ImportError:
+		except ImportError: # pragma: no cover
 			import group
 		if grp.__class__ == str or (sys.version_info < (3, 0) and grp.__class__ == unicode):
 			grp = group.Group( self.conn, grp )
@@ -530,10 +530,10 @@ class User( common.RestAuthResource ):
 	def __lt__( self, other ):
 		return self.name < other.name
 	
-	def __hash__( self ):
+	def __hash__( self ): # pragma: no cover
 		return hash( self.name )
 
-	def __repr__( self ):
+	def __repr__( self ): # pragma: no cover
 		if sys.version_info < (3, 0) and self.name.__class__ == unicode:
 			return '<User: {0}>'.format(self.name.encode( 'utf-8' ))
 		else:

@@ -22,19 +22,19 @@ Central code for handling connections to a RestAuth service.
 """
 try:
 	from http import client
-except ImportError:
+except ImportError: # pragma: no cover
 	# this is for python 2.x and earlier
 	import httplib as client
 
 import os, sys, base64, time
 try:
 	from RestAuthClient.error import *
-except ImportError:
+except ImportError: # pragma: no cover
 	from error import *
 
 try:
 	from urllib.parse import quote, urlencode, urlparse
-except ImportError:
+except ImportError: # pragma: no cover
 	# this is for python 2.x and earlier
 	from urllib import quote, urlencode
 	from urlparse import urlparse
@@ -42,11 +42,11 @@ except ImportError:
 try:
 	from RestAuthCommon import handlers
 	from RestAuthCommon import error
-except ImportError:
+except ImportError: # pragma: no cover
 	print( "Error: The RestAuthCommon library is not installed." )
 	sys.exit(1)
 	
-if sys.version_info >= (3, 2):
+if sys.version_info >= (3, 2): # pragma: no cover
 	from ssl import SSLContext, CERT_REQUIRED
 
 class RestAuthConnection:
@@ -75,7 +75,7 @@ class RestAuthConnection:
 		Initialize a new connection to a RestAuth service. 
 		"""
 		parseresult = urlparse( host )
-		if parseresult.scheme == 'https':
+		if parseresult.scheme == 'https': # pragma: no cover
 			self.use_ssl = True
 		else:
 			self.use_ssl = False
@@ -88,7 +88,7 @@ class RestAuthConnection:
 		# pre-calculate the auth-header so we only have to do this once:
 		self.set_credentials( user, passwd )
 		
-		if sys.version_info >= (3, 2) and self.use_ssl:
+		if sys.version_info >= (3, 2) and self.use_ssl: # pragma: no cover
 			self.context = SSLContext()
 			self.context.verify_mode = CERT_REQUIRED
 
@@ -166,7 +166,7 @@ class RestAuthConnection:
 		headers['Authorization'] = self.auth_header
 		headers['Accept'] = self.content_handler.mime
 	
-		if self.use_ssl:
+		if self.use_ssl: # pragma: no cover
 			if sys.version_info >= (3, 2):
 				conn = client.HTTPSConnection( self.host, context=self.context )
 			else:
@@ -184,7 +184,7 @@ class RestAuthConnection:
 			raise error.Unauthorized( response )
 		elif response.status == client.NOT_ACCEPTABLE:
 			raise error.NotAcceptable( response )
-		elif response.status == client.INTERNAL_SERVER_ERROR:
+		elif response.status == client.INTERNAL_SERVER_ERROR: # pragma: no cover
 			raise error.InternalServerError( response )
 		else:
 			return response
@@ -192,7 +192,7 @@ class RestAuthConnection:
 	def _sanitize_qs( self, params ):
 		if sys.version_info < (3, 0):
 			for key, value in params.iteritems():
-				if key.__class__ == unicode:
+				if key.__class__ == unicode: # pragma: no cover
 					key = key.encode( 'utf-8' )
 				if value.__class__ == unicode:
 					value = value.encode( 'utf-8' )
@@ -203,7 +203,7 @@ class RestAuthConnection:
 	def _sanitize_url( self, url ):
 		# make sure that it starts and ends with /, cut double-slashes:
 		url = '%s/'%( os.path.normpath( url ) )
-		if not url.startswith( '/' ):
+		if not url.startswith( '/' ): # pragma: no cover
 			url = '/%s'%(url)
 
 		if sys.version_info < (3, 0) and url.__class__ == unicode: 
