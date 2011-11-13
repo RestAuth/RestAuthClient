@@ -170,7 +170,8 @@ setup(
 	description='RestAuth client library',
 	long_description = """RestAuthClient is the client reference implementation of the
 `RestAuth protocol <https://restauth.net/Specification>`_. RestAuth is a system providing shared
-authentication, authorization and preferences.
+authentication, authorization and preferences. The full documentation of this library is available
+at `python.restauth.net <https://python.restauth.net>`_.
 
 This library requires `RestAuthCommon <https://common.restauth.net>`_
 (`PyPI <http://pypi.python.org/pypi/RestAuthCommon/>`_).
