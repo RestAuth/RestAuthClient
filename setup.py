@@ -22,7 +22,7 @@ from distutils.command.build import build as _build
 name = 'RestAuthClient'
 url = 'https://python.restauth.net'
 
-LATEST_RELEASE = '0.5.0'
+LATEST_RELEASE = '0.5.1'
 
 class build_doc( Command ):
 	description = "Build documentation."

@@ -1,4 +1,4 @@
-RestAuthClient 0.5.1 ()
+RestAuthClient 0.5.1 (13 November 2011)
 
   General:
   * remove false statement that this library depends on python-mimeparse
