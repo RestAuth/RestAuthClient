@@ -50,7 +50,7 @@ Installation
 ------------
 
 Installation itself is very easy. Just go to the directory where your source is located
-("RestAuthClient" in the above example) and just run:
+("RestAuthClient" in the above example) and run:
 
 .. code-block:: bash
 
