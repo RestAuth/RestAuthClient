@@ -1,0 +1,13 @@
+python-restauth (0.5.1-1) unstable; urgency=low
+  
+  * move to python-sphinx
+  * password is now an optional parameter when creating a user
+  * setting an empty password disables the user
+ 
+ -- Mathias Ertl <apt-repository@fsinf.at>  Tue, 07 Jun 2011 00:49:59 +0200
+
+python-restauth (0.0-93-gf37ba95-1) maverick; urgency=low
+
+  * Initial version
+
+ -- Mathias Ertl <apt-repository@fsinf.at>  Thu, 30 Sep 2010 11:57:14 +0200

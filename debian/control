@@ -1,0 +1,35 @@
+Source: python-restauth
+Section: misc
+Priority: extra
+Maintainer: Mathias Ertl <apt-repository@fsinf.at>
+Build-Depends: debhelper (>= 7.0.50), python (>= 2.6), python3, git-core, python-sphinx, python-central, python-support
+Standards-Version: 3.9.2
+XS-Python-Version: >= 2.6
+X-Python3-Version: >= 3.0
+Homepage: http://fs.fsinf.at/wiki/RestAuth
+
+Package: python-restauth
+Architecture: all
+Section: python
+Depends: ${shlibs:Depends}, ${python:Depends}, ${misc:Depends}, restauth-common
+XB-Python-Version: ${python:Versions}
+Provides: ${python:Provides}
+Description: client library for RestAuth webservices
+ This library is written in pure Python and is a reference implementation of
+ the RestAuth protocol.
+
+Package: python3-restauth
+Architecture: all
+Section: python
+Depends: ${shlibs:Depends}, ${python:Depends}, ${misc:Depends}, restauth-common
+XB-Python-Version: ${python:Versions}
+Description: client library for RestAuth webservices (python 3.x)
+ This library is written in pure Python and is a reference implementation of
+ the RestAuth protocol.
+
+Package: python-restauth-doc
+Architecture: all
+Depends: ${misc:Depends}
+Section: doc
+Description: API documentation and examples for python-restauth (python 2.6 and 3.x)
+ This includes sphinx documentation in HTML format and additional examples.
