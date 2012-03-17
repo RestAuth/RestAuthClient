@@ -103,6 +103,21 @@ def run_test_suite( host, user, passwd ):
 		unittest.TextTestRunner(verbosity=1).run(suite)
 
 
+class prepare_debian_changelog(Command):
+	description = "prepare debian/changelog file"
+	user_options = []
+	
+	def initialize_options( self ): pass
+	def finalize_options( self ): pass
+	def run(self):
+		if not os.path.exists('debian/changelog'):
+			sys.exit(0)
+		
+		version = get_version()
+		cmd = ['sed', '-i', '1s/(.*)/(%s-1)/' % version, 'debian/changelog']
+		p = Popen(cmd)
+		p.communicate()
+
 class test( Command ):
 	description = "Run test suite."
 	user_options = [
@@ -182,7 +197,8 @@ This library requires `RestAuthCommon <https://common.restauth.net>`_
 	download_url = 'https://python.restauth.net/download/',
 	packages=['RestAuthClient'],
 	cmdclass = { 'build_doc': build_doc, 'clean': clean, 'version': version,
-		'test': test, 'coverage': coverage },
+		'test': test, 'coverage': coverage,
+		'prepare_debian_changelog': prepare_debian_changelog, },
 	license = "GNU General Public License (GPL) v3",
 	requires = ['RestAuthCommon', ],
 	classifiers = [
