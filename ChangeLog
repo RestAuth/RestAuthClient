@@ -3,11 +3,15 @@ RestAuthClient 0.5.1 (13 November 2011)
   General:
   * remove false statement that this library depends on python-mimeparse
   * Adapt to changes in newest RestAuthCommon version
-  * handle version in a more centralized way
   * RestAuthConnection.set_content_handler also accepts unicode
-  * 'clean' target now removes more generated files
   
-  *_test functions:
+  build-related:
+  * 'clean' target now removes more generated files
+  * handle version in a more centralized way
+  * The 'debian' branch now includes a ready-to-use debian package.
+  * The new command 'prepare_debian_changelog' updates debian/changelog to the newest version
+  
+  test functions:
   * restauth_user.create_test, User.create_property_test and group.create_test
     now behave exactly like their non-test counterparts. The only difference
     is that user and group creation test methods do not return an instance of
