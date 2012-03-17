@@ -29,7 +29,7 @@ Description: client library for RestAuth webservices (python 3.x)
 
 Package: python-restauth-doc
 Architecture: all
-Depends: ${misc:Depends}
+Depends: ${misc:Depends}, libjs-jquery, libjs-underscore
 Section: doc
 Description: API documentation and examples for python-restauth (python 2.6 and 3.x)
  This includes sphinx documentation in HTML format and additional examples.
