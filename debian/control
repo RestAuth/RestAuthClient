@@ -11,7 +11,7 @@ Homepage: http://fs.fsinf.at/wiki/RestAuth
 Package: python-restauth
 Architecture: all
 Section: python
-Depends: ${shlibs:Depends}, ${python:Depends}, ${misc:Depends}, restauth-common
+Depends: ${shlibs:Depends}, ${python:Depends}, ${misc:Depends}, python-restauth-common
 XB-Python-Version: ${python:Versions}
 Provides: ${python:Provides}
 Description: client library for RestAuth webservices
@@ -21,7 +21,7 @@ Description: client library for RestAuth webservices
 Package: python3-restauth
 Architecture: all
 Section: python
-Depends: ${shlibs:Depends}, ${python:Depends}, ${misc:Depends}, restauth-common
+Depends: ${shlibs:Depends}, ${python:Depends}, ${misc:Depends}, python3-restauth-common
 XB-Python-Version: ${python:Versions}
 Description: client library for RestAuth webservices (python 3.x)
  This library is written in pure Python and is a reference implementation of
