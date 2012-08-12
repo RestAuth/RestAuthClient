@@ -402,7 +402,6 @@ class Group(common.RestAuthResource):
         return self.name == other.name and self.conn == other.conn
 
     def __repr__(self):  # pragma: no cover
-        import sys
         if sys.version_info < (3, 0) and self.name.__class__ == unicode:
             return '<Group: {0}>'.format(self.name.encode('utf-8'))
         else:
