@@ -55,9 +55,10 @@ def create(conn, name):
 
     :raise BadRequest: If the server was unable to parse the request body.
     :raise Unauthorized: When the connection uses wrong credentials.
+    :raise Forbidden: When the client is not allowed to perform this action.
     :raise GroupExists: When the user already exists.
-    :raise UnsupportedMediaType: The server does not support the
-        content type used by this connection (see also:
+    :raise UnsupportedMediaType: The server does not support the content type
+        used by this connection (see also:
         :py:meth:`~.RestAuthConnection.set_content_handler`).
     :raise InternalServerError: When the RestAuth service returns HTTP status
         code 500
@@ -109,9 +110,10 @@ def get_all(conn, user=None):
     :rtype: List of :py:class:`groups <.Group>`
 
     :raise Unauthorized: When the connection uses wrong credentials.
+    :raise Forbidden: When the client is not allowed to perform this action.
     :raise ResourceNotFound: When the given user does not exist.
-    :raise NotAcceptable: When the server cannot generate a response
-        in the content type used by this connection (see also:
+    :raise NotAcceptable: When the server cannot generate a response in the
+        content type used by this connection (see also:
         :py:meth:`~.RestAuthConnection.set_content_handler`).
     :raise InternalServerError: When the RestAuth service returns HTTP status
         code 500
@@ -149,6 +151,7 @@ def get(conn, name):
     :rtype: :py:class:`.Group`
 
     :raise Unauthorized: When the connection uses wrong credentials.
+    :raise Forbidden: When the client is not allowed to perform this action.
     :raise ResourceNotFound: If the group does not exist.
     :raise InternalServerError: When the RestAuth service returns HTTP status
         code 500
@@ -192,6 +195,8 @@ class Group(common.RestAuthResource):
         :rtype: list
 
         :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this
+            action.
         :raise ResourceNotFound: If the group does not exist.
         :raise NotAcceptable: When the server cannot generate a response
             in the content type used by this connection (see also:
@@ -224,6 +229,8 @@ class Group(common.RestAuthResource):
         :raise BadRequest: If the server was unable to parse the request
             body.
         :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this
+            action.
         :raise ResourceNotFound: If the group or user does not exist.
         :raise UnsupportedMediaType: The server does not support the
             content type used by this connection (see also:
@@ -253,6 +260,8 @@ class Group(common.RestAuthResource):
         :raise BadRequest: If the server was unable to parse the request
             body.
         :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this
+            action.
         :raise ResourceNotFound: If the group or user does not exist.
         :raise UnsupportedMediaType: The server does not support the
             content type used by this connection (see also:
@@ -280,6 +289,8 @@ class Group(common.RestAuthResource):
         Get a list of sub-groups of this group.
 
         :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this
+            action.
         :raise ResourceNotFound: If the sub- or meta-group not exist.
         :raise NotAcceptable: When the server cannot generate a response
             in the content type used by this connection (see also:
@@ -307,6 +318,8 @@ class Group(common.RestAuthResource):
         :type  group: :py:class:`.Group` or str
 
         :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this
+            action.
         :raise ResourceNotFound: If the sub- or meta-group not exist.
         :raise InternalServerError: When the RestAuth service returns HTTP
             status code 500
@@ -329,6 +342,8 @@ class Group(common.RestAuthResource):
         Delete this group.
 
         :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this
+            action.
         :raise ResourceNotFound: If the group does not exist.
         :raise InternalServerError: When the RestAuth service returns HTTP
             status code 500
@@ -352,6 +367,8 @@ class Group(common.RestAuthResource):
         :rtype: bool
 
         :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this
+            action.
         :raise ResourceNotFound: If the group or user does not exist.
         :raise InternalServerError: When the RestAuth service returns HTTP
             status code 500
@@ -377,6 +394,8 @@ class Group(common.RestAuthResource):
         Remove the given user from the group.
 
         :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this
+            action.
         :raise ResourceNotFound: If the group or user does not exist.
         :raise InternalServerError: When the RestAuth service returns HTTP
             status code 500

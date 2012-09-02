@@ -56,6 +56,8 @@ def create(conn, name, password=None, properties=None):
 
     :raise BadRequest: If the server was unable to parse the request body.
     :raise Unauthorized: When the connection uses wrong credentials.
+    :raise Forbidden: When the client is not allowed to perform this
+         action.
     :raise UserExists: If the user already exists.
     :raise PreconditionFailed: When username or password is invalid.
     :raise UnsupportedMediaType: The server does not support the
@@ -124,6 +126,8 @@ def get(conn, name):
     :rtype: :py:class:`~.restauth_user.User`
 
     :raise Unauthorized: When the connection uses wrong credentials.
+    :raise Forbidden: When the client is not allowed to perform this
+         action.
     :raise ResourceNotFound: If the user does not exist in RestAuth.
     :raise InternalServerError: When the RestAuth service returns
         HTTP status code 500
@@ -150,6 +154,8 @@ def get_all(conn):
     :rtype: [:py:class:`~.restauth_user.User`]
 
     :raise Unauthorized: When the connection uses wrong credentials.
+    :raise Forbidden: When the client is not allowed to perform this
+         action.
     :raise NotAcceptable: When the server cannot generate a response in the
         content type used by this connection (see also:
         :py:meth:`~.RestAuthConnection.set_content_handler`).
@@ -200,6 +206,8 @@ class User(common.RestAuthResource):
         :raise BadRequest: If the server was unable to parse the request
             body.
         :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this
+             action.
         :raise ResourceNotFound: If the user does not exist in RestAuth.
         :raise InternalServerError: When the RestAuth service returns
             HTTP status code 500
@@ -235,6 +243,8 @@ class User(common.RestAuthResource):
         :raise BadRequest: If the server was unable to parse the request
             body.
         :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this
+             action.
         :raise UnsupportedMediaType: The server does not support the
             content type used by this connection (see also:
             :py:meth:`~.RestAuthConnection.set_content_handler`).
@@ -255,6 +265,8 @@ class User(common.RestAuthResource):
         Remove this user.
 
         :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this
+             action.
         :raise ResourceNotFound: If the user does not exist in RestAuth.
         :raise InternalServerError: When the RestAuth service returns
             HTTP status code 500
@@ -276,6 +288,8 @@ class User(common.RestAuthResource):
         :rtype: dict
 
         :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this
+             action.
         :raise NotAcceptable: When the server cannot generate a response
             in the content type used by this connection (see also:
             :py:meth:`~.RestAuthConnection.set_content_handler`).
@@ -307,6 +321,8 @@ class User(common.RestAuthResource):
         :raise BadRequest: If the server was unable to parse the request
             body.
         :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this
+             action.
         :raise ResourceNotFound: If the user does not exist in RestAuth.
         :raise PropertyExists: When the property already exists
         :raise PreconditionFailed: When the propertyname contains invalid
@@ -370,6 +386,8 @@ class User(common.RestAuthResource):
         :raise BadRequest: If the server was unable to parse the request
             body.
         :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this
+             action.
         :raise ResourceNotFound: If the user does not exist in RestAuth.
         :raise NotAcceptable: When the server cannot generate a response
             in the content type used by this connection (see also:
@@ -401,6 +419,8 @@ class User(common.RestAuthResource):
         :rtype: str
 
         :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this
+             action.
         :raise ResourceNotFound: If the user or property does not exist.
         :raise NotAcceptable: When the server cannot generate a response
             in the content type used by this connection (see also:
@@ -423,6 +443,8 @@ class User(common.RestAuthResource):
         Delete the given property.
 
         :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this
+             action.
         :raise ResourceNotFound: If the user or property does not exist.
         :raise InternalServerError: When the RestAuth service returns
             HTTP status code 500
@@ -446,6 +468,8 @@ class User(common.RestAuthResource):
         :rtype: list of :py:class:`groups <.Group>`
 
         :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this
+             action.
         :raise ResourceNotFound: If the user does not exist.
         :raise InternalServerError: When the RestAuth service returns
             HTTP status code 500
@@ -469,6 +493,8 @@ class User(common.RestAuthResource):
         :rtype: bool
 
         :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this
+             action.
         :raise ResourceNotFound: If the user or group does not exist.
         :raise InternalServerError: When the RestAuth service returns
             HTTP status code 500
@@ -495,6 +521,8 @@ class User(common.RestAuthResource):
         :raise BadRequest: If the server was unable to parse the request
             body.
         :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this
+             action.
         :raise ResourceNotFound: If the user or group does not exist.
         :raise InternalServerError: When the RestAuth server returns
             HTTP status code 500
@@ -519,6 +547,8 @@ class User(common.RestAuthResource):
         :type  grp: :py:class:`str` or :py:class:`.Group`
 
         :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this
+             action.
         :raise ResourceNotFound: If the user or group does not exist.
         :raise InternalServerError: When the RestAuth service returns
             HTTP status code 500
