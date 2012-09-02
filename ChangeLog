@@ -1,3 +1,8 @@
+RestAuthClient 0.6.0 (DD MM YYYY)
+
+  General:
+  * The whole code is now pep8 clean
+
 RestAuthClient 0.5.1 (13 November 2011)
 
   General:
@@ -9,7 +14,8 @@ RestAuthClient 0.5.1 (13 November 2011)
   * 'clean' target now removes more generated files
   * handle version in a more centralized way
   * The 'debian' branch now includes a ready-to-use debian package.
-  * The new command 'prepare_debian_changelog' updates debian/changelog to the newest version
+  * The new command 'prepare_debian_changelog' updates debian/changelog to the
+    newest version
   
   test functions:
   * restauth_user.create_test, User.create_property_test and group.create_test
