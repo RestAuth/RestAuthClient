@@ -1,5 +1,9 @@
 RestAuthClient 0.6.0 (DD MM YYYY)
 
+  This release adds support for version 0.6 of the RestAuth protocol. This
+  brings the following enhancements:
+  * Support for HTTP status code 403 FORBIDDEN
+
   General:
   * The whole code is now pep8 clean
 
