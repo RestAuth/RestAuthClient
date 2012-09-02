@@ -165,6 +165,8 @@ class RestAuthConnection:
         :rtype: :py:class:`~http.client.HTTPResponse`
 
         :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this
+             action.
         :raise NotAcceptable: When the server cannot generate a response
             in the content type used by this connection (see also:
             :py:meth:`.set_content_handler`).
@@ -244,6 +246,9 @@ class RestAuthConnection:
         :rtype: :py:class:`~http.client.HTTPResponse`
 
         :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this
+             action.
+        :raise NotAcceptable: When the server cannot generate a response
         :raise NotAcceptable: When the server cannot generate a response
             in the content type used by this connection (see also:
             :py:meth:`.set_content_handler`).
@@ -278,6 +283,8 @@ class RestAuthConnection:
         :raise BadRequest: If the server was unable to parse the request
             body.
         :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this
+             action.
         :raise NotAcceptable: When the server cannot generate a response
             in the content type used by this connection (see also:
             :py:meth:`.set_content_handler`).
@@ -319,6 +326,8 @@ class RestAuthConnection:
         :raise BadRequest: If the server was unable to parse the request
             body.
         :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this
+             action.
         :raise NotAcceptable: When the server cannot generate a response
             in the content type used by this connection (see also:
             :py:meth:`.set_content_handler`).
@@ -350,6 +359,8 @@ class RestAuthConnection:
         :return: The response to the request
         :rtype: :py:class:`~http.client.HTTPResponse`
         :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this
+             action.
         :raise NotAcceptable: When the server cannot generate a response
             in the content type used by this connection (see also:
             :py:meth:`.set_content_handler`).
