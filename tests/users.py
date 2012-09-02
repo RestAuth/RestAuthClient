@@ -17,6 +17,16 @@ username = "mati \u6110"
 password = "mati \u6111"
 propKey = "mati \u6112"
 propVal = "mati \u6113"
+propKey1 = "mati \u6112"
+propVal1 = "mati \u6113"
+propKey2 = "mati \u6114"
+propVal2 = "mati \u6115"
+propKey3 = "mati \u6116"
+propVal3 = "mati \u6117"
+propKey4 = "mati \u6118"
+propVal4 = "mati \u6119"
+propKey5 = "mati \u6120"
+propVal5 = "mati \u6121"
 
 groupname = "group \u6114"
 
@@ -374,6 +384,78 @@ class PropertyTests(PropertyBaseTests):
             self.fail()
         except error.ResourceNotFound as e:
             self.assertEqual("user", e.get_type())
+
+
+class SetMultiplePropertyTests(PropertyBaseTests):
+    def test_setNoProperties(self):
+        self.user.set_properties({})
+        self.assertProperties(**{})
+
+    def test_setOneProperty(self):
+        properties = {propKey1: propVal1}
+        self.user.set_properties(properties)
+        self.assertProperties(**properties)
+
+        properties = {propKey1: propVal2}
+        self.user.set_properties(properties)
+        self.assertProperties(**properties)
+
+    def test_setTwoProperties(self):
+        properties = {propKey1: propVal1, propKey2: propVal2}
+        self.user.set_properties(properties)
+        self.assertProperties(**properties)
+
+        properties = {propKey1: propVal2, propKey2: propVal1}
+        self.user.set_properties(properties)
+        self.assertProperties(**properties)
+
+    def test_setThreeProperties(self):
+        properties = {propKey1: propVal1, propKey2: propKey2, propKey3: propKey3}
+        self.user.set_properties(properties)
+        self.assertProperties(**properties)
+
+        properties = {propKey1: propVal2, propKey2: propKey3, propKey3: propVal1}
+        self.user.set_properties(properties)
+        self.assertProperties(**properties)
+
+    def test_setInvalidProperty(self):
+        properties = {'foo:bar': propVal1}
+
+        try:
+            self.user.set_properties(properties)
+            self.fail()
+        except error.PreconditionFailed:
+            self.assertProperties(**{})
+
+        properties = {'foo:bar': propVal1, propKey2: propVal2}
+
+        try:
+            self.user.set_properties(properties)
+            self.fail()
+        except error.PreconditionFailed:
+            self.assertProperties(**{})
+
+        good_props = {propKey2: propVal3}
+        self.user.set_properties(good_props)
+
+        try:
+            self.user.set_properties(properties)
+            self.fail()
+        except error.PreconditionFailed:
+            self.assertProperties(**good_props)
+
+
+    def test_mixedSetAndCreate(self):
+        properties = {propKey1: propVal1}
+        self.user.set_properties(properties)
+        self.assertProperties(**properties)
+
+        properties[propKey1] = propVal5
+        properties[propKey2] = propVal2
+        properties[propKey3] = propVal3
+
+        self.user.set_properties(properties)
+        self.assertProperties(**properties)
 
 
 class SimpleUserGroupTests(unittest.TestCase):
