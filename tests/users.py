@@ -98,6 +98,13 @@ class BasicTests(unittest.TestCase, PropertyTestMixin):
         user = restauth_user.create(self.conn, username, password, properties)
         self.assertProperties(user=user, **properties)
 
+    def test_createUserWithInvalidProperties(self):
+        properties = {propKey: propVal, 'foo:bar': propVal2}
+        args = [self.conn, username, password, properties]
+        self.assertRaises(error.PreconditionFailed,
+                          restauth_user.create, *args)
+        self.assertEqual([], restauth_user.get_all(self.conn))
+
     def test_createInvalidUser(self):
         args = [self.conn, "foo/bar", "password"]
         self.assertRaises(error.PreconditionFailed,
@@ -212,6 +219,13 @@ class CreateUserTest(unittest.TestCase):
     def test_createUserTestWithPasswordAndProperties(self):
         self.assertEquals(None, restauth_user.create_test(
             self.conn, username, "password", properties={'foo': 'bar'}))
+        self.assertEqual([], restauth_user.get_all(self.conn))
+
+    def test_createUserWithInvalidProperties(self):
+        properties = {propKey: propVal, 'foo:bar': propVal2}
+        args = [self.conn, username, password, properties]
+        self.assertRaises(error.PreconditionFailed,
+                          restauth_user.create, *args)
         self.assertEqual([], restauth_user.get_all(self.conn))
 
     def test_createUserTestWithTooShortUsername(self):
