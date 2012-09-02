@@ -190,6 +190,8 @@ class RestAuthConnection:
 
         if response.status == client.UNAUTHORIZED:
             raise error.Unauthorized(response)
+        elif response.status == client.FORBIDDEN:
+            raise error.Forbidden(response)
         elif response.status == client.NOT_ACCEPTABLE:
             raise error.NotAcceptable(response)
         elif response.status == \
