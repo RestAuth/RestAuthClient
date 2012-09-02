@@ -475,10 +475,6 @@ class User(common.RestAuthResource):
             HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        try:
-            from RestAuthClient import group
-        except ImportError:  # pragma: no cover
-            import group
         return group.get_all(self.conn, self)
 
     def in_group(self, grp):
@@ -500,10 +496,6 @@ class User(common.RestAuthResource):
             HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        try:
-            from RestAuthClient import group
-        except ImportError:  # pragma: no cover
-            import group
         if grp.__class__ == str or \
                 (sys.version_info < (3, 0) and grp.__class__ == unicode):
             grp = group.Group(self.conn, grp)
@@ -528,10 +520,6 @@ class User(common.RestAuthResource):
             HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        try:
-            from RestAuthClient import group
-        except ImportError:  # pragma: no cover
-            import group
         if grp.__class__ == str or \
                 (sys.version_info < (3, 0) and grp.__class__ == unicode):
             grp = group.Group(self.conn, grp)
@@ -554,10 +542,6 @@ class User(common.RestAuthResource):
             HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        try:
-            from RestAuthClient import group
-        except ImportError:  # pragma: no cover import group
-            import group
         if grp.__class__ == str or \
                 (sys.version_info < (3, 0) and grp.__class__ == unicode):
             grp = group.Group(self.conn, grp)
@@ -581,3 +565,8 @@ class User(common.RestAuthResource):
             return '<User: {0}>'.format(self.name.encode('utf-8'))
         else:
             return '<User: {0}>'.format(self.name)
+
+try:
+    from RestAuthClient import group
+except ImportError:  # pragma: no cover
+    import group
