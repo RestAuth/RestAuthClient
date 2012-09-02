@@ -392,6 +392,7 @@ class User(common.RestAuthResource):
         :raise NotAcceptable: When the server cannot generate a response
             in the content type used by this connection (see also:
             :py:meth:`~.RestAuthConnection.set_content_handler`).
+        :raise PreconditionFailed: When the property name is invalid.
         :raise UnsupportedMediaType: The server does not support the
             content type used by this connection (see also:
             :py:meth:`~.RestAuthConnection.set_content_handler`).
@@ -408,6 +409,8 @@ class User(common.RestAuthResource):
             return
         elif resp.status == http.NOT_FOUND:
             raise error.ResourceNotFound(resp)
+        elif resp.status == http.PRECONDITION_FAILED:
+            raise error.PreconditionFailed(resp)
         else:  # pragma: no cover
             raise UnknownStatus(resp)
 
@@ -428,6 +431,8 @@ class User(common.RestAuthResource):
         :raise NotAcceptable: When the server cannot generate a response
             in the content type used by this connection (see also:
             :py:meth:`~.RestAuthConnection.set_content_handler`).
+        :raise PreconditionFailed: When any of the given property names is
+            invalid.
         :raise UnsupportedMediaType: The server does not support the
             content type used by this connection (see also:
             :py:meth:`~.RestAuthConnection.set_content_handler`).
@@ -436,11 +441,13 @@ class User(common.RestAuthResource):
         :raise UnknownStatus: If the response status is unknown.
         """
         url = '%s/props/' % self.name
-        resp = self._put(url, params=kwargs)
+        resp = self._put(url, params=props)
         if resp.status == http.NO_CONTENT:
             return
         elif resp.status == http.NOT_FOUND:
             raise error.ResourceNotFound(resp)
+        elif resp.status == http.PRECONDITION_FAILED:
+            raise error.PreconditionFailed(resp)
         else:  # pragma: no cover
             raise UnknownStatus(resp)
 
