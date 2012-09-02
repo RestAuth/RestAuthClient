@@ -411,6 +411,39 @@ class User(common.RestAuthResource):
         else:  # pragma: no cover
             raise UnknownStatus(resp)
 
+    def set_properties(self, props):
+        """
+        Set multiple properties at once. This method overwrites any previous
+        settings.
+
+        :param props: The new properties to set
+        :type  props: dict
+
+        :raise BadRequest: If the server was unable to parse the request
+            body.
+        :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this
+             action.
+        :raise ResourceNotFound: If the user does not exist in RestAuth.
+        :raise NotAcceptable: When the server cannot generate a response
+            in the content type used by this connection (see also:
+            :py:meth:`~.RestAuthConnection.set_content_handler`).
+        :raise UnsupportedMediaType: The server does not support the
+            content type used by this connection (see also:
+            :py:meth:`~.RestAuthConnection.set_content_handler`).
+        :raise InternalServerError: When the RestAuth service returns
+            HTTP status code 500
+        :raise UnknownStatus: If the response status is unknown.
+        """
+        url = '%s/props/' % self.name
+        resp = self._put(url, params=kwargs)
+        if resp.status == http.NO_CONTENT:
+            return
+        elif resp.status == http.NOT_FOUND:
+            raise error.ResourceNotFound(resp)
+        else:  # pragma: no cover
+            raise UnknownStatus(resp)
+
     def get_property(self, prop):
         """
         Get the given property for this user.
