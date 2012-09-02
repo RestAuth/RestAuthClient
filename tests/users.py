@@ -21,7 +21,23 @@ propVal = "mati \u6113"
 groupname = "group \u6114"
 
 
-class BasicTests(unittest.TestCase):
+class PropertyTestMixin(object):
+    def assertProperties(self, user=None, **kwargs):
+        if user is None:
+            user = self.user
+
+        actual = user.get_properties()
+
+        # test and remove any auto-created properties
+        self.assertTrue('date joined' in actual)
+        actual.pop('date joined')
+
+        self.assertEqual(kwargs, actual)
+        for key, value in kwargs.items():
+            self.assertEqual(value, user.get_property(key))
+
+
+class BasicTests(unittest.TestCase, PropertyTestMixin):
     def setUp(self):
         self.conn = RestAuthConnection(rest_host, rest_user, rest_passwd)
         if restauth_user.get_all(self.conn):
@@ -70,9 +86,7 @@ class BasicTests(unittest.TestCase):
     def test_createUserWithProperty(self):
         properties = {propKey: propVal}
         user = restauth_user.create(self.conn, username, password, properties)
-
-        self.assertEqual(user, restauth_user.get(self.conn, username))
-        self.assertEqual({propKey: propVal}, user.get_properties())
+        self.assertProperties(user=user, **properties)
 
     def test_createInvalidUser(self):
         args = [self.conn, "foo/bar", "password"]
@@ -223,7 +237,7 @@ class CreateUserTest(unittest.TestCase):
             user.remove()
 
 
-class PropertyTests(unittest.TestCase):
+class PropertyBaseTests(unittest.TestCase, PropertyTestMixin):
     def setUp(self):
         self.conn = RestAuthConnection(rest_host, rest_user, rest_passwd)
         if restauth_user.get_all(self.conn):
@@ -235,30 +249,29 @@ class PropertyTests(unittest.TestCase):
         for user in restauth_user.get_all(self.conn):
             user.remove()
 
+
+class PropertyTests(PropertyBaseTests):
     def test_createProperty(self):
         self.user.create_property(propKey, propVal)
-        self.assertEqual({propKey: propVal}, self.user.get_properties())
-        self.assertEqual(propVal, self.user.get_property(propKey))
+        self.assertProperties(**{propKey: propVal})
 
     def test_createPropertyTwice(self):
         self.user.create_property(propKey, propVal)
-        self.assertEqual({propKey: propVal}, self.user.get_properties())
-        self.assertEqual(propVal, self.user.get_property(propKey))
+        self.assertProperties(**{propKey: propVal})
 
         try:
             self.user.create_property(propKey, propVal + "foo")
             self.fail()
         except restauth_user.PropertyExists as e:
             # verify that the prop hasn't changed:
-            self.assertEqual({propKey: propVal}, self.user.get_properties())
-            self.assertEqual(propVal, self.user.get_property(propKey))
+            self.assertProperties(**{propKey: propVal})
 
     def test_createInvalidProperty(self):
         try:
             self.user.create_property("foo:bar", propVal + "foo")
             self.fail()
         except error.PreconditionFailed:
-            self.assertEqual({}, self.user.get_properties())
+            self.assertProperties(**{})
 
     def test_createPropertyWithInvalidUser(self):
         user = restauth_user.User(self.conn, username + " foo")
@@ -274,19 +287,16 @@ class PropertyTests(unittest.TestCase):
 
     def test_setProperty(self):
         self.assertEqual(None, self.user.set_property(propKey, propVal))
-        self.assertEqual({propKey: propVal}, self.user.get_properties())
-        self.assertEqual(propVal, self.user.get_property(propKey))
+        self.assertProperties(**{propKey: propVal})
 
     def test_setPropertyTwice(self):
         newpropVal = propVal + " new"
 
         self.assertEqual(None, self.user.set_property(propKey, propVal))
-        self.assertEqual({propKey: propVal}, self.user.get_properties())
-        self.assertEqual(propVal, self.user.get_property(propKey))
+        self.assertProperties(**{propKey: propVal})
 
         self.assertEqual(propVal, self.user.set_property(propKey, newpropVal))
-        self.assertEqual({propKey: newpropVal}, self.user.get_properties())
-        self.assertEqual(newpropVal, self.user.get_property(propKey))
+        self.assertProperties(**{propKey: newpropVal})
 
     def test_setPropertyWithInvalidUser(self):
         user = restauth_user.User(self.conn, username + " foo")
@@ -304,7 +314,7 @@ class PropertyTests(unittest.TestCase):
         self.assertEqual(None, self.user.create_property(propKey, propVal))
 
         self.user.remove_property(propKey)
-        self.assertEqual({}, self.user.get_properties())
+        self.assertProperties()
         try:
             self.user.get_property(propKey)
             self.fail()
@@ -312,7 +322,7 @@ class PropertyTests(unittest.TestCase):
             self.assertEqual("property", e.get_type())
 
     def test_removeInvalidProperty(self):
-        self.user.create_property(propKey, propVal)
+        self.assertEquals(None, self.user.create_property(propKey, propVal))
 
         try:
             self.user.remove_property(propKey + " foo")
@@ -320,8 +330,7 @@ class PropertyTests(unittest.TestCase):
         except error.ResourceNotFound as e:
             self.assertEqual("property", e.get_type())
             self.assertEqual([self.user], restauth_user.get_all(self.conn))
-            self.assertEqual({propKey: propVal}, self.user.get_properties())
-            self.assertEqual(propVal, self.user.get_property(propKey))
+            self.assertProperties(**{propKey: propVal})
 
     def test_removePropertyWithInvalidUser(self):
         user = restauth_user.User(self.conn, "new user")
@@ -340,7 +349,7 @@ class PropertyTests(unittest.TestCase):
         """
 
         user_2 = restauth_user.create(self.conn, "new user", "password")
-        self.user.create_property(propKey, propVal)
+        self.assertEquals(None, self.user.create_property(propKey, propVal))
 
         try:
             user_2.remove_property(propKey)
@@ -348,10 +357,7 @@ class PropertyTests(unittest.TestCase):
         except error.ResourceNotFound as e:
             self.assertEqual("property", e.get_type())
 
-        self.assertEqual({}, user_2.get_properties())
-
-        self.assertEqual({propKey: propVal}, self.user.get_properties())
-        self.assertEqual(propVal, self.user.get_property(propKey))
+        self.assertProperties(user=user_2, **{})
 
     def test_getInvalidProperty(self):
         try:
@@ -418,17 +424,10 @@ class SimpleUserGroupTests(unittest.TestCase):
             self.assertEqual("user", e.get_type())
 
 
-class CreatePropertyTest(unittest.TestCase):
-    def setUp(self):
-        self.conn = RestAuthConnection(rest_host, rest_user, rest_passwd)
-        self.user = restauth_user.create(self.conn, username, password)
-
-    def tearDown(self):
-        self.user.remove()
-
+class CreatePropertyTest(PropertyBaseTests):
     def test_createProperty(self):
         self.assertIsNone(self.user.create_property_test(propKey, propVal))
-        self.assertEqual({}, self.user.get_properties())
+        self.assertProperties(**{})
 
     def test_createExistingProperty(self):
         self.user.create_property(propKey, propVal)
@@ -437,15 +436,14 @@ class CreatePropertyTest(unittest.TestCase):
             self.user.create_property_test(propKey, "bar")
             self.fail()
         except PropertyExists:
-            self.assertEqual({propKey: propVal}, self.user.get_properties())
-            self.assertEqual(propVal, self.user.get_property(propKey))
+            self.assertProperties(**{propKey: propVal})
 
     def test_createInvalidProperty(self):
         try:
             self.user.create_property_test("foo:bar", "bar")
             self.fail()
         except error.PreconditionFailed:
-            self.assertEqual({}, self.user.get_properties())
+            self.assertProperties(**{})
 
     def test_createPropertyForNonExistingUser(self):
         user = restauth_user.User(self.conn, 'foobar')
