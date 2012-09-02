@@ -186,21 +186,21 @@ class CreateUserTest(unittest.TestCase):
         self.conn = RestAuthConnection(rest_host, rest_user, rest_passwd)
 
     def test_createUserTest(self):
-        self.assertIsNone(restauth_user.create_test(self.conn, username))
+        self.assertEquals(None, restauth_user.create_test(self.conn, username))
         self.assertEqual([], restauth_user.get_all(self.conn))
 
     def test_createUserTestWithPassword(self):
-        self.assertIsNone(restauth_user.create_test(
+        self.assertEquals(None, restauth_user.create_test(
             self.conn, username, "password"))
         self.assertEqual([], restauth_user.get_all(self.conn))
 
     def test_createUserTestWithProperties(self):
-        self.assertIsNone(restauth_user.create_test(
+        self.assertEquals(None, restauth_user.create_test(
             self.conn, username, properties={'foo': 'bar'}))
         self.assertEqual([], restauth_user.get_all(self.conn))
 
     def test_createUserTestWithPasswordAndProperties(self):
-        self.assertIsNone(restauth_user.create_test(
+        self.assertEquals(None, restauth_user.create_test(
             self.conn, username, "password", properties={'foo': 'bar'}))
         self.assertEqual([], restauth_user.get_all(self.conn))
 
@@ -426,7 +426,8 @@ class SimpleUserGroupTests(unittest.TestCase):
 
 class CreatePropertyTest(PropertyBaseTests):
     def test_createProperty(self):
-        self.assertIsNone(self.user.create_property_test(propKey, propVal))
+        self.assertEquals(None,
+                          self.user.create_property_test(propKey, propVal))
         self.assertProperties(**{})
 
     def test_createExistingProperty(self):
