@@ -22,7 +22,7 @@ from distutils.command.build import build as _build
 name = 'RestAuthClient'
 url = 'https://python.restauth.net'
 
-LATEST_RELEASE = '0.5.1'
+LATEST_RELEASE = '0.6.0'
 
 class build_doc( Command ):
 	description = "Build documentation."
@@ -38,7 +38,7 @@ class build_doc( Command ):
 		version = get_version()
 		os.environ['SPHINXOPTS'] = '-D release=%s -D version=%s'%(version, version)
 		os.environ['LATEST_RELEASE'] = LATEST_RELEASE
-		
+
 		cmd = [ 'make', '-C', 'doc', 'html' ]
 		p = Popen( cmd )
 		p.communicate()
@@ -74,7 +74,7 @@ def get_version():
 		f = open( 'debian/changelog' )
 		version = re.search( '\((.*)\)', f.readline() ).group(1)
 		f.close()
-		
+
 		if ':' in version: # strip epoch:
 			version = version.split( ':', 1 )[1]
 		version = version.rsplit( '-', 1 )[0] # strip debian revision
@@ -106,13 +106,13 @@ def run_test_suite( host, user, passwd ):
 class prepare_debian_changelog(Command):
 	description = "prepare debian/changelog file"
 	user_options = []
-	
+
 	def initialize_options( self ): pass
 	def finalize_options( self ): pass
 	def run(self):
 		if not os.path.exists('debian/changelog'):
 			sys.exit(0)
-		
+
 		version = get_version()
 		cmd = ['sed', '-i', '1s/(.*)/(%s-1)/' % version, 'debian/changelog']
 		p = Popen(cmd)
@@ -125,7 +125,7 @@ class test( Command ):
 		( 'password=', 'p', 'Password to use vor RestAuth server' ),
 		( 'host=', 'h', 'URL of the RestAuth server (ex: http://auth.example.com)')]
 
-	def initialize_options( self ): 
+	def initialize_options( self ):
 		self.user = 'vowi'
 		self.passwd = 'vowi'
 		self.host = 'http://[::1]:8000'
@@ -136,7 +136,7 @@ class test( Command ):
 		common_path = os.path.join( '..', 'restauth-common', 'python' )
 		if os.path.exists( common_path ):
 			sys.path.insert( 0, common_path )
-			
+
 		run_test_suite( self.host, self.user, self.passwd )
 
 class coverage( Command ):
@@ -146,9 +146,9 @@ class coverage( Command ):
 		( 'user=', 'u', 'Username to use vor RestAuth server' ),
 		( 'password=', 'p', 'Password to use vor RestAuth server' ),
 		( 'host=', 'h', 'URL of the RestAuth server (ex: http://auth.example.com)') ]
-	
 
-	def initialize_options( self ): 
+
+	def initialize_options( self ):
 		self.user = 'vowi'
 		self.passwd = 'vowi'
 		self.host = 'http://[::1]:8000'

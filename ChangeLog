@@ -1,4 +1,4 @@
-RestAuthClient 0.6.0 (DD MM YYYY)
+RestAuthClient 0.6.0 (15 September 2012)
 
   This release adds support for version 0.6 of the RestAuth protocol. This
   brings the following enhancements:
