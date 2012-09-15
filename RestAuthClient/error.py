@@ -16,57 +16,66 @@
 # along with RestAuth.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-This module collects various general exceptions that might be thrown on many 
+This module collects various general exceptions that might be thrown on many
 different (or all) RestAuth methods.
 
 .. moduleauthor:: Mathias Ertl <mati@restauth.net>
 """
 
-from RestAuthCommon.error import RestAuthImplementationException, RestAuthRuntimeException, ResourceConflict
+from RestAuthCommon.error import (
+    RestAuthImplementationException,
+    RestAuthRuntimeException,
+    ResourceConflict
+)
 
-class UnknownStatus( RestAuthImplementationException ):
-	"""
-	Thrown when a method returns an unexpected status.
-	
-	This exception can be thrown by every method that interacts with the
-	RestAuth service.
-	"""
-	pass
-	
-class HttpException( RestAuthRuntimeException ):
-	"""
-	Thrown when the HTTP request throws an execption. This most likely means that the RestAuth
-	server is unreachable.
-	
-	:param Exception cause: The exception causing this exception to be created.
-	"""
-	def __init__( self, cause ):
-		self.cause = cause
-		self.value = str(cause)
-		
-	def get_cause( self ):
-		"""
-		Get the exception that caused this exception.
-		
-		:return: The exception that caused this exception
-		:rtype: Exception
-		"""
-		return self.cause
 
-class UserExists( ResourceConflict ):
-	"""
-	Thrown when attempting to create a :py:class:`User` that already exists.
-	"""
-	pass
+class UnknownStatus(RestAuthImplementationException):
+    """
+    Thrown when a method returns an unexpected status.
 
-class PropertyExists( ResourceConflict ):
-	"""
-	Thrown when attempting to create a property that already exists.
-	"""
-	pass
+    This exception can be thrown by every method that interacts with the
+    RestAuth service.
+    """
+    pass
 
-class GroupExists( ResourceConflict ):
-	"""
-	Thrown when a :py:class:`.Group` that already exists should be created.
-	"""
-	pass
+
+class HttpException(RestAuthRuntimeException):
+    """
+    Thrown when the HTTP request throws an execption. This most likely means
+    that the RestAuth server is unreachable.
+
+    :param Exception cause: The exception causing this exception to be created.
+    """
+    def __init__(self, cause):
+        self.cause = cause
+        self.value = str(cause)
+
+    def get_cause(self):
+        """
+        Get the exception that caused this exception.
+
+        :return: The exception that caused this exception
+        :rtype: Exception
+        """
+        return self.cause
+
+
+class UserExists(ResourceConflict):
+    """
+    Thrown when attempting to create a :py:class:`User` that already exists.
+    """
+    pass
+
+
+class PropertyExists(ResourceConflict):
+    """
+    Thrown when attempting to create a property that already exists.
+    """
+    pass
+
+
+class GroupExists(ResourceConflict):
+    """
+    Thrown when a :py:class:`.Group` that already exists should be created.
+    """
+    pass

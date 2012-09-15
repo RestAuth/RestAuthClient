@@ -24,6 +24,9 @@ repository to a directory named "RestAuthClient", simply do:
 
    git clone http://git.fsinf.at/restauth/python.git RestAuthClient
 
+.. NOTE:: A mirror of this git-repository is available
+   `on github <https://github.com/matigit/RestAuthClient>`_.
+
 Older versions are marked as tags. You can view available tags with :command:`git tag -l`. You can
 use any of those versions with :command:`git checkout`, for example :command:`git checkout 1.0`.
 To move back to the newest version, use :command:`git checkout master`.
@@ -34,7 +37,7 @@ If you ever want to update the source code, just use:
 
    python setup.py clean
    git pull
-   
+
 ... and do the same as if you where
 :ref:`doing a new installation <install_from-source_installation>`.
 
@@ -79,7 +82,7 @@ Run tests
 RestAuthClient features an extensive test suite. Since it implements a network protocol, the library
 requires a RestAuth server to run on ``http://[::1]:8000`` that has the service ``vowi`` with the
 password ``vowi`` preconfigured. The `RestAuth server <https://server.restauth.net>`_ contains the
-script ``test.sh`` in its source code to simply start a server and add the expected service. 
+script ``test.sh`` in its source code to simply start a server and add the expected service.
 
 After you started the server, you can run test-suite using:
 
@@ -94,7 +97,7 @@ You can also generate a test coverage report using `coverage.py
 <http://nedbatchelder.com/code/coverage/>`_ using:
 
 .. code-block:: bash
-   
+
    python setup.py coverage
 
 By default, a pretty coverage report will go to doc/coverage/.

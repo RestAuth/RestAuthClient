@@ -1,3 +1,13 @@
+RestAuthClient 0.6.0 (15 September 2012)
+
+  This release adds support for version 0.6 of the RestAuth protocol. This
+  brings the following enhancements:
+  * Support for HTTP status code 403 FORBIDDEN
+  * Support for setting multiple user properties in a single HTTP call.
+
+  General:
+  * The whole code is now pep8 clean
+
 RestAuthClient 0.5.1 (13 November 2011)
 
   General:
@@ -9,7 +19,8 @@ RestAuthClient 0.5.1 (13 November 2011)
   * 'clean' target now removes more generated files
   * handle version in a more centralized way
   * The 'debian' branch now includes a ready-to-use debian package.
-  * The new command 'prepare_debian_changelog' updates debian/changelog to the newest version
+  * The new command 'prepare_debian_changelog' updates debian/changelog to the
+    newest version
   
   test functions:
   * restauth_user.create_test, User.create_property_test and group.create_test
