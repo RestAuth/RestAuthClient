@@ -18,6 +18,8 @@ import re
 import sys
 import shutil
 import time
+import unittest
+
 from distutils.core import setup, Command
 from subprocess import Popen, PIPE
 from distutils.command.clean import clean as _clean
@@ -101,11 +103,15 @@ class version(Command):
         print(get_version())
 
 
-def run_test_suite(host, user, passwd):
-    import unittest
-    from tests import connection, users, groups
+def run_test_suite(host, user, passwd, part=None):
+    if part is None:
+        from tests import connection, users, groups
+        suite = connection, users, groups
+    else:
+        mod = __import__('tests', globals(), locals(), [part], -1)
+        suite = [getattr(mod, part)]
 
-    for mod in [connection, users, groups]:
+    for mod in suite:
         mod.rest_host = host
         mod.rest_user = user
         mod.rest_passwd = passwd
@@ -144,29 +150,34 @@ server_options = [
 
 class test(Command):
     description = "Run test suite."
-    user_options = server_options
+    user_options = server_options + [
+        ('part=', None,
+         'Only test one module (either "connection", "users" or "groups")'),
+    ]
 
     def initialize_options(self):
         self.user = 'vowi'
         self.passwd = 'vowi'
         self.host = 'http://[::1]:8000'
+        self.part = None
 
     def finalize_options(self):
-        pass
+        if self.part not in [None, 'connection', 'users', 'groups']:
+            print('part must be one of "connection", "users" or "groups"')
+            sys.exit(1)
 
     def run(self):
         common_path = os.path.join('..', 'restauth-common', 'python')
         if os.path.exists(common_path):
             sys.path.insert(0, common_path)
 
-        run_test_suite(self.host, self.user, self.passwd)
+        run_test_suite(self.host, self.user, self.passwd, part=self.part)
 
 
 class coverage(Command):
     description = "Run test suite and generate code coverage analysis."
-    user_options = [
-        ('output-dir=', 'o', 'Output directory for coverage analysis')] + \
-        server_options,
+    user_options = server_options + [
+        ('output-dir=', 'o', 'Output directory for coverage analysis')]
 
     def initialize_options(self):
         self.user = 'vowi'
