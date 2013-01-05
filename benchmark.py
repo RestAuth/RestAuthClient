@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import argparse
 import time
 
 from RestAuthClient.restauth_user import (
@@ -8,15 +9,28 @@ from RestAuthClient.group import (
     create as group_create, get as group_get, get_all as group_get_all)
 from RestAuthClient.common import RestAuthConnection
 
-count=100
+parser = argparse.ArgumentParser(description="Benchmark a RestAuth service.")
+parser.add_argument('-c', '--count', type=int, metavar='N', default=100,
+                    help="Create N users (default: %(default)s).")
+parser.add_argument('--host', default="http://[::1]:8000",
+                    help="Use HOST as RestAuth host (default: %(default)s).")
+parser.add_argument('--user', default="example.com",
+                    help="Use USER as RestAuth user (default: %(default)s).")
+parser.add_argument(
+    '--password', default="nopass",
+    help="Use PASSWORD as RestAuth password (default: %(default)s)."
+)
+args = parser.parse_args()
+
+count = args.count
 
 usernames = ['user%s' % i for i in range(1, count)]
-props = dict([('key%s' % i, 'val%s' % i) for i in range(1, int(count/10))])
+props = dict([('key%s' % i, 'val%s' % i) for i in range(1, int(count / 10))])
 groupnames = ['group%s' % i for i in range(1, count)]
 
 users = []
 groups = []
-conn = RestAuthConnection('http://127.0.0.1', 'example.com', 'nopass')
+conn = RestAuthConnection(args.host, args.user, args.password)
 
 total_start = time.time()
 
@@ -50,7 +64,7 @@ for user in users:
     user.set_password('foobar')
 print('%.3f seconds' % (time.time() - start))
 
-print('Create %s properties for each user...' % int(count/10), end=' ')
+print('Create %s properties for each user...' % int(count / 10), end=' ')
 start = time.time()
 for user in users:
     for key, val in props.items():
@@ -79,7 +93,7 @@ for user in users:
         user.set_property(key, 'foobar')
 print('%.3f seconds' % (time.time() - start))
 
-print('Delete %s properties of each user...' % (count/10), end=' ')
+print('Delete %s properties of each user...' % (count / 10), end=' ')
 start = time.time()
 for user in users:
     for key in props.keys():
@@ -95,7 +109,7 @@ print('%.3f seconds' % (time.time() - start))
 print('Adding users to groups...', end=' ')
 start = time.time()
 # we add 100 users to first group, 100 users to second group, ...
-for i in range(0, int(count/100)):
+for i in range(0, int(count / 100)):
     offset = i * 100
     for user in users[offset:offset + 100]:
         groups[i].add_user(user.name)
@@ -111,7 +125,7 @@ print('%.3f seconds' % (time.time() - start))
 
 print('Checking individual memberships...', end=' ')
 start = time.time()
-for i in range(0, int(count/100)):
+for i in range(0, int(count / 100)):
     for user in users[:100]:  # only use 100 users, as this multiplies!
         groups[i].is_member(user.name)
         groups[i].is_member(user.name)
@@ -120,7 +134,7 @@ print('%.3f seconds' % (time.time() - start))
 
 print('Remove memberships...', end=' ')
 start = time.time()
-for i in range(0, int(count/100)):
+for i in range(0, int(count / 100)):
     offset = i * 100
     for user in users[offset:offset + 100]:
         groups[i].remove_user(user.name)
