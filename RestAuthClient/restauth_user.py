@@ -191,9 +191,22 @@ class User(common.RestAuthResource):
     prefix = '/users/'
     """Prefix used for HTTP query methods inherited from base class"""
 
+    _group = None
+
     def __init__(self, conn, name):
         self.conn = conn
         self.name = name
+
+    @property
+    def group(self):
+        """Provide access to the group module.
+
+        This module is loaded upon first use to avoid circular imports.
+        """
+        if User._group is None:
+            _temp = __import__('RestAuthClient', fromlist=['group'])
+            User._group = _temp.group
+        return User._group
 
     def set_password(self, password=None):
         """
@@ -515,7 +528,7 @@ class User(common.RestAuthResource):
             HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        return group.get_all(self.conn, self)
+        return self.group.get_all(self.conn, self)
 
     def in_group(self, grp):
         """
@@ -538,7 +551,7 @@ class User(common.RestAuthResource):
         """
         if grp.__class__ == str or \
                 (sys.version_info < (3, 0) and grp.__class__ == unicode):
-            grp = group.Group(self.conn, grp)
+            grp = self.group.Group(self.conn, grp)
         return grp.is_member(self.name)
 
     def add_group(self, grp):
@@ -562,7 +575,7 @@ class User(common.RestAuthResource):
         """
         if grp.__class__ == str or \
                 (sys.version_info < (3, 0) and grp.__class__ == unicode):
-            grp = group.Group(self.conn, grp)
+            grp = self.group.Group(self.conn, grp)
         grp.add_user(self.name)
 
     def remove_group(self, grp):
@@ -584,7 +597,7 @@ class User(common.RestAuthResource):
         """
         if grp.__class__ == str or \
                 (sys.version_info < (3, 0) and grp.__class__ == unicode):
-            grp = group.Group(self.conn, grp)
+            grp = self.group.Group(self.conn, grp)
         grp.remove_user(self.name)
 
     def __eq__(self, other):
@@ -605,8 +618,3 @@ class User(common.RestAuthResource):
             return '<User: {0}>'.format(self.name.encode('utf-8'))
         else:
             return '<User: {0}>'.format(self.name)
-
-try:
-    from RestAuthClient import group
-except ImportError:  # pragma: no cover
-    import group
