@@ -7,3 +7,5 @@ MANIFEST
 build/
 dist/
 Makefile.local
+py3/
+py2/
