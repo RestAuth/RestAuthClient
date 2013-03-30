@@ -72,7 +72,7 @@ class RestAuthConnection:
     :type  passwd: str
     :param content_handler: Directly passed to :py:meth:`.set_content_handler`.
     :type  content_handler: str or subclass of
-        RestAuthCommon.handlers.content_handler.
+        RestAuthCommon.handlers.ContentHandler.
     """
 
     def __init__(self, host, user, passwd, content_handler='application/json'):
@@ -125,7 +125,7 @@ class RestAuthConnection:
         :type  content_handler: str or
            :py:class:`~RestAuthCommon:RestAuthCommon.handlers.content_handler`
         """
-        if isinstance(content_handler, handlers.content_handler):
+        if isinstance(content_handler, handlers.ContentHandler):
             self.content_handler = content_handler
         elif isinstance(content_handler, str) or \
                 isinstance(content_handler, unicode):
