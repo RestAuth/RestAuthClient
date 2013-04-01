@@ -1,7 +1,3 @@
-RestAuthClient 0.6.2 (XX XXXX XXXX)
-  
-  * add python2 identifier for pypi.
-
 RestAuthClient 0.6.1 (01 April 2013)
 
   * Add --part option to setup.py to only test part of the test-suite.
@@ -9,6 +5,7 @@ RestAuthClient 0.6.1 (01 April 2013)
   * Fix intersphinx documentation.
   * Cleanup of import statements.
   * Use cleaner isinstance() instead of ...__class__ == <class>
+  * add requires to setup.py
 
 RestAuthClient 0.6.0 (15 September 2012)
 
