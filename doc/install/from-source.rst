@@ -8,7 +8,7 @@ RestAuthClient is written as a *bleeding edge* project and thus requires relativ
 versions.
 
 * `Python 2.6 <http://www.python.org/>`_ or later
-* `RestAuthCommon <https://common.restauth.net>`_
+* `RestAuthCommon 0.6.1 <https://common.restauth.net>`_ or later
 
 Get source
 ----------

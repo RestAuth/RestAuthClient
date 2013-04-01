@@ -1,2 +1,2 @@
--e git+https://git.fsinf.at/restauth/restauth-common.git#egg=RestAuthCommon
+RestAuthCommon==0.6.1
 Sphinx==1.1.3
