@@ -20,30 +20,26 @@ Central code for handling connections to a RestAuth service.
 
 .. moduleauthor:: Mathias Ertl <mati@restauth.net>
 """
-try:
-    from http import client
-except ImportError:  # pragma: no cover
-    # this is for python 2.x and earlier
-    import httplib as client
 
 import base64
 import os
 import sys
 
 try:
-    from RestAuthClient.error import HttpException
-except ImportError:  # pragma: no cover
-    from error import HttpException
-
-try:
+    from http import client
     from urllib.parse import quote
     from urllib.parse import urlencode
     from urllib.parse import urlparse
 except ImportError:  # pragma: no cover
     # this is for python 2.x and earlier
+    import httplib as client
     from urllib import quote
     from urllib import urlencode
     from urlparse import urlparse
+
+if sys.version_info >= (3, 2):  # pragma: no cover
+    from ssl import CERT_REQUIRED
+    from ssl import SSLContext
 
 try:
     from RestAuthCommon import error
@@ -54,8 +50,7 @@ except ImportError:  # pragma: no cover
     print("Error: The RestAuthCommon library is not installed.")
     sys.exit(1)
 
-if sys.version_info >= (3, 2):  # pragma: no cover
-    from ssl import SSLContext, CERT_REQUIRED
+from RestAuthClient.error import HttpException
 
 
 class RestAuthConnection:
