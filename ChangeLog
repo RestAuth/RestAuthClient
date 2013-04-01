@@ -5,7 +5,8 @@ RestAuthClient 0.6.1 (01 April 2013)
   * Fix intersphinx documentation.
   * Cleanup of import statements.
   * Use cleaner isinstance() instead of ...__class__ == <class>
-  * add requires to setup.py
+  * Switch to distribute
+  * add install_requires to setup.py
 
 RestAuthClient 0.6.0 (15 September 2012)
 

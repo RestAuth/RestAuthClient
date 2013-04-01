@@ -12,3 +12,4 @@ py2/
 bin/
 include/
 lib/
+*.egg-info/
