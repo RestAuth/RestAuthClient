@@ -2,6 +2,9 @@ RestAuthClient 0.6.1 (XX XXXX 2013)
 
   * Add --part option to setup.py to only test part of the test-suite.
   * Add a small benchmark script to test performance of RestAuth services.
+  * Fix intersphinx documentation.
+  * Cleanup of import statements.
+  * Use cleaner isinstance() instead of ...__class__ == <class>
 
 RestAuthClient 0.6.0 (15 September 2012)
 
