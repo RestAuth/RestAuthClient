@@ -221,7 +221,7 @@ man_pages = [
 #intersphinx_mapping = {'http://docs.python.org/': None}
 intersphinx_mapping = {
 	'python': ('http://docs.python.org/3.2', None),
-	'restauthcommon': ('https://common.restauth.net', None),
+	'common': ('https://common.restauth.net', None),
 }
 
 LATEST_RELEASE = os.environ.get( 'LATEST_RELEASE' )

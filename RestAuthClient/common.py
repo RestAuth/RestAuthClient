@@ -71,8 +71,8 @@ class RestAuthConnection:
         RestAuth (passed to :py:meth:`.set_credentials`).
     :type  passwd: str
     :param content_handler: Directly passed to :py:meth:`.set_content_handler`.
-    :type  content_handler: str or subclass of
-        RestAuthCommon.handlers.ContentHandler.
+    :type  content_handler: str or
+        :py:class:`ContentHandler <common:RestAuthCommon.handlers.ContentHandler>`
     """
 
     def __init__(self, host, user, passwd, content_handler='application/json'):
@@ -119,11 +119,10 @@ class RestAuthConnection:
 
         :param content_handler: Either a self-implemented handler, which must
             be a subclass of
-            :py:class:`~RestAuthCommon:RestAuthCommon.handlers.content_handler`
+            :py:class:`ContentHandler <common:RestAuthCommon.handlers.ContentHandler>`
             or a str, which must be one of the MIME types specified in
-            :py:data:`~RestAuthCommon:RestAuthCommon.handlers.CONTENT_HANDLERS`.
-        :type  content_handler: str or
-           :py:class:`~RestAuthCommon:RestAuthCommon.handlers.content_handler`
+            :py:data:`CONTENT_HANDLERS <common:RestAuthCommon.handlers.CONTENT_HANDLERS>`.
+        :type  content_handler: str or :py:class:`ContentHandler <common:RestAuthCommon.handlers.ContentHandler>`
         """
         if isinstance(content_handler, handlers.ContentHandler):
             self.content_handler = content_handler
