@@ -548,8 +548,8 @@ class User(common.RestAuthResource):
             HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        if grp.__class__ == str or \
-                (sys.version_info < (3, 0) and grp.__class__ == unicode):
+        if isinstance(grp, str) or \
+                (sys.version_info < (3, 0) and isinstance(grp, unicode)):
             grp = self.group.Group(self.conn, grp)
         return grp.is_member(self.name)
 
@@ -572,8 +572,8 @@ class User(common.RestAuthResource):
             HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        if grp.__class__ == str or \
-                (sys.version_info < (3, 0) and grp.__class__ == unicode):
+        if isinstance(grp, str) or \
+                (sys.version_info < (3, 0) and isinstance(grp, unicode)):
             grp = self.group.Group(self.conn, grp)
         grp.add_user(self.name)
 
@@ -594,8 +594,8 @@ class User(common.RestAuthResource):
             HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        if grp.__class__ == str or \
-                (sys.version_info < (3, 0) and grp.__class__ == unicode):
+        if isinstance(grp, str) or \
+                (sys.version_info < (3, 0) and isinstance(grp, unicode)):
             grp = self.group.Group(self.conn, grp)
         grp.remove_user(self.name)
 
@@ -613,7 +613,7 @@ class User(common.RestAuthResource):
         return hash(self.name)
 
     def __repr__(self):  # pragma: no cover
-        if sys.version_info < (3, 0) and self.name.__class__ == unicode:
+        if sys.version_info < (3, 0) and isinstance(self.name, unicode):
             return '<User: {0}>'.format(self.name.encode('utf-8'))
         else:
             return '<User: {0}>'.format(self.name)
