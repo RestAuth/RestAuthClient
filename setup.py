@@ -43,8 +43,11 @@ class build_doc(Command):
         pass
 
     def run(self):
-        ver = get_version()
-        os.environ['SPHINXOPTS'] = '-D release=%s -D version=%s' % (ver, ) * 2
+        version = get_version()
+        os.environ['SPHINXOPTS'] = ' '.join([
+            '-D release=%s' % version,
+            '-D version=%s' % version,
+        ])
         os.environ['LATEST_RELEASE'] = LATEST_RELEASE
 
         cmd = ['make', '-C', 'doc', 'html']
