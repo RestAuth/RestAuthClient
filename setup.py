@@ -31,6 +31,7 @@ url = 'https://python.restauth.net'
 
 LATEST_RELEASE = '0.6.1'
 
+requires = ['RestAuthCommon (>=0.6.1)', ]
 
 class build_doc(Command):
     description = "Build documentation."
@@ -232,12 +233,17 @@ This library requires `RestAuthCommon <https://common.restauth.net>`_
     author_email='mati@restauth.net',
     url=url,
     download_url='https://python.restauth.net/download/',
-    packages=['RestAuthClient'],
-    cmdclass={'build_doc': build_doc, 'clean': clean, 'version': version,
-        'test': test, 'coverage': coverage,
-        'prepare_debian_changelog': prepare_debian_changelog, },
+    packages=['RestAuthClient', ],
+    cmdclass={
+        'build_doc': build_doc,
+        'clean': clean,
+        'coverage': coverage,
+        'prepare_debian_changelog': prepare_debian_changelog,
+        'test': test,
+        'version': version,
+    },
     license="GNU General Public License (GPL) v3",
-    requires=['RestAuthCommon', ],
+    requires=requires,
     classifiers=[
         "Development Status :: 6 - Mature",
         "Environment :: Other Environment",
@@ -246,8 +252,13 @@ This library requires `RestAuthCommon <https://common.restauth.net>`_
         "Intended Audience :: System Administrators",
         "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 2",
+        "Programming Language :: Python :: 2.6",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.1",
+        "Programming Language :: Python :: 3.2",
+        "Programming Language :: Python :: 3.3",
         "Programming Language :: Python",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Software Development :: Libraries :: Python Modules",
