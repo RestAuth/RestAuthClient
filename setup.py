@@ -20,9 +20,11 @@ import shutil
 import time
 import unittest
 
-from distutils.core import setup, Command
-from subprocess import Popen, PIPE
 from distutils.command.clean import clean as _clean
+from distutils.core import Command
+from distutils.core import setup
+from subprocess import PIPE
+from subprocess import Popen
 
 name = 'RestAuthClient'
 url = 'https://python.restauth.net'
@@ -38,10 +40,10 @@ class build_doc(Command):
         pass
 
     def finalize_options(self):
-        command = self.get_command_name()
+        pass
 
     def run(self):
-        vers = get_version()
+        ver = get_version()
         os.environ['SPHINXOPTS'] = '-D release=%s -D version=%s' % (ver, ) * 2
         os.environ['LATEST_RELEASE'] = LATEST_RELEASE
 
@@ -234,17 +236,17 @@ This library requires `RestAuthCommon <https://common.restauth.net>`_
     license="GNU General Public License (GPL) v3",
     requires=['RestAuthCommon', ],
     classifiers=[
-        "Programming Language :: Python",
-        "Programming Language :: Python :: 3",
-        "Operating System :: OS Independent",
+        "Development Status :: 6 - Mature",
         "Environment :: Other Environment",
-        "Development Status :: 4 - Beta",
-        "License :: OSI Approved :: GNU General Public License (GPL)",
+        "Environment :: Web Environment",
         "Intended Audience :: Developers",
         "Intended Audience :: System Administrators",
-        "Topic :: System :: Systems Administration :: Authentication/Directory",
+        "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Software Development :: Libraries :: Python Modules",
-        "Environment :: Web Environment",
+        "Topic :: System :: Systems Administration :: Authentication/Directory",
     ]
 )
