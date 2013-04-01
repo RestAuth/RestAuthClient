@@ -21,17 +21,25 @@ import time
 import unittest
 
 from distutils.command.clean import clean as _clean
-from distutils.core import Command
-from distutils.core import setup
 from subprocess import PIPE
 from subprocess import Popen
+
+try:
+    from setuptools import Command
+    from setuptools import setup
+except ImportError:
+    import distribute_setup
+    distribute_setup.use_setuptools()
+    from setuptools import Command
+    from setuptools import setup
+
 
 name = 'RestAuthClient'
 url = 'https://python.restauth.net'
 
 LATEST_RELEASE = '0.6.1'
 
-requires = ['RestAuthCommon (>=0.6.1)', ]
+requires = ['RestAuthCommon>=0.6.1', ]
 
 class build_doc(Command):
     description = "Build documentation."
@@ -243,7 +251,7 @@ This library requires `RestAuthCommon <https://common.restauth.net>`_
         'version': version,
     },
     license="GNU General Public License (GPL) v3",
-    requires=requires,
+    install_requires=requires,
     classifiers=[
         "Development Status :: 6 - Mature",
         "Environment :: Other Environment",
