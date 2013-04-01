@@ -20,12 +20,11 @@ Module handling code relevant to user authentication and property management.
 """
 
 import sys
-try:
-    from RestAuthClient import common
-    from RestAuthClient.error import *
-except ImportError:  # pragma: no cover
-    from error import *
-    import common
+
+if sys.version_info < (3, 0):
+    import httplib as http
+else:  # pragma: no cover
+    from http import client as http
 
 try:
     from RestAuthCommon import error
@@ -33,10 +32,10 @@ except ImportError:  # pragma: no cover
     print("Error: The RestAuthCommon library is not installed.")
     sys.exit(1)
 
-if sys.version_info < (3, 0):
-    import httplib as http
-else:  # pragma: no cover
-    from http import client as http
+from RestAuthClient import common
+from RestAuthClient.error import PropertyExists
+from RestAuthClient.error import UnknownStatus
+from RestAuthClient.error import UserExists
 
 
 def create(conn, name, password=None, properties=None):
