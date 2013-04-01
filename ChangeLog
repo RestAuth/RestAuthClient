@@ -1,3 +1,7 @@
+RestAuthClient 0.6.2 (XX XXXX XXXX)
+  
+  * add python2 identifier for pypi.
+
 RestAuthClient 0.6.1 (01 April 2013)
 
   * Add --part option to setup.py to only test part of the test-suite.
