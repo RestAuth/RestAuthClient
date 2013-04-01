@@ -29,7 +29,7 @@ from subprocess import Popen
 name = 'RestAuthClient'
 url = 'https://python.restauth.net'
 
-LATEST_RELEASE = '0.6.0'
+LATEST_RELEASE = '0.6.1'
 
 
 class build_doc(Command):
