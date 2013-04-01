@@ -29,18 +29,20 @@ except ImportError:  # pragma: no cover
 import base64
 import os
 import sys
-import time
 
 try:
-    from RestAuthClient.error import *
+    from RestAuthClient.error import HttpException
 except ImportError:  # pragma: no cover
-    from error import *
+    from error import HttpException
 
 try:
-    from urllib.parse import quote, urlencode, urlparse
+    from urllib.parse import quote
+    from urllib.parse import urlencode
+    from urllib.parse import urlparse
 except ImportError:  # pragma: no cover
     # this is for python 2.x and earlier
-    from urllib import quote, urlencode
+    from urllib import quote
+    from urllib import urlencode
     from urlparse import urlparse
 
 try:
