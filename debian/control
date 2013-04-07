@@ -7,8 +7,8 @@ Standards-Version: 3.9.2
 XS-Python-Version: >= 2.6
 X-Python3-Version: >= 3.0
 Homepage: https://python.restauth.net
-Vcs-Browser: https://git.fsinf.at/restauth/python
-Vcs-Git: https://git.fsinf.at/restauth/python.git
+Vcs-Browser: https://git.fsinf.at/apt/python-restauth
+Vcs-Git: https://git.fsinf.at/apt/python-restauth.git
 
 Package: python-restauth
 Architecture: all
