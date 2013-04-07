@@ -22,13 +22,11 @@ Module handling code relevant to group handling.
 """
 
 import sys
-try:
-    from RestAuthClient import common, restauth_user
-    from RestAuthClient.error import *
-except ImportError:  # pragma: no cover
-    import common
-    import restauth_user
-    from error import *
+
+from RestAuthClient import common
+from RestAuthClient.restauth_user import User
+from RestAuthClient.error import GroupExists
+from RestAuthClient.error import UnknownStatus
 
 try:
     from RestAuthCommon import error
@@ -121,7 +119,7 @@ def get_all(conn, user=None):
     """
     params = {}
     if user:
-        if user.__class__ == restauth_user.User:
+        if isinstance(user, User):
             user = user.name
 
         params['user'] = user
@@ -212,7 +210,7 @@ class Group(common.RestAuthResource):
             # parse user-list:
             body = resp.read().decode('utf-8')
             names = self.conn.content_handler.unmarshal_list(body)
-            users = [restauth_user.User(self.conn, name) for name in names]
+            users = [User(self.conn, name) for name in names]
             return users
         elif resp.status == http.NOT_FOUND:
             raise error.ResourceNotFound(resp)
@@ -239,7 +237,7 @@ class Group(common.RestAuthResource):
             status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        if user.__class__ == restauth_user.User:
+        if isinstance(user, User):
             user = user.name
         params = {'user': user}
         resp = self._post('/%s/users/' % self.name, params)
@@ -270,7 +268,7 @@ class Group(common.RestAuthResource):
             status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        if group.__class__ == Group:
+        if isinstance(group, Group):
             group = group.name
 
         params = {'group': group}
@@ -325,7 +323,7 @@ class Group(common.RestAuthResource):
             status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        if group.__class__ == Group:
+        if isinstance(group, Group):
             group = group.name
 
         path = '/%s/groups/%s/' % (self.name, group)
@@ -374,7 +372,7 @@ class Group(common.RestAuthResource):
             status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        if user.__class__ == restauth_user.User:
+        if isinstance(user, User):
             user = user.name
 
         path = '/%s/users/%s/' % (self.name, user)
@@ -401,7 +399,7 @@ class Group(common.RestAuthResource):
             status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        if user.__class__ == restauth_user.User:
+        if isinstance(user, User):
             user = user.name
 
         path = '/%s/users/%s/' % (self.name, user)
@@ -421,7 +419,7 @@ class Group(common.RestAuthResource):
         return self.name == other.name and self.conn == other.conn
 
     def __repr__(self):  # pragma: no cover
-        if sys.version_info < (3, 0) and self.name.__class__ == unicode:
+        if sys.version_info < (3, 0) and isinstance(self.name, unicode):
             return '<Group: {0}>'.format(self.name.encode('utf-8'))
         else:
             return '<Group: {0}>'.format(self.name)

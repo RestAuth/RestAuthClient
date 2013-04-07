@@ -1,3 +1,13 @@
+RestAuthClient 0.6.1 (01 April 2013)
+
+  * Add --part option to setup.py to only test part of the test-suite.
+  * Add a small benchmark script to test performance of RestAuth services.
+  * Fix intersphinx documentation.
+  * Cleanup of import statements.
+  * Use cleaner isinstance() instead of ...__class__ == <class>
+  * Switch to distribute
+  * add install_requires to setup.py
+
 RestAuthClient 0.6.0 (15 September 2012)
 
   This release adds support for version 0.6 of the RestAuth protocol. This

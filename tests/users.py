@@ -81,7 +81,6 @@ class BasicTests(unittest.TestCase, PropertyTestMixin):
         self.assertEqual(user1, restauth_user.get(self.conn, username))
         # check that no password verifies as correct
         self.assertFalse(user1.verify_password(''))
-        self.assertFalse(user1.verify_password(None))
         self.assertFalse(user1.verify_password(password))
 
         # use empty string instead:
@@ -90,7 +89,6 @@ class BasicTests(unittest.TestCase, PropertyTestMixin):
         self.assertEqual(user2, restauth_user.get(self.conn, username + '1'))
         # check that no password verifies as correct
         self.assertFalse(user2.verify_password(''))
-        self.assertFalse(user2.verify_password(None))
         self.assertFalse(user2.verify_password(password))
 
     def test_createUserWithProperty(self):
@@ -152,7 +150,6 @@ class BasicTests(unittest.TestCase, PropertyTestMixin):
         self.assertFalse(user.verify_password(password))
         self.assertFalse(user.verify_password(newpass))
         self.assertFalse(user.verify_password(''))
-        self.assertFalse(user.verify_password(None))
 
     def test_setPasswordInvalidUser(self):
         user = restauth_user.User(self.conn, username)

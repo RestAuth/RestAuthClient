@@ -20,38 +20,37 @@ Central code for handling connections to a RestAuth service.
 
 .. moduleauthor:: Mathias Ertl <mati@restauth.net>
 """
-try:
-    from http import client
-except ImportError:  # pragma: no cover
-    # this is for python 2.x and earlier
-    import httplib as client
 
 import base64
 import os
 import sys
-import time
 
 try:
-    from RestAuthClient.error import *
-except ImportError:  # pragma: no cover
-    from error import *
-
-try:
-    from urllib.parse import quote, urlencode, urlparse
+    from http import client
+    from urllib.parse import quote
+    from urllib.parse import urlencode
+    from urllib.parse import urlparse
 except ImportError:  # pragma: no cover
     # this is for python 2.x and earlier
-    from urllib import quote, urlencode
+    import httplib as client
+    from urllib import quote
+    from urllib import urlencode
     from urlparse import urlparse
 
+if sys.version_info >= (3, 2):  # pragma: no cover
+    from ssl import CERT_REQUIRED
+    from ssl import SSLContext
+
 try:
-    from RestAuthCommon import handlers
     from RestAuthCommon import error
+    from RestAuthCommon.handlers import CONTENT_HANDLERS
+    from RestAuthCommon.handlers import ContentHandler
+    from RestAuthCommon.handlers import JSONContentHandler
 except ImportError:  # pragma: no cover
     print("Error: The RestAuthCommon library is not installed.")
     sys.exit(1)
 
-if sys.version_info >= (3, 2):  # pragma: no cover
-    from ssl import SSLContext, CERT_REQUIRED
+from RestAuthClient.error import HttpException
 
 
 class RestAuthConnection:
@@ -71,11 +70,11 @@ class RestAuthConnection:
         RestAuth (passed to :py:meth:`.set_credentials`).
     :type  passwd: str
     :param content_handler: Directly passed to :py:meth:`.set_content_handler`.
-    :type  content_handler: str or subclass of
-        RestAuthCommon.handlers.content_handler.
+    :type  content_handler: str or
+        :py:class:`~common:RestAuthCommon.handlers.ContentHandler`
     """
 
-    def __init__(self, host, user, passwd, content_handler='application/json'):
+    def __init__(self, host, user, passwd, content_handler=None):
         """
         Initialize a new connection to a RestAuth service.
         """
@@ -111,27 +110,30 @@ class RestAuthConnection:
         enc_credentials = base64.b64encode(raw_credentials.encode())
         self.auth_header = "Basic %s" % enc_credentials.decode()
 
-    def set_content_handler(self, content_handler='application/json'):
-        """
-        Set the content type used by this connection. The default value
-        is 'json', which is supported by the reference server
-        implementation.
+    def set_content_handler(self, content_handler=None):
+        """Set the content type used by this connection.
 
-        :param content_handler: Either a self-implemented handler, which must
-            be a subclass of
-            :py:class:`~RestAuthCommon:RestAuthCommon.handlers.content_handler`
-            or a str, which must be one of the MIME types specified in
-            :py:data:`~RestAuthCommon:RestAuthCommon.handlers.CONTENT_HANDLERS`.
+        :param content_handler: The content handler to use.
+
+            * If None, use
+              :py:class:`~common:RestAuthCommon.handlers.JSONContentHandler`.
+            * If an instance of
+              :py:class:`~common:RestAuthCommon.handlers.ContentHandler`, use
+              that instance unchanged.
+            * If a str, it is asumed to be one of the MIME types specified in
+              :py:data:`~common:RestAuthCommon.handlers.CONTENT_HANDLERS`.
+
         :type  content_handler: str or
-           :py:class:`~RestAuthCommon:RestAuthCommon.handlers.content_handler`
+            :py:class:`~common:RestAuthCommon.handlers.ContentHandler`
         """
-        if isinstance(content_handler, handlers.content_handler):
+        if content_handler is None:
+            self.content_handler = JSONContentHandler()
+        elif isinstance(content_handler, ContentHandler):
             self.content_handler = content_handler
         elif isinstance(content_handler, str) or \
                 isinstance(content_handler, unicode):
-            handler_dict = handlers.CONTENT_HANDLERS
             try:
-                cl = handler_dict[content_handler]
+                cl = CONTENT_HANDLERS[content_handler]
             except KeyError:
                 raise RuntimeError(
                     "Unknown content_handler: %s" % content_handler)

@@ -7,3 +7,9 @@ MANIFEST
 build/
 dist/
 Makefile.local
+py3/
+py2/
+bin/
+include/
+lib/
+*.egg-info/

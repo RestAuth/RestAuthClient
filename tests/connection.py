@@ -9,7 +9,7 @@ from RestAuthClient.error import *
 from RestAuthClient import restauth_user
 from RestAuthCommon import error
 
-from RestAuthCommon.handlers import content_handler
+from RestAuthCommon.handlers import ContentHandler
 
 rest_host = 'http://[:1]:8000'
 rest_user = 'vowi'
@@ -24,7 +24,7 @@ paths = [
 ]
 
 
-class wrongContentHandler(content_handler):
+class wrongContentHandler(ContentHandler):
     mime = 'wrong/mime'
 
 

@@ -20,12 +20,11 @@ Module handling code relevant to user authentication and property management.
 """
 
 import sys
-try:
-    from RestAuthClient import common
-    from RestAuthClient.error import *
-except ImportError:  # pragma: no cover
-    from error import *
-    import common
+
+if sys.version_info < (3, 0):
+    import httplib as http
+else:  # pragma: no cover
+    from http import client as http
 
 try:
     from RestAuthCommon import error
@@ -33,10 +32,10 @@ except ImportError:  # pragma: no cover
     print("Error: The RestAuthCommon library is not installed.")
     sys.exit(1)
 
-if sys.version_info < (3, 0):
-    import httplib as http
-else:  # pragma: no cover
-    from http import client as http
+from RestAuthClient import common
+from RestAuthClient.error import PropertyExists
+from RestAuthClient.error import UnknownStatus
+from RestAuthClient.error import UserExists
 
 
 def create(conn, name, password=None, properties=None):
@@ -191,9 +190,22 @@ class User(common.RestAuthResource):
     prefix = '/users/'
     """Prefix used for HTTP query methods inherited from base class"""
 
+    _group = None
+
     def __init__(self, conn, name):
         self.conn = conn
         self.name = name
+
+    @property
+    def group(self):
+        """Provide access to the group module.
+
+        This module is loaded upon first use to avoid circular imports.
+        """
+        if User._group is None:
+            _temp = __import__('RestAuthClient', fromlist=['group'])
+            User._group = _temp.group
+        return User._group
 
     def set_password(self, password=None):
         """
@@ -515,7 +527,7 @@ class User(common.RestAuthResource):
             HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        return group.get_all(self.conn, self)
+        return self.group.get_all(self.conn, self)
 
     def in_group(self, grp):
         """
@@ -536,9 +548,9 @@ class User(common.RestAuthResource):
             HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        if grp.__class__ == str or \
-                (sys.version_info < (3, 0) and grp.__class__ == unicode):
-            grp = group.Group(self.conn, grp)
+        if isinstance(grp, str) or \
+                (sys.version_info < (3, 0) and isinstance(grp, unicode)):
+            grp = self.group.Group(self.conn, grp)
         return grp.is_member(self.name)
 
     def add_group(self, grp):
@@ -560,9 +572,9 @@ class User(common.RestAuthResource):
             HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        if grp.__class__ == str or \
-                (sys.version_info < (3, 0) and grp.__class__ == unicode):
-            grp = group.Group(self.conn, grp)
+        if isinstance(grp, str) or \
+                (sys.version_info < (3, 0) and isinstance(grp, unicode)):
+            grp = self.group.Group(self.conn, grp)
         grp.add_user(self.name)
 
     def remove_group(self, grp):
@@ -582,9 +594,9 @@ class User(common.RestAuthResource):
             HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        if grp.__class__ == str or \
-                (sys.version_info < (3, 0) and grp.__class__ == unicode):
-            grp = group.Group(self.conn, grp)
+        if isinstance(grp, str) or \
+                (sys.version_info < (3, 0) and isinstance(grp, unicode)):
+            grp = self.group.Group(self.conn, grp)
         grp.remove_user(self.name)
 
     def __eq__(self, other):
@@ -601,12 +613,7 @@ class User(common.RestAuthResource):
         return hash(self.name)
 
     def __repr__(self):  # pragma: no cover
-        if sys.version_info < (3, 0) and self.name.__class__ == unicode:
+        if sys.version_info < (3, 0) and isinstance(self.name, unicode):
             return '<User: {0}>'.format(self.name.encode('utf-8'))
         else:
             return '<User: {0}>'.format(self.name)
-
-try:
-    from RestAuthClient import group
-except ImportError:  # pragma: no cover
-    import group
