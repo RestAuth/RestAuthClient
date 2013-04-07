@@ -2,6 +2,8 @@ python-restauth (0.6.1-1) unstable; urgency=low
 
   * Version bump from upstream
   * Move repository of Debian package to different repository.
+  * Migrate to using pristine-tar.
+  * Require RestAuth 0.6.1 or greater.
  
  -- Mathias Ertl <mati@restauth.net>  Sun, 07 Apr 2013 16:20:31 +0200
 
