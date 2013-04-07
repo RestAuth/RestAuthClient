@@ -5,7 +5,8 @@ python-restauth (0.6.1-1) unstable; urgency=low
   * Migrate to using pristine-tar.
   * Require RestAuth 0.6.1 or greater.
   * Install python packages directly, only use requested python versions.
- 
+  * Use dh_sphinxdoc.
+
  -- Mathias Ertl <mati@restauth.net>  Sun, 07 Apr 2013 16:20:31 +0200
 
 python-restauth (0.5.1-3-g236f119-1) unstable; urgency=low
