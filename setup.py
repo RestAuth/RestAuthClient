@@ -39,7 +39,7 @@ url = 'https://python.restauth.net'
 
 LATEST_RELEASE = '0.6.1'
 
-requires = ['RestAuthCommon>=0.6.1', ]
+requires = ['RestAuthCommon>=0.6.2', ]
 
 class build_doc(Command):
     description = "Build documentation."
