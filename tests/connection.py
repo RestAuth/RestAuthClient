@@ -49,6 +49,22 @@ class BasicTests(unittest.TestCase):
             except error.Unauthorized as e:
                 pass
 
+        conn = RestAuthConnection(rest_host, rest_user, 'credentials')
+        for path in paths:
+            try:
+                conn.get(path)
+                self.fail(msg="%s did not verify password!" % path)
+            except error.Unauthorized as e:
+                pass
+
+        conn = RestAuthConnection(rest_host, 'wrong', rest_passwd)
+        for path in paths:
+            try:
+                conn.get(path)
+                self.fail(msg="%s did not verify service!" % path)
+            except error.Unauthorized as e:
+                pass
+
     def test_wrongHost(self):
         conn = RestAuthConnection('http://[:2]:8003', 'wrong', 'credentials')
         try:
