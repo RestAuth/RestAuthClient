@@ -181,7 +181,7 @@ class test(Command):
             sys.exit(1)
 
     def run(self):
-        common_path = os.path.join('..', 'restauth-common', 'python')
+        common_path = os.path.join('..', 'RestAuthCommon', 'python')
         if os.path.exists(common_path):
             sys.path.insert(0, common_path)
 
@@ -208,7 +208,7 @@ class coverage(Command):
         except ImportError:
             print("You need coverage.py installed.")
             return
-        common_path = os.path.join('..', 'restauth-common', 'python')
+        common_path = os.path.join('..', 'RestAuthCommon', 'python')
         if os.path.exists(common_path):
             sys.path.insert(0, common_path)
 
