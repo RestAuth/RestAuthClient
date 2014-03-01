@@ -2,14 +2,13 @@
 
 from __future__ import unicode_literals
 
-import sys
-import unittest
 from RestAuthClient.common import RestAuthConnection
 from RestAuthClient.error import *
 from RestAuthClient import restauth_user
 from RestAuthCommon import error
 
 from RestAuthCommon.handlers import ContentHandler
+from .base import RestAuthClientTestCase
 
 rest_host = 'http://[:1]:8000'
 rest_user = 'vowi'
@@ -28,17 +27,11 @@ class wrongContentHandler(ContentHandler):
     mime = 'wrong/mime'
 
 
-class BasicTests(unittest.TestCase):
+class BasicTests(RestAuthClientTestCase):
     """
     Make some tests directly using the connection. The point is that this
     way we can test some code that would otherwise never get tested.
     """
-
-    def setUp(self):
-        self.conn = RestAuthConnection(rest_host, rest_user, rest_passwd)
-
-    def tearDown(self):
-        pass
 
     def test_wrongCredentials(self):
         conn = RestAuthConnection(rest_host, 'wrong', 'credentials')
