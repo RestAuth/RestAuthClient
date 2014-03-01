@@ -2,7 +2,8 @@
 
 from __future__ import unicode_literals
 
-from RestAuthClient.error import *
+from RestAuthClient.error import UserExists
+from RestAuthClient.error import PropertyExists
 from RestAuthClient import restauth_user
 from RestAuthClient import group
 from RestAuthCommon import error
