@@ -1,3 +1,1 @@
 RestAuthCommon>=0.6.4
-Sphinx>=1.2.2
-coverage>=3.7
