@@ -225,4 +225,11 @@ intersphinx_mapping = {
 }
 
 LATEST_RELEASE = os.environ.get( 'LATEST_RELEASE' )
-rst_prolog = """.. |latest-release| replace:: %s\n"""%LATEST_RELEASE
+rst_epilog = """.. |latest-release| replace:: %s\n
+.. _git: https://github.com/RestAuth/RestAuthClient.git
+.. _git-web: https://github.com/RestAuth/RestAuthClient
+.. _issue: https://github.com/RestAuth/RestAuthClient/issues
+.. _issue-new: https://github.com/RestAuth/RestAuthClient/issues
+.. _muc: xmpp:rest@conference.jabber.at?join
+.. _tarballs: https://python.restauth.net/download
+""" % LATEST_RELEASE
