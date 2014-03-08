@@ -1,4 +1,6 @@
-# This file is part of RestAuthClient.
+# -*- coding: utf-8 -*-
+#
+# This file is part of RestAuthClient (https://python.restauth.net).
 #
 # RestAuthClient is free software: you can redistribute it and/or modify it under the terms of the
 # GNU General Public License as published by the Free Software Foundation, either version 3 of the
@@ -10,6 +12,9 @@
 #
 # You should have received a copy of the GNU General Public License along with RestAuthClient.py.
 # If not, see <http://www.gnu.org/licenses/>.
+
+
+from __future__ import unicode_literals
 
 import os
 import re
