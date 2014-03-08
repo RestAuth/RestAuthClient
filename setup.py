@@ -154,16 +154,18 @@ class prepare_debian_changelog(Command):
 
 
 server_options = [
-    ('user=', 'u', 'Username to use vor RestAuth server'),
-    ('password=', 'p', 'Password to use vor RestAuth server'),
-    ('host=', 'h', 'URL of the RestAuth server (ex: http://auth.example.com)')
+    # cast to str because Python2 distutils requires a str.
+    (str('user='), str('u'), 'Username to use vor RestAuth server'),
+    (str('password='), str('p'), 'Password to use vor RestAuth server'),
+    (str('host='), str('h'), 'URL of the RestAuth server (ex: http://auth.example.com)')
 ]
 
 
 class test(Command):
     description = "Run test suite."
     user_options = server_options + [
-        ('part=', None,
+        # cast to str because Python2 distutils requires a str.
+        (str('part='), None,
          'Only test one module (either "connection", "users" or "groups")'),
     ]
 
@@ -189,7 +191,7 @@ class test(Command):
 class coverage(Command):
     description = "Run test suite and generate code coverage analysis."
     user_options = server_options + [
-        ('output-dir=', 'o', 'Output directory for coverage analysis')]
+        (str('output-dir='), str('o'), 'Output directory for coverage analysis')]
 
     def initialize_options(self):
         self.user = 'vowi'
