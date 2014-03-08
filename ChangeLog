@@ -3,6 +3,7 @@ RestAuthClient 0.6.2 (XX XXXXX 2013)
   * This project is now hosted on github:
     https://github.com/RestAuth/RestAuthClient
   * Generalize and update requirements.txt
+  * Do not decode HTTP responses, as this brakes binary protocols (e.g. BSON)
 
 RestAuthClient 0.6.1 (01 April 2013)
 
