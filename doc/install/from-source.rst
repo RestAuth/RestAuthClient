@@ -16,16 +16,12 @@ Get source
 From git
 ++++++++
 
-This project is developed on `git.fsinf.at <https://git.fsinf.at/>`_. You can view the source code
-at `git.fsinf.at/restauth/python  <https://git.fsinf.at/restauth/python>`_. To clone the
-repository to a directory named "RestAuthClient", simply do:
+This project is developed `on github <git-web_>`_.  To clone the repository to a directory named
+"RestAuthClient", simply do:
 
 .. code-block:: bash
 
-   git clone http://git.fsinf.at/restauth/python.git RestAuthClient
-
-.. NOTE:: A mirror of this git-repository is available
-   `on github <https://github.com/matigit/RestAuthClient>`_.
+   git clone https://github.com/RestAuth/RestAuthClient.git
 
 Older versions are marked as tags. You can view available tags with :command:`git tag -l`. You can
 use any of those versions with :command:`git checkout`, for example :command:`git checkout 1.0`.
@@ -38,14 +34,14 @@ If you ever want to update the source code, just use:
    python setup.py clean
    git pull
 
-... and do the same as if you where
-:ref:`doing a new installation <install_from-source_installation>`.
+... and do the same as if you where :ref:`doing a new installation
+<install_from-source_installation>`.
 
 Official releases
 +++++++++++++++++
 
-You can download official releases of RestAuthClient `here <https://python.restauth.net/download>`_.
-The latest release is version |latest-release|.
+You can download official releases of RestAuthClient `here <tarballs_>`_. The latest release is
+version |latest-release|.
 
 .. _install_from-source_installation:
 
