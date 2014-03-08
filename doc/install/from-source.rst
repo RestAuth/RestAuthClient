@@ -4,11 +4,16 @@ Installation from source
 Requirements
 ------------
 
-RestAuthClient is written as a *bleeding edge* project and thus requires relatively new software
-versions.
+RestAuthClient has few requirements:
 
-* `Python 2.6 <http://www.python.org/>`_ or later
-* `RestAuthCommon 0.6.1 <https://common.restauth.net>`_ or later
+* `Python 2.6 <http://www.python.org/>`_ or later or Python 3.2 or later.
+
+  * Python 2.5, 3.0 or 3.1 are not supported.
+
+* `RestAuthCommon 0.6.4.1 <https://common.restauth.net>`_ or later
+
+If you want to use different content handlers provided by RestAuthCommon, you need the
+corresponding libraries as well, please check the RestAuthCommon documentation.
 
 Get source
 ----------
