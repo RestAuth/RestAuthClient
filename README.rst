@@ -20,7 +20,8 @@ If you use pip, you can install RestAuthClient with::
 
    pip install RestAuthClient
 
-If you want to install Debian/Ubuntu packages, simple do::
+If you want to install Debian/Ubuntu packages, simple do (Replace **<dist>**
+with your distribution)::
 
    wget -O - http://apt.fsinf.at/keys/apt-repository@fsinf.at | apt-key add -
    echo deb http://apt.fsinf.at <dist> restauth > /etc/apt/sources.list.d/restauth.list
