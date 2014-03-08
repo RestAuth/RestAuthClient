@@ -1,10 +1,11 @@
-RestAuthClient is the Python reference implementation for RestAuth_, a protocol
-providing shared authentication, authorization and preferences.
+**RestAuthClient** is the reference client implementation, for RestAuth_,
+written in Python. RestAuth is a protocol providing shared authentication,
+authorization and preferences.
 
 Requirements
 ============
 
-**RestAuthClient** runs with Python2.6+ and Python3.2+.
+**RestAuthClient** works with Python2.6+ and Python3.2+.
 
 **RestAuthClient** requires no special libraries but RestAuthCommon_ and any
 library required by any content handler you use.
@@ -16,7 +17,7 @@ Installation
 Full installation instructions are provided on the `homepage
 <https://python.restauth.net>`_.
 
-If you use pip, you can install RestAuthClient with::
+If you use pip, you can install **RestAuthClient** with::
 
    pip install RestAuthClient
 
