@@ -17,7 +17,6 @@ import os
 import re
 import sys
 import shutil
-import time
 import unittest
 
 from distutils.command.clean import clean as _clean
@@ -33,11 +32,10 @@ except ImportError:
     from setuptools import Command
     from setuptools import setup
 
+from RestAuthClient import version as LATEST_RELEASE
 
 name = 'RestAuthClient'
 url = 'https://python.restauth.net'
-
-LATEST_RELEASE = '0.6.1'
 
 requires = ['RestAuthCommon>=0.6.1', ]
 
@@ -53,11 +51,11 @@ class build_doc(Command):
 
     def run(self):
         version = get_version()
+        os.environ['LATEST_RELEASE'] = LATEST_RELEASE
         os.environ['SPHINXOPTS'] = ' '.join([
             '-D release=%s' % version,
             '-D version=%s' % version,
         ])
-        os.environ['LATEST_RELEASE'] = LATEST_RELEASE
 
         cmd = ['make', '-C', 'doc', 'html']
         p = Popen(cmd)
@@ -85,10 +83,7 @@ class clean(_clean):
 
 def get_version():
     version = LATEST_RELEASE
-    if os.path.exists('.version'):
-        version = open('.version').readlines()[0]
-    elif os.path.exists('.git'):  # get from git
-        date = time.strftime('%Y.%m.%d')
+    if os.path.exists('.git'):  # get from git
         cmd = ['git', 'describe', 'master']
         p = Popen(cmd, stdout=PIPE)
         version = p.communicate()[0].decode('utf-8')
@@ -214,8 +209,6 @@ class coverage(Command):
 
         if not os.path.exists(self.dir):
             os.makedirs(self.dir)
-
-        exclude_list = ['raise UnknownStatus.*']
 
         cov = coverage.coverage(include='RestAuthClient/*')
         cov.start()
