@@ -4,16 +4,13 @@ from __future__ import unicode_literals
 
 from operator import attrgetter
 
-import unittest
 from RestAuthClient.error import *
-from RestAuthClient.common import RestAuthConnection
-from RestAuthClient import restauth_user, group
+from RestAuthClient import restauth_user
+from RestAuthClient import group
 
 from RestAuthCommon import error
 
-rest_host = 'http://[::1]:8000'
-rest_user = 'vowi'
-rest_passwd = 'vowi'
+from .base import RestAuthClientTestCase
 
 username_1 = "mati 1 \u6110"
 username_2 = "mati 2 \u6111"
@@ -24,9 +21,9 @@ groupname_2 = "group \u7111"
 groupname_3 = "group \u7112"
 
 
-class BasicTests(unittest.TestCase):
+class BasicTests(RestAuthClientTestCase):
     def setUp(self):
-        self.conn = RestAuthConnection(rest_host, rest_user, rest_passwd)
+        super(BasicTests, self).setUp()
 
         self.assertEqual([], restauth_user.get_all(self.conn))
         self.assertEqual([], group.get_all(self.conn))
@@ -228,9 +225,9 @@ class BasicTests(unittest.TestCase):
             self.assertEqual("group", e.get_type())
 
 
-class MetaGroupTests(unittest.TestCase):
+class MetaGroupTests(RestAuthClientTestCase):
     def setUp(self):
-        self.conn = RestAuthConnection(rest_host, rest_user, rest_passwd)
+        super(MetaGroupTests, self).setUp()
 
         self.assertEqual([], restauth_user.get_all(self.conn))
         self.assertEqual([], group.get_all(self.conn))
@@ -334,10 +331,7 @@ class MetaGroupTests(unittest.TestCase):
             self.assertEqual("group", e.get_type())
 
 
-class CreateTest(unittest.TestCase):
-    def setUp(self):
-        self.conn = RestAuthConnection(rest_host, rest_user, rest_passwd)
-
+class CreateTest(RestAuthClientTestCase):
     def test_createGroup(self):
         self.assertTrue(group.create_test(self.conn, groupname_1))
         self.assertEquals([], group.get_all(self.conn))

@@ -2,14 +2,13 @@
 
 from __future__ import unicode_literals
 
-import sys
-import unittest
 from RestAuthClient.common import RestAuthConnection
 from RestAuthClient.error import *
 from RestAuthClient import restauth_user
 from RestAuthCommon import error
 
 from RestAuthCommon.handlers import ContentHandler
+from .base import RestAuthClientTestCase
 
 rest_host = 'http://[:1]:8000'
 rest_user = 'vowi'
@@ -28,17 +27,11 @@ class wrongContentHandler(ContentHandler):
     mime = 'wrong/mime'
 
 
-class BasicTests(unittest.TestCase):
+class BasicTests(RestAuthClientTestCase):
     """
     Make some tests directly using the connection. The point is that this
     way we can test some code that would otherwise never get tested.
     """
-
-    def setUp(self):
-        self.conn = RestAuthConnection(rest_host, rest_user, rest_passwd)
-
-    def tearDown(self):
-        pass
 
     def test_wrongCredentials(self):
         conn = RestAuthConnection(rest_host, 'wrong', 'credentials')
@@ -46,6 +39,22 @@ class BasicTests(unittest.TestCase):
             try:
                 conn.get(path)
                 self.fail(msg="%s did not require authorization!" % path)
+            except error.Unauthorized as e:
+                pass
+
+        conn = RestAuthConnection(rest_host, rest_user, 'credentials')
+        for path in paths:
+            try:
+                conn.get(path)
+                self.fail(msg="%s did not verify password!" % path)
+            except error.Unauthorized as e:
+                pass
+
+        conn = RestAuthConnection(rest_host, 'wrong', rest_passwd)
+        for path in paths:
+            try:
+                conn.get(path)
+                self.fail(msg="%s did not verify service!" % path)
             except error.Unauthorized as e:
                 pass
 

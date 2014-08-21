@@ -1,6 +1,11 @@
 RestAuthClient 0.6.2 (XX XXXXX 2013)
 
-  * generalize requirements.txt
+  * This project is now hosted on github:
+    https://github.com/RestAuth/RestAuthClient
+  * Generalize and update requirements.txt
+  * Do not decode HTTP responses, as this brakes binary protocols (e.g. BSON)
+  * The test cases now use the content handler specified by the MIME
+    environment variable.
 
 RestAuthClient 0.6.1 (01 April 2013)
 

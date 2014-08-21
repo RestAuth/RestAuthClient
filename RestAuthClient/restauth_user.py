@@ -165,8 +165,7 @@ def get_all(conn):
     resp = conn.get(User.prefix)
 
     if resp.status == http.OK:
-        body = resp.read().decode('utf-8')
-        usernames = conn.content_handler.unmarshal_list(body)
+        usernames = conn.content_handler.unmarshal_list(resp.read())
         return [User(conn, name) for name in usernames]
     else:  # pragma: no cover
         raise UnknownStatus(resp)
@@ -312,8 +311,7 @@ class User(common.RestAuthResource):
         """
         resp = self._get('%s/props/' % (self.name))
         if resp.status == http.OK:
-            body = resp.read().decode('utf-8')
-            return self.conn.content_handler.unmarshal_dict(body)
+            return self.conn.content_handler.unmarshal_dict(resp.read())
         elif resp.status == http.NOT_FOUND:
             raise error.ResourceNotFound(resp)
         else:  # pragma: no cover
@@ -415,8 +413,7 @@ class User(common.RestAuthResource):
         url = '%s/props/%s/' % (self.name, prop)
         resp = self._put(url, params={'value': value})
         if resp.status == http.OK:
-            body = resp.read().decode('utf-8')
-            return self.conn.content_handler.unmarshal_str(body)
+            return self.conn.content_handler.unmarshal_str(resp.read())
         if resp.status == http.CREATED:
             return
         elif resp.status == http.NOT_FOUND:
@@ -483,8 +480,7 @@ class User(common.RestAuthResource):
         """
         resp = self._get('%s/props/%s' % (self.name, prop))
         if resp.status == http.OK:
-            body = resp.read().decode('utf-8')
-            return self.conn.content_handler.unmarshal_str(body)
+            return self.conn.content_handler.unmarshal_str(resp.read())
         elif resp.status == http.NOT_FOUND:
             raise error.ResourceNotFound(resp)
         else:  # pragma: no cover

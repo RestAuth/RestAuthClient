@@ -1,23 +1,25 @@
-# This file is part of RestAuthClient.py.
+# -*- coding: utf-8 -*-
 #
-#    RestAuthClient.py is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
+# This file is part of RestAuthClient (https://python.restauth.net).
 #
-#    Foobar is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
+# RestAuthClient is free software: you can redistribute it and/or modify it under the terms of the
+# GNU General Public License as published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
 #
-#    You should have received a copy of the GNU General Public License
-#    along with RestAuthClient.py.  If not, see <http://www.gnu.org/licenses/>.
+# RestAuthClient is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+# the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with RestAuthClient.py.
+# If not, see <http://www.gnu.org/licenses/>.
+
+
+from __future__ import unicode_literals
 
 import os
 import re
 import sys
 import shutil
-import time
 import unittest
 
 from distutils.command.clean import clean as _clean
@@ -33,13 +35,12 @@ except ImportError:
     from setuptools import Command
     from setuptools import setup
 
+from RestAuthClient import version as LATEST_RELEASE
 
 name = 'RestAuthClient'
 url = 'https://python.restauth.net'
 
-LATEST_RELEASE = '0.6.1'
-
-requires = ['RestAuthCommon>=0.6.2', ]
+requires = ['RestAuthCommon>=0.6.4.1', ]
 
 class build_doc(Command):
     description = "Build documentation."
@@ -53,11 +54,11 @@ class build_doc(Command):
 
     def run(self):
         version = get_version()
+        os.environ['LATEST_RELEASE'] = LATEST_RELEASE
         os.environ['SPHINXOPTS'] = ' '.join([
             '-D release=%s' % version,
             '-D version=%s' % version,
         ])
-        os.environ['LATEST_RELEASE'] = LATEST_RELEASE
 
         cmd = ['make', '-C', 'doc', 'html']
         p = Popen(cmd)
@@ -85,10 +86,7 @@ class clean(_clean):
 
 def get_version():
     version = LATEST_RELEASE
-    if os.path.exists('.version'):
-        version = open('.version').readlines()[0]
-    elif os.path.exists('.git'):  # get from git
-        date = time.strftime('%Y.%m.%d')
+    if os.path.exists('.git'):  # get from git
         cmd = ['git', 'describe', 'master']
         p = Popen(cmd, stdout=PIPE)
         version = p.communicate()[0].decode('utf-8')
@@ -156,16 +154,18 @@ class prepare_debian_changelog(Command):
 
 
 server_options = [
-    ('user=', 'u', 'Username to use vor RestAuth server'),
-    ('password=', 'p', 'Password to use vor RestAuth server'),
-    ('host=', 'h', 'URL of the RestAuth server (ex: http://auth.example.com)')
+    # cast to str because Python2 distutils requires a str.
+    (str('user='), str('u'), 'Username to use vor RestAuth server'),
+    (str('password='), str('p'), 'Password to use vor RestAuth server'),
+    (str('host='), str('h'), 'URL of the RestAuth server (ex: http://auth.example.com)')
 ]
 
 
 class test(Command):
     description = "Run test suite."
     user_options = server_options + [
-        ('part=', None,
+        # cast to str because Python2 distutils requires a str.
+        (str('part='), None,
          'Only test one module (either "connection", "users" or "groups")'),
     ]
 
@@ -181,7 +181,7 @@ class test(Command):
             sys.exit(1)
 
     def run(self):
-        common_path = os.path.join('..', 'restauth-common', 'python')
+        common_path = os.path.join('..', 'RestAuthCommon', 'python')
         if os.path.exists(common_path):
             sys.path.insert(0, common_path)
 
@@ -191,7 +191,7 @@ class test(Command):
 class coverage(Command):
     description = "Run test suite and generate code coverage analysis."
     user_options = server_options + [
-        ('output-dir=', 'o', 'Output directory for coverage analysis')]
+        (str('output-dir='), str('o'), 'Output directory for coverage analysis')]
 
     def initialize_options(self):
         self.user = 'vowi'
@@ -208,14 +208,12 @@ class coverage(Command):
         except ImportError:
             print("You need coverage.py installed.")
             return
-        common_path = os.path.join('..', 'restauth-common', 'python')
+        common_path = os.path.join('..', 'RestAuthCommon', 'python')
         if os.path.exists(common_path):
             sys.path.insert(0, common_path)
 
         if not os.path.exists(self.dir):
             os.makedirs(self.dir)
-
-        exclude_list = ['raise UnknownStatus.*']
 
         cov = coverage.coverage(include='RestAuthClient/*')
         cov.start()
@@ -264,7 +262,6 @@ This library requires `RestAuthCommon <https://common.restauth.net>`_
         "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.1",
         "Programming Language :: Python :: 3.2",
         "Programming Language :: Python :: 3.3",
         "Programming Language :: Python",

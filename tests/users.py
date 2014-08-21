@@ -2,12 +2,13 @@
 
 from __future__ import unicode_literals
 
-import sys
-import unittest
-from RestAuthClient.error import *
-from RestAuthClient.common import RestAuthConnection
-from RestAuthClient import restauth_user, group
+from RestAuthClient.error import UserExists
+from RestAuthClient.error import PropertyExists
+from RestAuthClient import restauth_user
+from RestAuthClient import group
 from RestAuthCommon import error
+
+from .base import RestAuthClientTestCase
 
 rest_host = 'http://[::1]:8000'
 rest_user = 'vowi'
@@ -47,9 +48,9 @@ class PropertyTestMixin(object):
             self.assertEqual(value, user.get_property(key))
 
 
-class BasicTests(unittest.TestCase, PropertyTestMixin):
+class BasicTests(RestAuthClientTestCase, PropertyTestMixin):
     def setUp(self):
-        self.conn = RestAuthConnection(rest_host, rest_user, rest_passwd)
+        super(BasicTests, self).setUp()
         if restauth_user.get_all(self.conn):
             raise RuntimeError("Found leftover users.")
 
@@ -195,10 +196,7 @@ class BasicTests(unittest.TestCase, PropertyTestMixin):
             self.assertEqual("user", e.get_type())
 
 
-class CreateUserTest(unittest.TestCase):
-    def setUp(self):
-        self.conn = RestAuthConnection(rest_host, rest_user, rest_passwd)
-
+class CreateUserTest(RestAuthClientTestCase):
     def test_createUserTest(self):
         self.assertEquals(None, restauth_user.create_test(self.conn, username))
         self.assertEqual([], restauth_user.get_all(self.conn))
@@ -258,9 +256,9 @@ class CreateUserTest(unittest.TestCase):
             user.remove()
 
 
-class PropertyBaseTests(unittest.TestCase, PropertyTestMixin):
+class PropertyBaseTests(RestAuthClientTestCase, PropertyTestMixin):
     def setUp(self):
-        self.conn = RestAuthConnection(rest_host, rest_user, rest_passwd)
+        super(PropertyBaseTests, self).setUp()
         if restauth_user.get_all(self.conn):
             raise RuntimeError("Found leftover users.")
 
@@ -469,9 +467,9 @@ class SetMultiplePropertyTests(PropertyBaseTests):
         self.assertProperties(**properties)
 
 
-class SimpleUserGroupTests(unittest.TestCase):
+class SimpleUserGroupTests(RestAuthClientTestCase):
     def setUp(self):
-        self.conn = RestAuthConnection(rest_host, rest_user, rest_passwd)
+        super(SimpleUserGroupTests, self).setUp()
         if restauth_user.get_all(self.conn):
             raise RuntimeError("Found leftover users.")
         if group.get_all(self.conn):

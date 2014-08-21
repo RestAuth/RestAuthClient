@@ -126,8 +126,7 @@ def get_all(conn, user=None):
 
     resp = conn.get(Group.prefix, params)
     if resp.status == http.OK:
-        body = resp.read().decode('utf-8')
-        names = conn.content_handler.unmarshal_list(body)
+        names = conn.content_handler.unmarshal_list(resp.read())
         return [Group(conn, name) for name in names]
     elif resp.status == http.NOT_FOUND:
         raise error.ResourceNotFound(resp)
@@ -208,8 +207,7 @@ class Group(common.RestAuthResource):
         resp = self._get('/%s/users/' % self.name, params)
         if resp.status == http.OK:
             # parse user-list:
-            body = resp.read().decode('utf-8')
-            names = self.conn.content_handler.unmarshal_list(body)
+            names = self.conn.content_handler.unmarshal_list(resp.read())
             users = [User(self.conn, name) for name in names]
             return users
         elif resp.status == http.NOT_FOUND:
@@ -300,8 +298,7 @@ class Group(common.RestAuthResource):
         path = '/%s/groups/' % self.name
         resp = self._get(path)
         if resp.status == http.OK:
-            body = resp.read().decode('utf-8')
-            names = self.conn.content_handler.unmarshal_list(body)
+            names = self.conn.content_handler.unmarshal_list(resp.read())
             return [Group(self.conn, name) for name in names]
         elif resp.status == http.NOT_FOUND:
             raise error.ResourceNotFound(resp)
