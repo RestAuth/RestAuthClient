@@ -40,7 +40,7 @@ from RestAuthClient import version as LATEST_RELEASE
 name = 'RestAuthClient'
 url = 'https://python.restauth.net'
 
-requires = ['RestAuthCommon>=0.6.4.1', ]
+requires = ['RestAuthCommon>=0.6.5', ]
 
 class build_doc(Command):
     description = "Build documentation."

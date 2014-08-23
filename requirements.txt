@@ -1,1 +1,1 @@
-RestAuthCommon>=0.6.4.1
+RestAuthCommon>=0.6.5
