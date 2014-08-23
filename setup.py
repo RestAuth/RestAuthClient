@@ -36,6 +36,8 @@ except ImportError:
     from setuptools import setup
 
 from RestAuthClient import version as LATEST_RELEASE
+PY2 = sys.version_info[0] == 2
+PY3 = sys.version_info[0] == 3
 
 name = 'RestAuthClient'
 url = 'https://python.restauth.net'
@@ -216,6 +218,12 @@ class coverage(Command):
             os.makedirs(self.dir)
 
         cov = coverage.coverage(include='RestAuthClient/*')
+
+        if PY3:
+            cov.exclude('pragma: .*py2')
+        else:
+            cov.exclude('pragma: .*py3')
+
         cov.start()
         run_test_suite(self.host, self.user, self.passwd)
         cov.stop()
