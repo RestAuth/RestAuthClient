@@ -95,6 +95,8 @@ class RestAuthConnection:
 
         if parseresult.scheme == 'https':  # pragma: no cover
             self._conn = client.HTTPSConnection
+
+            # Add SSLContext in Python3
             if ssl_context is not None:
                 self._conn_kwargs['context'] = ssl_context
             elif PY34:  # pragma: py34
@@ -107,16 +109,14 @@ class RestAuthConnection:
         else:
             self._conn = client.HTTPConnection
 
+        # Add optional parameters
         if timeout is not None:
             self._conn_kwargs['timeout'] = timeout
         if source_address is not None:
             self._conn_kwargs['source_address'] = source_address
 
-        self.user = user
-        self.passwd = passwd
+        # Set credentials, authentication header
         self.set_content_handler(content_handler)
-
-        # pre-calculate the auth-header so we only have to do this once:
         self.set_credentials(user, passwd)
 
     def set_credentials(self, user, passwd):
@@ -371,7 +371,7 @@ class RestAuthConnection:
 
     def __eq__(self, other):
         return self._conn == other._conn and self._conn_kwargs == other._conn_kwargs and \
-            self.user == other.user and self.passwd == other.passwd
+            self.auth_header == other.auth_header
 
 
 class RestAuthResource:
