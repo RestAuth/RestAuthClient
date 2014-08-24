@@ -25,13 +25,12 @@ import base64
 import os
 import sys
 
-try:
+if sys.version_info >= (3, ):  # pragma: py3
     from http import client
     from urllib.parse import quote
     from urllib.parse import urlencode
     from urllib.parse import urlparse
-except ImportError:  # pragma: no cover
-    # this is for python 2.x and earlier
+else:  # pragma: py2
     import httplib as client
     from urllib import quote
     from urllib import urlencode
