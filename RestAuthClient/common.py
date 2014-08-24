@@ -56,6 +56,9 @@ class RestAuthConnection:
        stateless, there is no way of knowing if a connection working now will still work 0.2
        seconds from now.
 
+    .. versionadded:: 0.6.2
+       The ssl_context, timeout and source_address parameters.
+
     :param host: The hostname of the RestAuth service
     :type  host: str
     :param user: The service name to use for authenticating with RestAuth (passed

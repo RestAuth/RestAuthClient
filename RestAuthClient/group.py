@@ -86,6 +86,9 @@ def create_test(conn, name):
 def get_all(conn, user=None, flat=False):
     """Factory method that gets all groups for this service known to RestAuth.
 
+    .. versionadded:: 0.6.2
+       The ``flat`` parameter.
+
     :param conn: A connection to a RestAuth service.
     :type  conn: :py:class:`.RestAuthConnection`
     :param user: Only return groups where the named user is a member

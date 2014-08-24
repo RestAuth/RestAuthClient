@@ -126,8 +126,10 @@ def get(conn, name):
 
 
 def get_all(conn, flat=False):
-    """
-    Factory method that gets all users known to RestAuth.
+    """Factory method that gets all users known to RestAuth.
+
+    .. versionadded:: 0.6.2
+       The ``flat`` parameter.
 
     :param conn: A connection to a RestAuth service.
     :type  conn: :py:class:`.RestAuthConnection`
