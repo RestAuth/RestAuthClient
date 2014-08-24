@@ -82,14 +82,19 @@ class RestAuthConnection:
         Initialize a new connection to a RestAuth service.
         """
         parseresult = urlparse(host)
+
+        self._conn_kwargs = {
+            'host': parseresult.netloc
+        }
+
         if parseresult.scheme == 'https':  # pragma: no cover
             self._conn = client.HTTPSConnection
             if PY3 is True:  # pragma: py3
-                self.context = SSLContext()
-                self.context.verify_mode = CERT_REQUIRED
+                context = SSLContext()
+                context.verify_mode = CERT_REQUIRED
+                self._conn_kwargs['context'] = context
         else:
             self._conn = client.HTTPConnection
-        self.host = parseresult.netloc
 
         self.user = user
         self.passwd = passwd
@@ -97,7 +102,6 @@ class RestAuthConnection:
 
         # pre-calculate the auth-header so we only have to do this once:
         self.set_credentials(user, passwd)
-
 
     def set_credentials(self, user, passwd):
         """
@@ -184,10 +188,7 @@ class RestAuthConnection:
         headers['Authorization'] = self.auth_header
         headers['Accept'] = self.content_handler.mime
 
-        if self.context is not None:
-            conn = self._conn(self.host, context=self.context)
-        else:
-            conn = self._conn(self.host)
+        conn = self._conn(**self._conn_kwargs)
 
         try:
             conn.request(method, url, body, headers)
@@ -388,8 +389,8 @@ class RestAuthConnection:
         return self.send('DELETE', url, headers=headers)
 
     def __eq__(self, other):
-        return self.host == other.host and self.user == other.user and \
-            self.passwd == other.passwd
+        return self._conn == other._conn and self._conn_kwargs == other._conn_kwargs and \
+            self.user == other.user and self.passwd == other.passwd
 
 
 class RestAuthResource:
