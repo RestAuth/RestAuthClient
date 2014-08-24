@@ -28,11 +28,7 @@ from RestAuthClient.restauth_user import User
 from RestAuthClient.error import GroupExists
 from RestAuthClient.error import UnknownStatus
 
-try:
-    from RestAuthCommon import error
-except ImportError:  # pragma: no cover
-    print("Error: The RestAuthCommon library is not installed.")
-    sys.exit(1)
+from RestAuthCommon import error
 
 if sys.version_info < (3, 0):
     import httplib as http
@@ -95,7 +91,7 @@ def create_test(conn, name):
         raise UnknownStatus(resp)
 
 
-def get_all(conn, user=None):
+def get_all(conn, user=None, flat=False):
     """
     Factory method that gets all groups for this service known to
     RestAuth.
@@ -104,8 +100,11 @@ def get_all(conn, user=None):
     :type  conn: :py:class:`.RestAuthConnection`
     :param user: Only return groups where the named user is a member
     :type  user: str
-    :return: A list of Group objects
-    :rtype: List of :py:class:`groups <.Group>`
+    :param flat: If True, only return a list of group names as str, not of
+        :py:class:`~.groups.Group` objects.
+    :type  flat: bool
+    :return: A list of Group objects or a list of str if ``flat=True``
+    :rtype: [:py:class:`groups <.Group>` or str]
 
     :raise Unauthorized: When the connection uses wrong credentials.
     :raise Forbidden: When the client is not allowed to perform this action.
@@ -127,7 +126,10 @@ def get_all(conn, user=None):
     resp = conn.get(Group.prefix, params)
     if resp.status == http.OK:
         names = conn.content_handler.unmarshal_list(resp.read())
-        return [Group(conn, name) for name in names]
+        if flat is True:
+            return names
+        else:
+            return [Group(conn, name) for name in names]
     elif resp.status == http.NOT_FOUND:
         raise error.ResourceNotFound(resp)
     else:  # pragma: no cover

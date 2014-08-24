@@ -11,6 +11,8 @@ RestAuthClient 0.6.2 (XX XXXXX 2013)
   * RestAuthConnection now offers new optional parameters timeout an
     source_address.
   * RestAuthConnection now offers an optional ssl_context parameter in Python3.
+  * get_all() in restauth_user and groups now accepts the "flat" parameter. If
+    True, the functions return a list of strings instead of objects.
 
 RestAuthClient 0.6.1 (01 April 2013)
 

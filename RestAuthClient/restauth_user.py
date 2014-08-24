@@ -26,12 +26,7 @@ if sys.version_info < (3, 0):
 else:  # pragma: no cover
     from http import client as http
 
-try:
-    from RestAuthCommon import error
-except ImportError:  # pragma: no cover
-    print("Error: The RestAuthCommon library is not installed.")
-    sys.exit(1)
-
+from RestAuthCommon import error
 from RestAuthClient import common
 from RestAuthClient.error import PropertyExists
 from RestAuthClient.error import UnknownStatus
@@ -143,14 +138,17 @@ def get(conn, name):
         raise UnknownStatus(resp)
 
 
-def get_all(conn):
+def get_all(conn, flat=False):
     """
     Factory method that gets all users known to RestAuth.
 
     :param conn: A connection to a RestAuth service.
     :type  conn: :py:class:`.RestAuthConnection`
-    :return: A list of User objects
-    :rtype: [:py:class:`~.restauth_user.User`]
+    :param flat: If True, only return a list of usernames as str, not of
+        :py:class:`~.restauth_user.User` objects.
+    :type  flat: bool
+    :return: A list of User objects or str, if ``flat=True``.
+    :rtype: [:py:class:`~.restauth_user.User` or str]
 
     :raise Unauthorized: When the connection uses wrong credentials.
     :raise Forbidden: When the client is not allowed to perform this
@@ -166,7 +164,10 @@ def get_all(conn):
 
     if resp.status == http.OK:
         usernames = conn.content_handler.unmarshal_list(resp.read())
-        return [User(conn, name) for name in usernames]
+        if flat is True:
+            return usernames
+        else:
+            return [User(conn, name) for name in usernames]
     else:  # pragma: no cover
         raise UnknownStatus(resp)
 
