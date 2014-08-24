@@ -35,11 +35,11 @@ else:  # pragma: py2
     from urllib import urlencode
     from urlparse import urlparse
 
-if sys.version_info >= (3, 2):  # pragma: no cover
+if sys.version_info >= (3, 2):  # pragma: py3
     import ssl
 if sys.version_info >= (3, 4):  # pragma: py34
     PY34 = True
-else:
+else:  # pragma: no cover
     PY34 = False
 
 from RestAuthCommon import error
@@ -216,7 +216,7 @@ class RestAuthConnection:
             return response
 
     def _sanitize_qs(self, params):
-        if sys.version_info < (3, 0):
+        if PY3 is False:  # pragma: py2
             for key, value in params.iteritems():
                 if key.__class__ == unicode:  # pragma: no cover
                     key = key.encode('utf-8')
@@ -232,7 +232,7 @@ class RestAuthConnection:
         if not url.startswith('/'):  # pragma: no cover
             url = '/%s' % url
 
-        if sys.version_info < (3, 0) and url.__class__ == unicode:
+        if PY3 is False and url.__class__ == unicode:  # pragma: py2
             url = url.encode('utf-8')  # encode utf-8 in python 2.x
 
         url = quote(url)
