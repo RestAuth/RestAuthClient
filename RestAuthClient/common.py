@@ -35,9 +35,13 @@ else:  # pragma: py2
     from urllib import urlencode
     from urlparse import urlparse
 
+PY32 = False
+PY34 = False
 if sys.version_info >= (3, 2):  # pragma: no cover
-    from ssl import CERT_REQUIRED
-    from ssl import SSLContext
+    PY32 = True
+    import ssl
+if sys.version_info >= (3, 4):  # pragma: py34
+    PY34 = True
 
 try:
     from RestAuthCommon import error
@@ -69,10 +73,21 @@ class RestAuthConnection:
     :type  passwd: str
     :param content_handler: Directly passed to :py:meth:`.set_content_handler`.
     :type  content_handler: str or :py:class:`~common:RestAuthCommon.handlers.ContentHandler`
+    :param     ssl_context: Use a different SSL context for this connection. **This parameter
+        requires Python3.**
+
+        The default varies depending on the Python version used:
+
+        * In Python 3.4 or later, the default is created with
+          :py:func:`~ssl.create_default_context`.
+        * In Python 3.2 and 3.3, a context is created with :py:data:`~ssl.PROTOCOL_SSLv23` as
+          protocol, :py:data:`~ssl.CERT_REQUIRED` as :py:attr:`~ssl.SSLContext.verify_mode` and the certificate chain
+          loaded by :py:meth:`~ssl.set_default_verify_paths`.
+    :type      ssl_context: :py:class:`~ssl.SSLContext`
     """
     context = None
 
-    def __init__(self, host, user, passwd, content_handler=None):
+    def __init__(self, host, user, passwd, content_handler=None, ssl_context=None):
         """Initialize a new connection to a RestAuth service."""
 
         parseresult = urlparse(host)
@@ -83,9 +98,14 @@ class RestAuthConnection:
 
         if parseresult.scheme == 'https':  # pragma: no cover
             self._conn = client.HTTPSConnection
-            if PY3 is True:  # pragma: py3
-                context = SSLContext()
-                context.verify_mode = CERT_REQUIRED
+            if ssl_context is not None:
+                self._conn_kwargs['context'] = ssl_context
+            elif PY34:  # pragma: py34
+                self._conn_kwargs['context'] = ssl.create_default_context()
+            elif PY3:  # pragma: py3
+                context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+                context.verify_mode = ssl.CERT_REQUIRED
+                context.set_default_verify_paths()
                 self._conn_kwargs['context'] = context
         else:
             self._conn = client.HTTPConnection
