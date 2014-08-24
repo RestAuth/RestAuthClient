@@ -41,16 +41,10 @@ if sys.version_info >= (3, 2):  # pragma: no cover
 if sys.version_info >= (3, 4):  # pragma: py34
     PY34 = True
 
-try:
-    from RestAuthCommon import error
-    from RestAuthCommon.handlers import CONTENT_HANDLERS
-    from RestAuthCommon.handlers import ContentHandler
-    from RestAuthCommon.handlers import JSONContentHandler
-except ImportError as e:  # pragma: no cover
-    print(e)
-    print("Error: The RestAuthCommon library is not installed.")
-    sys.exit(1)
-
+from RestAuthCommon import error
+from RestAuthCommon.handlers import CONTENT_HANDLERS
+from RestAuthCommon.handlers import ContentHandler
+from RestAuthCommon.handlers import JSONContentHandler
 from RestAuthClient.error import HttpException
 
 
