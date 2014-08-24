@@ -218,9 +218,9 @@ class coverage(Command):
         cov = coverage.coverage(include='RestAuthClient/*')
 
         if PY3:
-            cov.exclude('pragma: .*py2')
+            cov.exclude(r'pragma: .*\bpy2\b')
         else:
-            cov.exclude('pragma: .*py3')
+            cov.exclude(r'pragma: .*\bpy3\b')
 
         cov.start()
         run_test_suite(self.host, self.user, self.passwd)
