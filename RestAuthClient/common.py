@@ -272,11 +272,14 @@ class RestAuthConnection:
 
         return self.send('GET', url, headers=headers)
 
-    def post(self, url, params=None, headers=None):
+    def post(self, url, params, headers=None):
         """
         Perform a POST request on the connection. This method takes care of escaping parameters and
         assembling the correct URL. This method internally calls the :py:meth:`.send` function to
         perform service authentication.
+
+        .. versionadded:: 0.6.2
+           ``params`` is no longer an optional parameter
 
         :param url: The URL to perform the GET request on. The URL must not include a query string.
         :type  url: str
@@ -297,8 +300,6 @@ class RestAuthConnection:
             connection.
         :raise InternalServerError: When the server has some internal error.
         """
-        if params is None:
-            params = {}
         if headers is None:
             headers = {}
 
@@ -313,11 +314,14 @@ class RestAuthConnection:
 
         return response
 
-    def put(self, url, params=None, headers=None):
+    def put(self, url, params, headers=None):
         """
         Perform a PUT request on the connection. This method takes care of escaping parameters and
         assembling the correct URL. This method internally calls the :py:meth:`.send` function to
         perform service authentication.
+
+        .. versionadded:: 0.6.2
+           ``params`` is no longer an optional parameter
 
         :param url: The URL to perform the GET request on. The URL must not include a query string.
         :type  url: str
@@ -338,8 +342,6 @@ class RestAuthConnection:
             connection.
         :raise InternalServerError: When the server has some internal error.
         """
-        if params is None:
-            params = {}
         if headers is None:
             headers = {}
 
@@ -392,7 +394,7 @@ class RestAuthResource:
         url = '%s%s' % (self.__class__.prefix, url)
         return self.conn.get(url, params, headers)
 
-    def _post(self, url, params=None, headers=None):
+    def _post(self, url, params, headers=None):
         """
         Internal method that prefixes a POST request with the resources name and passes the request
         to :py:meth:`RestAuthConnection.post`.
@@ -400,7 +402,7 @@ class RestAuthResource:
         url = '%s%s' % (self.__class__.prefix, url)
         return self.conn.post(url, params, headers)
 
-    def _put(self, url, params=None, headers=None):
+    def _put(self, url, params, headers=None):
         """
         Internal method that prefixes a PUT request with the resources name and passes the request
         to :py:meth:`RestAuthConnection.put`.
