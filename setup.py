@@ -43,6 +43,7 @@ name = 'RestAuthClient'
 url = 'https://python.restauth.net'
 
 requires = ['RestAuthCommon>=0.6.5', ]
+coverage_path = os.path.join('doc', 'coverage')
 
 class build_doc(Command):
     description = "Build documentation."
@@ -73,7 +74,6 @@ class clean(_clean):
             shutil.rmtree('build')
         if os.path.exists('dist'):
             shutil.rmtree('dist')
-        coverage_path = os.path.join('doc', 'coverage')
         if os.path.exists(coverage_path):
             shutil.rmtree(coverage_path)
         if os.path.exists('MANIFEST'):
@@ -192,14 +192,12 @@ class test(Command):
 
 class coverage(Command):
     description = "Run test suite and generate code coverage analysis."
-    user_options = server_options + [
-        (str('output-dir='), str('o'), 'Output directory for coverage analysis')]
+    user_options = server_options
 
     def initialize_options(self):
         self.user = 'example.com'
         self.passwd = 'nopass'
         self.host = 'http://[::1]:8000'
-        self.dir = 'doc/coverage'
 
     def finalize_options(self):
         pass
@@ -214,8 +212,8 @@ class coverage(Command):
         if os.path.exists(common_path):
             sys.path.insert(0, common_path)
 
-        if not os.path.exists(self.dir):
-            os.makedirs(self.dir)
+        if not os.path.exists(coverage_path):
+            os.makedirs(coverage_path)
 
         cov = coverage.coverage(include='RestAuthClient/*')
 
@@ -227,7 +225,7 @@ class coverage(Command):
         cov.start()
         run_test_suite(self.host, self.user, self.passwd)
         cov.stop()
-        cov.html_report(directory=self.dir)
+        cov.html_report(directory=coverage_path)
         cov.report()
 
 setup(
