@@ -8,7 +8,9 @@ RestAuthClient 0.6.2 (XX XXXXX 2013)
 	http://pythonconquerstheuniverse.wordpress.com/2012/02/15/mutable-default-arguments/
   * The test cases now use the content handler specified by the MIME
     environment variable.
-  * RestAuthConnection offers an optional ssl_context parameter in Python3.
+  * RestAuthConnection now offers new optional parameters timeout an
+    source_address.
+  * RestAuthConnection now offers an optional ssl_context parameter in Python3.
 
 RestAuthClient 0.6.1 (01 April 2013)
 

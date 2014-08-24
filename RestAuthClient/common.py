@@ -84,10 +84,15 @@ class RestAuthConnection:
           protocol, :py:data:`~ssl.CERT_REQUIRED` as :py:attr:`~ssl.SSLContext.verify_mode` and the certificate chain
           loaded by :py:meth:`~ssl.set_default_verify_paths`.
     :type      ssl_context: :py:class:`~ssl.SSLContext`
+    :param         timeout: Timeout for HTTP connections. If omitted, use the systems default.
+    :type          timeout: int
+    :param  source_address: A tuple of ``(host, port)`` to make connections from.
+    :type   source_address: tuple
     """
     context = None
 
-    def __init__(self, host, user, passwd, content_handler=None, ssl_context=None):
+    def __init__(self, host, user, passwd, content_handler=None, ssl_context=None, timeout=None,
+                 source_address=None):
         """Initialize a new connection to a RestAuth service."""
 
         parseresult = urlparse(host)
@@ -102,13 +107,18 @@ class RestAuthConnection:
                 self._conn_kwargs['context'] = ssl_context
             elif PY34:  # pragma: py34
                 self._conn_kwargs['context'] = ssl.create_default_context()
-            elif PY3:  # pragma: py3
+            elif PY3:  # pragma: no branch, py3
                 context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
                 context.verify_mode = ssl.CERT_REQUIRED
                 context.set_default_verify_paths()
                 self._conn_kwargs['context'] = context
         else:
             self._conn = client.HTTPConnection
+
+        if timeout is not None:
+            self._conn_kwargs['timeout'] = timeout
+        if source_address is not None:
+            self._conn_kwargs['source_address'] = source_address
 
         self.user = user
         self.passwd = passwd
