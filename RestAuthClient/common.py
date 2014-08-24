@@ -35,10 +35,8 @@ else:  # pragma: py2
     from urllib import urlencode
     from urlparse import urlparse
 
-PY32 = False
 PY34 = False
 if sys.version_info >= (3, 2):  # pragma: no cover
-    PY32 = True
     import ssl
 if sys.version_info >= (3, 4):  # pragma: py34
     PY34 = True
