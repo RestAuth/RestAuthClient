@@ -35,11 +35,12 @@ else:  # pragma: py2
     from urllib import urlencode
     from urlparse import urlparse
 
-PY34 = False
 if sys.version_info >= (3, 2):  # pragma: no cover
     import ssl
 if sys.version_info >= (3, 4):  # pragma: py34
     PY34 = True
+else:
+    PY34 = False
 
 from RestAuthCommon import error
 from RestAuthCommon.handlers import CONTENT_HANDLERS
