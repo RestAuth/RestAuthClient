@@ -172,8 +172,8 @@ class test(Command):
     ]
 
     def initialize_options(self):
-        self.user = 'vowi'
-        self.passwd = 'vowi'
+        self.user = 'example.com'
+        self.passwd = 'nopass'
         self.host = 'http://[::1]:8000'
         self.part = None
 
@@ -196,8 +196,8 @@ class coverage(Command):
         (str('output-dir='), str('o'), 'Output directory for coverage analysis')]
 
     def initialize_options(self):
-        self.user = 'vowi'
-        self.passwd = 'vowi'
+        self.user = 'example.com'
+        self.passwd = 'nopass'
         self.host = 'http://[::1]:8000'
         self.dir = 'doc/coverage'
 
