@@ -26,11 +26,13 @@ import os
 import sys
 
 if sys.version_info >= (3, ):  # pragma: py3
+    PY3 = True
     from http import client
     from urllib.parse import quote
     from urllib.parse import urlencode
     from urllib.parse import urlparse
 else:  # pragma: py2
+    PY3 = False
     import httplib as client
     from urllib import quote
     from urllib import urlencode
@@ -73,6 +75,7 @@ class RestAuthConnection:
     :type  content_handler: str or
         :py:class:`~common:RestAuthCommon.handlers.ContentHandler`
     """
+    context = None
 
     def __init__(self, host, user, passwd, content_handler=None):
         """
@@ -80,9 +83,12 @@ class RestAuthConnection:
         """
         parseresult = urlparse(host)
         if parseresult.scheme == 'https':  # pragma: no cover
-            self.use_ssl = True
+            self._conn = client.HTTPSConnection
+            if PY3 is True:  # pragma: py3
+                self.context = SSLContext()
+                self.context.verify_mode = CERT_REQUIRED
         else:
-            self.use_ssl = False
+            self._conn = client.HTTPConnection
         self.host = parseresult.netloc
 
         self.user = user
@@ -92,9 +98,6 @@ class RestAuthConnection:
         # pre-calculate the auth-header so we only have to do this once:
         self.set_credentials(user, passwd)
 
-        if sys.version_info >= (3, 2) and self.use_ssl:  # pragma: no cover
-            self.context = SSLContext()
-            self.context.verify_mode = CERT_REQUIRED
 
     def set_credentials(self, user, passwd):
         """
@@ -178,13 +181,10 @@ class RestAuthConnection:
         headers['Authorization'] = self.auth_header
         headers['Accept'] = self.content_handler.mime
 
-        if self.use_ssl:  # pragma: no cover
-            if sys.version_info >= (3, 2):
-                conn = client.HTTPSConnection(self.host, context=self.context)
-            else:
-                conn = client.HTTPSConnection(self.host)
+        if self.context is not None:
+            conn = self._conn(self.host, context=self.context)
         else:
-            conn = client.HTTPConnection(self.host)
+            conn = self._conn(self.host)
 
         try:
             conn.request(method, url, body, headers)
