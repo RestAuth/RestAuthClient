@@ -2,22 +2,18 @@
 #
 # This file is part of RestAuthClient (https://python.restauth.net).
 #
-# RestAuth is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# RestAuthClient is free software: you can redistribute it and/or modify it under the terms of the
+# GNU General Public License as published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
 #
-# RestAuth is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# RestAuthClient is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
-# along with RestAuth.  If not, see <http://www.gnu.org/licenses/>.
+# You should have received a copy of the GNU General Public License along with RestAuth. If not,
+# see <http://www.gnu.org/licenses/>.
 
-"""
-Module handling code relevant to user authentication and property management.
-"""
+"""Module handling code relevant to user authentication and property management."""
 
 import sys
 
@@ -34,31 +30,26 @@ from RestAuthClient.error import UserExists
 
 
 def create(conn, name, password=None, properties=None):
-    """
-    Factory method that creates a *new* user in the RestAuth
-    database.
+    """Factory method that creates a *new* user in the RestAuth database.
 
     :param conn: A connection to a RestAuth service.
     :type  conn: :py:class:`.RestAuthConnection`
     :param name: Name of the user to get
     :type  name: str
-    :param password: Password for the new user. If None or an empty string, the
-        user is effectively disabled.
+    :param password: Password for the new user. If None or an empty string, the user is effectively
+        disabled.
     :type  password: str
     :return: The user object representing the user just created.
     :rtype: :py:class:`~.restauth_user.User`
 
     :raise BadRequest: If the server was unable to parse the request body.
     :raise Unauthorized: When the connection uses wrong credentials.
-    :raise Forbidden: When the client is not allowed to perform this
-         action.
+    :raise Forbidden: When the client is not allowed to perform this action.
     :raise UserExists: If the user already exists.
     :raise PreconditionFailed: When username or password is invalid.
-    :raise UnsupportedMediaType: The server does not support the
-        content type used by this connection (see also:
-        :py:meth:`~.RestAuthConnection.set_content_handler`).
-    :raise InternalServerError: When the RestAuth service returns HTTP
-        status code 500
+    :raise UnsupportedMediaType: The server does not support the content type used by this
+        connection (see also: :py:meth:`~.RestAuthConnection.set_content_handler`).
+    :raise InternalServerError: When the RestAuth service returns HTTP status code 500
     :raise UnknownStatus: If the response status is unknown.
     """
     params = {'user': name}
@@ -80,14 +71,12 @@ def create(conn, name, password=None, properties=None):
 
 def create_test(conn, name, password=None, properties=None):
     """
-    Do a test-run on creating a new user (i.e. to test user input against the
-    RestAuth server configuration). This method throws the exact same
-    Exceptions as :py:func:`create` but always returns None instead of a
-    :py:class:`User` instance if the user could be created that way.
+    Do a test-run on creating a new user (i.e. to test user input against the RestAuth server
+    configuration). This method throws the exact same Exceptions as :py:func:`create` but always
+    returns None instead of a :py:class:`User` instance if the user could be created that way.
 
-    .. NOTE:: Invoking this method cannot guarantee that actually creating this
-       user will work in the future, i.e. it may have been created by another
-       client in the meantime.
+    .. NOTE:: Invoking this method cannot guarantee that actually creating this user will work in
+       the future, i.e. it may have been created by another client in the meantime.
     """
     params = {'user': name}
     if password:
@@ -108,9 +97,9 @@ def create_test(conn, name, password=None, properties=None):
 
 def get(conn, name):
     """
-    Factory method that gets an *existing* user from RestAuth. This
-    method verifies that the user exists in RestAuth and throws
-    :py:exc:`~RestAuthCommon:RestAuthCommon.error.ResourceNotFound` if not.
+    Factory method that gets an *existing* user from RestAuth. This method verifies that the user
+    exists in RestAuth and throws :py:exc:`~RestAuthCommon:RestAuthCommon.error.ResourceNotFound`
+    if not.
 
     :param conn: A connection to a RestAuth service.
     :type  conn: :py:class:`.RestAuthConnection`
@@ -120,11 +109,9 @@ def get(conn, name):
     :rtype: :py:class:`~.restauth_user.User`
 
     :raise Unauthorized: When the connection uses wrong credentials.
-    :raise Forbidden: When the client is not allowed to perform this
-         action.
+    :raise Forbidden: When the client is not allowed to perform this action.
     :raise ResourceNotFound: If the user does not exist in RestAuth.
-    :raise InternalServerError: When the RestAuth service returns
-        HTTP status code 500
+    :raise InternalServerError: When the RestAuth service returns HTTP status code 500
     :raise UnknownStatus: If the response status is unknown.
     """
     # this just verify that the user exists in RestAuth:
@@ -151,13 +138,10 @@ def get_all(conn, flat=False):
     :rtype: [:py:class:`~.restauth_user.User` or str]
 
     :raise Unauthorized: When the connection uses wrong credentials.
-    :raise Forbidden: When the client is not allowed to perform this
-         action.
-    :raise NotAcceptable: When the server cannot generate a response in the
-        content type used by this connection (see also:
-        :py:meth:`~.RestAuthConnection.set_content_handler`).
-    :raise InternalServerError: When the RestAuth service returns HTTP
-        status code 500
+    :raise Forbidden: When the client is not allowed to perform this action.
+    :raise NotAcceptable: When the server cannot generate a response in the content type used by
+        this connection (see also: :py:meth:`~.RestAuthConnection.set_content_handler`).
+    :raise InternalServerError: When the RestAuth service returns HTTP status code 500
     :raise UnknownStatus: If the response status is unknown.
     """
     resp = conn.get(User.prefix)
@@ -173,14 +157,11 @@ def get_all(conn, flat=False):
 
 
 class User(common.RestAuthResource):
-    """
-    An instance of this class is an object oriented abstraction of a user in a
-    RestAuth server.
+    """An instance of this class is an object oriented abstraction of a user in a RestAuth server.
 
-    .. Warning:: The constructor *does not* verify that the user actually
-       exists.  This has the advantage of saving one request to the RestAuth
-       service.  If you want to be sure that a user exists, use
-       :py:func:`~.get` or :py:func:`~.get_all`.
+    .. Warning:: The constructor *does not* verify that the user actually exists.  This has the
+       advantage of saving one request to the RestAuth service.  If you want to be sure that a user
+       exists, use :py:func:`~.get` or :py:func:`~.get_all`.
 
     :param conn: The connection to the RestAuthServer.
     :type  conn: :py:class:`.RestAuthConnection`
@@ -208,24 +189,19 @@ class User(common.RestAuthResource):
         return User._group
 
     def set_password(self, password=None):
-        """
-        Set the password of this user.
+        """Set the password of this user.
 
-        :param password: The new password of the user. If None or an empty
-            string, the user is effectively disabled.
+        :param password: The new password of the user. If None or an empty string, the user is
+            effectively disabled.
         :type  password: str
 
-        :raise BadRequest: If the server was unable to parse the request
-            body.
+        :raise BadRequest: If the server was unable to parse the request body.
         :raise Unauthorized: When the connection uses wrong credentials.
-        :raise Forbidden: When the client is not allowed to perform this
-             action.
+        :raise Forbidden: When the client is not allowed to perform this action.
         :raise ResourceNotFound: If the user does not exist in RestAuth.
-        :raise InternalServerError: When the RestAuth service returns
-            HTTP status code 500
-        :raise UnsupportedMediaType: The server does not support the
-            content type used by this connection (see also:
-            :py:meth:`~.RestAuthConnection.set_content_handler`).
+        :raise InternalServerError: When the RestAuth service returns HTTP status code 500
+        :raise UnsupportedMediaType: The server does not support the content type used by this
+            connection (see also: :py:meth:`~.RestAuthConnection.set_content_handler`).
         :raise UnknownStatus: If the response status is unknown.
         :raise PreconditionFailed: When the password is invalid.
         """
@@ -243,25 +219,20 @@ class User(common.RestAuthResource):
             raise UnknownStatus(resp)
 
     def verify_password(self, password):
-        """
-        Verify the given password.
+        """Verify the given password.
 
         :param password: The password to verify.
         :type  password: str
-        :return: True if the password is correct, False if the password
-            is wrong or the user does not exist.
+        :return: True if the password is correct, False if the password is wrong or the user does
+            not exist.
         :rtype: bool
 
-        :raise BadRequest: If the server was unable to parse the request
-            body.
+        :raise BadRequest: If the server was unable to parse the request body.
         :raise Unauthorized: When the connection uses wrong credentials.
-        :raise Forbidden: When the client is not allowed to perform this
-             action.
-        :raise UnsupportedMediaType: The server does not support the
-            content type used by this connection (see also:
-            :py:meth:`~.RestAuthConnection.set_content_handler`).
-        :raise InternalServerError: When the RestAuth service returns
-            HTTP status code 500
+        :raise Forbidden: When the client is not allowed to perform this action.
+        :raise UnsupportedMediaType: The server does not support the content type used by this
+            connection (see also: :py:meth:`~.RestAuthConnection.set_content_handler`).
+        :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
         resp = self._post(self.name, {'password': password})
@@ -273,15 +244,12 @@ class User(common.RestAuthResource):
             raise UnknownStatus(resp)
 
     def remove(self):
-        """
-        Remove this user.
+        """Remove this user.
 
         :raise Unauthorized: When the connection uses wrong credentials.
-        :raise Forbidden: When the client is not allowed to perform this
-             action.
+        :raise Forbidden: When the client is not allowed to perform this action.
         :raise ResourceNotFound: If the user does not exist in RestAuth.
-        :raise InternalServerError: When the RestAuth service returns
-            HTTP status code 500
+        :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
         resp = self._delete(self.name)
@@ -293,21 +261,17 @@ class User(common.RestAuthResource):
             raise UnknownStatus(resp)
 
     def get_properties(self):
-        """
-        Get all properties defined for this user.
+        """Get all properties defined for this user.
 
         :return: A key/value array of the properties defined for this user.
         :rtype: dict
 
         :raise Unauthorized: When the connection uses wrong credentials.
-        :raise Forbidden: When the client is not allowed to perform this
-             action.
-        :raise NotAcceptable: When the server cannot generate a response
-            in the content type used by this connection (see also:
-            :py:meth:`~.RestAuthConnection.set_content_handler`).
+        :raise Forbidden: When the client is not allowed to perform this action.
+        :raise NotAcceptable: When the server cannot generate a response in the content type used
+            by this connection (see also: :py:meth:`~.RestAuthConnection.set_content_handler`).
         :raise ResourceNotFound: If the user does not exist in RestAuth.
-        :raise InternalServerError: When the RestAuth service returns
-            HTTP status code 500
+        :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
         resp = self._get('%s/props/' % (self.name))
@@ -320,29 +284,23 @@ class User(common.RestAuthResource):
 
     def create_property(self, prop, value):
         """
-        Create a new property for this user. This method fails if the
-        property already exists. Use :py:meth:`set_property` if you do
-        not care if the property already exists.
+        Create a new property for this user. This method fails if the property already exists. Use
+        :py:meth:`set_property` if you do not care if the property already exists.
 
         :param prop: The property to set.
         :type  prop: str
         :param value: The new value of the property
         :type  value: str
 
-        :raise BadRequest: If the server was unable to parse the request
-            body.
+        :raise BadRequest: If the server was unable to parse the request body.
         :raise Unauthorized: When the connection uses wrong credentials.
-        :raise Forbidden: When the client is not allowed to perform this
-             action.
+        :raise Forbidden: When the client is not allowed to perform this action.
         :raise ResourceNotFound: If the user does not exist in RestAuth.
         :raise PropertyExists: When the property already exists
-        :raise PreconditionFailed: When the propertyname contains invalid
-            characters
-        :raise UnsupportedMediaType: The server does not support the
-            content type used by this connection (see also:
-            :py:meth:`~.RestAuthConnection.set_content_handler`).
-        :raise InternalServerError: When the RestAuth service returns
-            HTTP status code 500
+        :raise PreconditionFailed: When the propertyname contains invalid characters
+        :raise UnsupportedMediaType: The server does not support the content type used by this
+            connection (see also: :py:meth:`~.RestAuthConnection.set_content_handler`).
+        :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
         params = {'prop': prop, 'value': value}
@@ -360,14 +318,12 @@ class User(common.RestAuthResource):
 
     def create_property_test(self, prop, value):
         """
-        Do a test-run on creating a property (i.e. to test user input against
-        the RestAuth server configuration). This method throws the exact same
-        Exceptions as :py:func:`create_property` and also returns None if
-        creating the property would succeed.
+        Do a test-run on creating a property (i.e. to test user input against the RestAuth server
+        configuration). This method throws the exact same Exceptions as :py:func:`create_property`
+        and also returns None if creating the property would succeed.
 
-        .. NOTE:: Invoking this method cannot guarantee that actually creating
-           this property will work in the future, i.e. it may have been created
-           by another client in the meantime.
+        .. NOTE:: Invoking this method cannot guarantee that actually creating this property will
+           work in the future, i.e. it may have been created by another client in the meantime.
         """
         params = {'prop': prop, 'value': value}
         url = '/test/users/%s/props/' % self.name
@@ -385,30 +341,23 @@ class User(common.RestAuthResource):
             raise UnknownStatus(resp)
 
     def set_property(self, prop, value):
-        """
-        Set a property for this user. This method overwrites any
-        previous entry.
+        """Set a property for this user. This method overwrites any previous entry.
 
         :param prop: The property to set.
         :type  prop: str
         :param value: The new value of the property
         :type  value: str
 
-        :raise BadRequest: If the server was unable to parse the request
-            body.
+        :raise BadRequest: If the server was unable to parse the request body.
         :raise Unauthorized: When the connection uses wrong credentials.
-        :raise Forbidden: When the client is not allowed to perform this
-             action.
+        :raise Forbidden: When the client is not allowed to perform this action.
         :raise ResourceNotFound: If the user does not exist in RestAuth.
-        :raise NotAcceptable: When the server cannot generate a response
-            in the content type used by this connection (see also:
-            :py:meth:`~.RestAuthConnection.set_content_handler`).
+        :raise NotAcceptable: When the server cannot generate a response in the content type used
+            by this connection (see also: :py:meth:`~.RestAuthConnection.set_content_handler`).
         :raise PreconditionFailed: When the property name is invalid.
-        :raise UnsupportedMediaType: The server does not support the
-            content type used by this connection (see also:
-            :py:meth:`~.RestAuthConnection.set_content_handler`).
-        :raise InternalServerError: When the RestAuth service returns
-            HTTP status code 500
+        :raise UnsupportedMediaType: The server does not support the content type used by this
+            connection (see also: :py:meth:`~.RestAuthConnection.set_content_handler`).
+        :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
         url = '%s/props/%s/' % (self.name, prop)
@@ -425,29 +374,21 @@ class User(common.RestAuthResource):
             raise UnknownStatus(resp)
 
     def set_properties(self, props):
-        """
-        Set multiple properties at once. This method overwrites any previous
-        settings.
+        """Set multiple properties at once. This method overwrites any previous settings.
 
         :param props: The new properties to set
         :type  props: dict
 
-        :raise BadRequest: If the server was unable to parse the request
-            body.
+        :raise BadRequest: If the server was unable to parse the request body.
         :raise Unauthorized: When the connection uses wrong credentials.
-        :raise Forbidden: When the client is not allowed to perform this
-             action.
+        :raise Forbidden: When the client is not allowed to perform this action.
         :raise ResourceNotFound: If the user does not exist in RestAuth.
-        :raise NotAcceptable: When the server cannot generate a response
-            in the content type used by this connection (see also:
-            :py:meth:`~.RestAuthConnection.set_content_handler`).
-        :raise PreconditionFailed: When any of the given property names is
-            invalid.
-        :raise UnsupportedMediaType: The server does not support the
-            content type used by this connection (see also:
-            :py:meth:`~.RestAuthConnection.set_content_handler`).
-        :raise InternalServerError: When the RestAuth service returns
-            HTTP status code 500
+        :raise NotAcceptable: When the server cannot generate a response in the content type used
+            by this connection (see also: :py:meth:`~.RestAuthConnection.set_content_handler`).
+        :raise PreconditionFailed: When any of the given property names is invalid.
+        :raise UnsupportedMediaType: The server does not support the content type used by this
+            connection (see also: :py:meth:`~.RestAuthConnection.set_content_handler`).
+        :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
         url = '%s/props/' % self.name
@@ -462,21 +403,17 @@ class User(common.RestAuthResource):
             raise UnknownStatus(resp)
 
     def get_property(self, prop):
-        """
-        Get the given property for this user.
+        """Get the given property for this user.
 
         :return: The value of the property.
         :rtype: str
 
         :raise Unauthorized: When the connection uses wrong credentials.
-        :raise Forbidden: When the client is not allowed to perform this
-             action.
+        :raise Forbidden: When the client is not allowed to perform this action.
         :raise ResourceNotFound: If the user or property does not exist.
-        :raise NotAcceptable: When the server cannot generate a response
-            in the content type used by this connection (see also:
-            :py:meth:`~.RestAuthConnection.set_content_handler`).
-        :raise InternalServerError: When the RestAuth service returns
-            HTTP status code 500
+        :raise NotAcceptable: When the server cannot generate a response in the content type used
+            by this connection (see also: :py:meth:`~.RestAuthConnection.set_content_handler`).
+        :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
         resp = self._get('%s/props/%s' % (self.name, prop))
@@ -488,15 +425,12 @@ class User(common.RestAuthResource):
             raise UnknownStatus(resp)
 
     def remove_property(self, prop):
-        """
-        Delete the given property.
+        """Delete the given property.
 
         :raise Unauthorized: When the connection uses wrong credentials.
-        :raise Forbidden: When the client is not allowed to perform this
-             action.
+        :raise Forbidden: When the client is not allowed to perform this action.
         :raise ResourceNotFound: If the user or property does not exist.
-        :raise InternalServerError: When the RestAuth service returns
-            HTTP status code 500
+        :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
         resp = self._delete('%s/props/%s' % (self.name, prop))
@@ -508,8 +442,7 @@ class User(common.RestAuthResource):
             raise UnknownStatus(resp)
 
     def get_groups(self):
-        """
-        Get all groups that this user is a member of.
+        """Get all groups that this user is a member of.
 
         This method is just a shortcut for :py:func:`.group.get_all`.
 
@@ -517,18 +450,15 @@ class User(common.RestAuthResource):
         :rtype: list of :py:class:`groups <.Group>`
 
         :raise Unauthorized: When the connection uses wrong credentials.
-        :raise Forbidden: When the client is not allowed to perform this
-             action.
+        :raise Forbidden: When the client is not allowed to perform this action.
         :raise ResourceNotFound: If the user does not exist.
-        :raise InternalServerError: When the RestAuth service returns
-            HTTP status code 500
+        :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
         return self.group.get_all(self.conn, self)
 
     def in_group(self, grp):
-        """
-        Check if the user is a member in the given group.
+        """Check if the user is a member in the given group.
 
         This method is just a shortcut for :py:meth:`.Group.is_member`.
 
@@ -538,45 +468,36 @@ class User(common.RestAuthResource):
         :rtype: bool
 
         :raise Unauthorized: When the connection uses wrong credentials.
-        :raise Forbidden: When the client is not allowed to perform this
-             action.
+        :raise Forbidden: When the client is not allowed to perform this action.
         :raise ResourceNotFound: If the user or group does not exist.
-        :raise InternalServerError: When the RestAuth service returns
-            HTTP status code 500
+        :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        if isinstance(grp, str) or \
-                (sys.version_info < (3, 0) and isinstance(grp, unicode)):
+        if isinstance(grp, str) or (sys.version_info < (3, 0) and isinstance(grp, unicode)):
             grp = self.group.Group(self.conn, grp)
         return grp.is_member(self.name)
 
     def add_group(self, grp):
-        """
-        Make this user a member if the given group.
+        """Make this user a member if the given group.
 
         This method is just a shortcut for :py:meth:`.Group.add_user`.
 
         :param grp: The group of interest.
         :type  grp: :py:class:`str` or :py:class:`.Group`
 
-        :raise BadRequest: If the server was unable to parse the request
-            body.
+        :raise BadRequest: If the server was unable to parse the request body.
         :raise Unauthorized: When the connection uses wrong credentials.
-        :raise Forbidden: When the client is not allowed to perform this
-             action.
+        :raise Forbidden: When the client is not allowed to perform this action.
         :raise ResourceNotFound: If the user or group does not exist.
-        :raise InternalServerError: When the RestAuth server returns
-            HTTP status code 500
+        :raise InternalServerError: When the RestAuth server returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        if isinstance(grp, str) or \
-                (sys.version_info < (3, 0) and isinstance(grp, unicode)):
+        if isinstance(grp, str) or (sys.version_info < (3, 0) and isinstance(grp, unicode)):
             grp = self.group.Group(self.conn, grp)
         grp.add_user(self.name)
 
     def remove_group(self, grp):
-        """
-        Remove the users membership from the given group.
+        """Remove the users membership from the given group.
 
         This method is just a shortcut for :py:meth:`.Group.remove_user`.
 
@@ -584,22 +505,19 @@ class User(common.RestAuthResource):
         :type  grp: :py:class:`str` or :py:class:`.Group`
 
         :raise Unauthorized: When the connection uses wrong credentials.
-        :raise Forbidden: When the client is not allowed to perform this
-             action.
+        :raise Forbidden: When the client is not allowed to perform this action.
         :raise ResourceNotFound: If the user or group does not exist.
-        :raise InternalServerError: When the RestAuth service returns
-            HTTP status code 500
+        :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        if isinstance(grp, str) or \
-                (sys.version_info < (3, 0) and isinstance(grp, unicode)):
+        if isinstance(grp, str) or (sys.version_info < (3, 0) and isinstance(grp, unicode)):
             grp = self.group.Group(self.conn, grp)
         grp.remove_user(self.name)
 
     def __eq__(self, other):
         """
-        Two instances of the class User evaluate as equal if their name
-        and connection evaluate as equal.
+        Two instances of the class User evaluate as equal if their name and connection evaluate as
+        equal.
         """
         return self.name == other.name and self.conn == other.conn
 
