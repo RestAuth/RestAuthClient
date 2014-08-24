@@ -17,10 +17,12 @@
 
 import sys
 
-if sys.version_info < (3, 0):
-    import httplib as http
-else:  # pragma: no cover
+if sys.version_info > (3, 0):  # pragma: py3
+    PY3 = True
     from http import client as http
+else:  # pragma: py2
+    PY3 = False
+    import httplib as http
 
 from RestAuthCommon import error
 from RestAuthClient import common
@@ -475,7 +477,7 @@ class User(common.RestAuthResource):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        if isinstance(grp, str) or (sys.version_info < (3, 0) and isinstance(grp, unicode)):
+        if isinstance(grp, str) or (PY3 is False and isinstance(grp, unicode)):
             grp = self.group.Group(self.conn, grp)
         return grp.is_member(self.name)
 
@@ -494,7 +496,7 @@ class User(common.RestAuthResource):
         :raise InternalServerError: When the RestAuth server returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        if isinstance(grp, str) or (sys.version_info < (3, 0) and isinstance(grp, unicode)):
+        if isinstance(grp, str) or (PY3 is False and isinstance(grp, unicode)):
             grp = self.group.Group(self.conn, grp)
         grp.add_user(self.name)
 
@@ -512,7 +514,7 @@ class User(common.RestAuthResource):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        if isinstance(grp, str) or (sys.version_info < (3, 0) and isinstance(grp, unicode)):
+        if isinstance(grp, str) or (PY3 is False and isinstance(grp, unicode)):
             grp = self.group.Group(self.conn, grp)
         grp.remove_user(self.name)
 
@@ -530,7 +532,7 @@ class User(common.RestAuthResource):
         return hash(self.name)
 
     def __repr__(self):  # pragma: no cover
-        if sys.version_info < (3, 0) and isinstance(self.name, unicode):
+        if PY3 is False and isinstance(self.name, unicode):
             return '<User: {0}>'.format(self.name.encode('utf-8'))
         else:
             return '<User: {0}>'.format(self.name)
