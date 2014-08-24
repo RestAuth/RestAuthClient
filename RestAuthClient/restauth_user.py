@@ -180,7 +180,7 @@ class User(common.RestAuthResource):
     .. Warning:: The constructor *does not* verify that the user actually
        exists.  This has the advantage of saving one request to the RestAuth
        service.  If you want to be sure that a user exists, use
-       :py:meth:`~.restauth_user.get` or :py:meth:`~.restauth_user.get_all`.
+       :py:func:`~.get` or :py:func:`~.get_all`.
 
     :param conn: The connection to the RestAuthServer.
     :type  conn: :py:class:`.RestAuthConnection`
