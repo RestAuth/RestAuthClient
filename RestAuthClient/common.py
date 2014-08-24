@@ -143,7 +143,7 @@ class RestAuthConnection:
 
             self.content_handler = cl()
 
-    def send(self, method, url, body=None, headers={}):
+    def send(self, method, url, body=None, headers=None):
         """
         Send an HTTP request to the RestAuth service. This method is
         called by the :py:meth:`.get`, :py:meth:`.post`, :py:meth:`.put`
@@ -178,6 +178,9 @@ class RestAuthConnection:
         :raise InternalServerError: When the server has some internal
             error.
         """
+        if headers is None:
+            headers = {}
+
         headers['Authorization'] = self.auth_header
         headers['Accept'] = self.content_handler.mime
 
@@ -227,7 +230,7 @@ class RestAuthConnection:
         url = quote(url)
         return url
 
-    def get(self, url, params={}, headers={}):
+    def get(self, url, params=None, headers=None):
         """
         Perform a GET request on the connection. This method takes care
         of escaping parameters and assembling the correct URL. This
@@ -257,13 +260,16 @@ class RestAuthConnection:
         :raise InternalServerError: When the server has some internal
             error.
         """
+        if params is None:
+            params = {}
+
         url = self._sanitize_url(url)
         if params:
             url = '%s?%s' % (url, self._sanitize_qs(params))
 
         return self.send('GET', url, headers=headers)
 
-    def post(self, url, params={}, headers={}):
+    def post(self, url, params=None, headers=None):
         """
         Perform a POST request on the connection. This method takes care
         of escaping parameters and assembling the correct URL. This
@@ -295,6 +301,11 @@ class RestAuthConnection:
         :raise InternalServerError: When the server has some internal
             error.
         """
+        if params is None:
+            params = {}
+        if headers is None:
+            headers = {}
+
         headers['Content-Type'] = self.content_handler.mime
         body = self.content_handler.marshal_dict(params)
         url = self._sanitize_url(url)
@@ -306,7 +317,7 @@ class RestAuthConnection:
 
         return response
 
-    def put(self, url, params={}, headers={}):
+    def put(self, url, params=None, headers=None):
         """
         Perform a PUT request on the connection. This method takes care
         of escaping parameters and assembling the correct URL. This
@@ -338,6 +349,11 @@ class RestAuthConnection:
         :raise InternalServerError: When the server has some internal
             error.
         """
+        if params is None:
+            params = {}
+        if headers is None:
+            headers = {}
+
         headers['Content-Type'] = self.content_handler.mime
         body = self.content_handler.marshal_dict(params)
         url = self._sanitize_url(url)
@@ -348,7 +364,7 @@ class RestAuthConnection:
             raise error.UnsupportedMediaType(response)
         return response
 
-    def delete(self, url, headers={}):
+    def delete(self, url, headers=None):
         """
         Perform a DELETE request on the connection. This method internally
         calls the :py:meth:`.send` function to perform service authentication.
@@ -383,7 +399,7 @@ class RestAuthResource:
     with the prefix of that class (i.e. /users/).
     """
 
-    def _get(self, url, params={}, headers={}):
+    def _get(self, url, params=None, headers=None):
         """
         Internal method that prefixes a GET request with the resource
         name and passes the request to :py:meth:`RestAuthConnection.get`.
@@ -391,7 +407,7 @@ class RestAuthResource:
         url = '%s%s' % (self.__class__.prefix, url)
         return self.conn.get(url, params, headers)
 
-    def _post(self, url, params={}, headers={}):
+    def _post(self, url, params=None, headers=None):
         """
         Internal method that prefixes a POST request with the resources
         name and passes the request to :py:meth:`RestAuthConnection.post`.
@@ -400,7 +416,7 @@ class RestAuthResource:
         url = '%s%s' % (self.__class__.prefix, url)
         return self.conn.post(url, params, headers)
 
-    def _put(self, url, params={}, headers={}):
+    def _put(self, url, params=None, headers=None):
         """
         Internal method that prefixes a PUT request with the resources
         name and passes the request to :py:meth:`RestAuthConnection.put`.
@@ -409,7 +425,7 @@ class RestAuthResource:
         url = '%s%s' % (self.__class__.prefix, url)
         return self.conn.put(url, params, headers)
 
-    def _delete(self, url, headers={}):
+    def _delete(self, url, headers=None):
         """
         Internal method that prefixes a DELETE request with the
         resources name and passes the request to

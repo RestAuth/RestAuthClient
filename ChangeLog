@@ -4,6 +4,8 @@ RestAuthClient 0.6.2 (XX XXXXX 2013)
     https://github.com/RestAuth/RestAuthClient
   * Generalize and update requirements.txt
   * Do not decode HTTP responses, as this brakes binary protocols (e.g. BSON)
+  * Do not use mutable default arguments, this is dangerous. See:
+	http://pythonconquerstheuniverse.wordpress.com/2012/02/15/mutable-default-arguments/
   * The test cases now use the content handler specified by the MIME
     environment variable.
 
