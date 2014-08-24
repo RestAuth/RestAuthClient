@@ -222,6 +222,9 @@ class coverage(Command):
         else:
             cov.exclude(r'pragma: .*\bpy3\b')
 
+        if sys.version_info < (3, 4):
+            cov.exclude(r'pragma: .*\bpy34\b')
+
         cov.start()
         run_test_suite(self.host, self.user, self.passwd)
         cov.stop()
