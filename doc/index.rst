@@ -9,7 +9,7 @@ efficient and easy-to-maintain integration into existing services.
 
 **RestAuthClient** is the client reference implemenation of the `RestAuth protocol
 <https://restauth.net/Specification>`_ and is written in pure `Python <http://www.python.org>`_,
-it requires Python 2.6 or later and is fully compatible with Python 3. **RestAuthClient** is free
+it requires Python 2.7 or later or Python 3.2 or later. **RestAuthClient** is free
 software and is licenced under the `GNU General Public Licence, version 3
 <http://www.gnu.org/licenses/gpl.html>`_, so please feel free to :doc:`contribute </contribute>`.
 
