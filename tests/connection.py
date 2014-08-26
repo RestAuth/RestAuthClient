@@ -39,7 +39,7 @@ class BasicTests(RestAuthClientTestCase):
             try:
                 conn.get(path)
                 self.fail(msg="%s did not require authorization!" % path)
-            except error.Unauthorized as e:
+            except error.Unauthorized:
                 pass
 
         conn = RestAuthConnection(rest_host, rest_user, 'credentials')
@@ -47,7 +47,7 @@ class BasicTests(RestAuthClientTestCase):
             try:
                 conn.get(path)
                 self.fail(msg="%s did not verify password!" % path)
-            except error.Unauthorized as e:
+            except error.Unauthorized:
                 pass
 
         conn = RestAuthConnection(rest_host, 'wrong', rest_passwd)
@@ -55,7 +55,7 @@ class BasicTests(RestAuthClientTestCase):
             try:
                 conn.get(path)
                 self.fail(msg="%s did not verify service!" % path)
-            except error.Unauthorized as e:
+            except error.Unauthorized:
                 pass
 
     def test_wrongHost(self):
