@@ -20,7 +20,6 @@
 
 import sys
 
-from RestAuthClient import common
 from RestAuthClient.restauth_user import User
 from RestAuthClient.error import GroupExists
 from RestAuthClient.error import UnknownStatus
@@ -33,7 +32,7 @@ else:  # pragma: no cover
     from http import client as http
 
 
-class Group(common.RestAuthResource):
+class Group(object):
     """An instance of this class represents a group in RestAuth.
 
     *Note:* The constructor *does not* verify that the group actually exists. This has the
@@ -45,8 +44,6 @@ class Group(common.RestAuthResource):
     :param name: The name of this user.
     :type  name: str
     """
-
-    prefix = '/groups/'
 
     def __init__(self, conn, name):
         self.conn = conn
