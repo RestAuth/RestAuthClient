@@ -49,3 +49,6 @@ Once you have added the repositories, installing RestAuthClient is as simple as
 
    apt-get install python-restauth
 
+or, if you use Python 3::
+
+   apt-get install python3-restauth
