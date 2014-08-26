@@ -33,127 +33,6 @@ else:  # pragma: no cover
     from http import client as http
 
 
-def create(conn, name):
-    """Factory method that creates a *new* group in RestAuth.
-
-    :param conn: A connection to a RestAuth service.
-    :type  conn: :py:class:`.RestAuthConnection`
-    :param name: The name of the group to create
-    :type  name: str
-    :return: The group object representing the group just created.
-    :rtype: Group
-
-    :raise BadRequest: If the server was unable to parse the request body.
-    :raise Unauthorized: When the connection uses wrong credentials.
-    :raise Forbidden: When the client is not allowed to perform this action.
-    :raise GroupExists: When the user already exists.
-    :raise UnsupportedMediaType: The server does not support the content type used by this
-        connection (see also: :py:meth:`~.RestAuthConnection.set_content_handler`).
-    :raise InternalServerError: When the RestAuth service returns HTTP status code 500
-    :raise UnknownStatus: If the response status is unknown.
-    """
-    resp = conn.post(Group.prefix, {'group': name})
-    if resp.status == http.CREATED:
-        return Group(conn, name)
-    elif resp.status == http.CONFLICT:
-        raise GroupExists("Conflict.")
-    elif resp.status == http.PRECONDITION_FAILED:
-        raise error.PreconditionFailed(resp)
-    else:  # pragma: no cover
-        raise UnknownStatus(resp)
-
-
-def create_test(conn, name):
-    """
-    Do a test-run on creating a new group (i.e. to test user input against the RestAuth server
-    configuration). This method throws the exact same Exceptions as :py:func:`create` but always
-    returns None instead of a :py:class:`Group` instance if the group could be created that way.
-
-    .. NOTE:: Invoking this method cannot guarantee that actually creating this group will work in
-       the future, i.e. it may have been created by another client in the meantime.
-    """
-    resp = conn.post('/test/%s/' % Group.prefix, {'group': name})
-    if resp.status == http.CREATED:
-        return True
-    elif resp.status == http.CONFLICT:
-        raise GroupExists("Conflict.")
-    elif resp.status == http.PRECONDITION_FAILED:
-        raise error.PreconditionFailed(resp)
-    else:  # pragma: no cover
-        raise UnknownStatus(resp)
-
-
-def get_all(conn, user=None, flat=False):
-    """Factory method that gets all groups for this service known to RestAuth.
-
-    .. versionadded:: 0.6.2
-       The ``flat`` parameter.
-
-    :param conn: A connection to a RestAuth service.
-    :type  conn: :py:class:`.RestAuthConnection`
-    :param user: Only return groups where the named user is a member
-    :type  user: str
-    :param flat: If True, only return a list of group names as str, not of
-        :py:class:`~.groups.Group` objects.
-    :type  flat: bool
-    :return: A list of Group objects or a list of str if ``flat=True``
-    :rtype: [:py:class:`groups <.Group>` or str]
-
-    :raise Unauthorized: When the connection uses wrong credentials.
-    :raise Forbidden: When the client is not allowed to perform this action.
-    :raise ResourceNotFound: When the given user does not exist.
-    :raise NotAcceptable: When the server cannot generate a response in the content type used by
-        this connection (see also: :py:meth:`~.RestAuthConnection.set_content_handler`).
-    :raise InternalServerError: When the RestAuth service returns HTTP status code 500
-    :raise UnknownStatus: If the response status is unknown.
-    """
-    params = {}
-    if user:
-        if isinstance(user, User):
-            user = user.name
-
-        params['user'] = user
-
-    resp = conn.get(Group.prefix, params)
-    if resp.status == http.OK:
-        names = conn.content_handler.unmarshal_list(resp.read())
-        if flat is True:
-            return names
-        else:
-            return [Group(conn, name) for name in names]
-    elif resp.status == http.NOT_FOUND:
-        raise error.ResourceNotFound(resp)
-    else:  # pragma: no cover
-        raise UnknownStatus(resp)
-
-
-def get(conn, name):
-    """
-    Factory method that gets an *existing* user from RestAuth. This method verifies that the user
-    exists in the RestAuth and throws :py:exc:`.ResourceNotFound` if not.
-
-    :param conn: A connection to a RestAuth service.
-    :type  conn: :py:class:`.RestAuthConnection`
-    :param name: The name of the group to get
-    :type  name: str
-    :return: The group object representing the group in RestAuth.
-    :rtype: :py:class:`.Group`
-
-    :raise Unauthorized: When the connection uses wrong credentials.
-    :raise Forbidden: When the client is not allowed to perform this action.
-    :raise ResourceNotFound: If the group does not exist.
-    :raise InternalServerError: When the RestAuth service returns HTTP status code 500
-    :raise UnknownStatus: If the response status is unknown.
-    """
-    resp = conn.get('%s%s' % (Group.prefix, name))
-    if resp.status == http.NO_CONTENT:
-        return Group(conn, name)
-    elif resp.status == http.NOT_FOUND:
-        raise error.ResourceNotFound(resp)
-    else:  # pragma: no cover
-        raise UnknownStatus(resp)
-
-
 class Group(common.RestAuthResource):
     """An instance of this class represents a group in RestAuth.
 
@@ -367,6 +246,128 @@ class Group(common.RestAuthResource):
         else:  # pragma: no cover
             raise UnknownStatus(resp)
 
+    @classmethod
+    def create(cls, conn, name):
+        """Factory method that creates a *new* group in RestAuth.
+
+        :param conn: A connection to a RestAuth service.
+        :type  conn: :py:class:`.RestAuthConnection`
+        :param name: The name of the group to create
+        :type  name: str
+        :return: The group object representing the group just created.
+        :rtype: Group
+
+        :raise BadRequest: If the server was unable to parse the request body.
+        :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this action.
+        :raise GroupExists: When the user already exists.
+        :raise UnsupportedMediaType: The server does not support the content type used by this
+            connection (see also: :py:meth:`~.RestAuthConnection.set_content_handler`).
+        :raise InternalServerError: When the RestAuth service returns HTTP status code 500
+        :raise UnknownStatus: If the response status is unknown.
+        """
+        resp = conn.post(Group.prefix, {'group': name})
+        if resp.status == http.CREATED:
+            return Group(conn, name)
+        elif resp.status == http.CONFLICT:
+            raise GroupExists("Conflict.")
+        elif resp.status == http.PRECONDITION_FAILED:
+            raise error.PreconditionFailed(resp)
+        else:  # pragma: no cover
+            raise UnknownStatus(resp)
+
+    @classmethod
+    def create_test(cls, conn, name):
+        """
+        Do a test-run on creating a new group (i.e. to test user input against the RestAuth server
+        configuration). This method throws the exact same Exceptions as :py:func:`create` but
+        always returns None instead of a :py:class:`Group` instance if the group could be created
+        that way.
+
+        .. NOTE:: Invoking this method cannot guarantee that actually creating this group will work
+           in the future, i.e. it may have been created by another client in the meantime.
+        """
+        resp = conn.post('/test/%s/' % Group.prefix, {'group': name})
+        if resp.status == http.CREATED:
+            return True
+        elif resp.status == http.CONFLICT:
+            raise GroupExists("Conflict.")
+        elif resp.status == http.PRECONDITION_FAILED:
+            raise error.PreconditionFailed(resp)
+        else:  # pragma: no cover
+            raise UnknownStatus(resp)
+
+    @classmethod
+    def get_all(cls, conn, user=None, flat=False):
+        """Factory method that gets all groups for this service known to RestAuth.
+
+        .. versionadded:: 0.6.2
+           The ``flat`` parameter.
+
+        :param conn: A connection to a RestAuth service.
+        :type  conn: :py:class:`.RestAuthConnection`
+        :param user: Only return groups where the named user is a member
+        :type  user: str
+        :param flat: If True, only return a list of group names as str, not of
+            :py:class:`~.groups.Group` objects.
+        :type  flat: bool
+        :return: A list of Group objects or a list of str if ``flat=True``
+        :rtype: [:py:class:`groups <.Group>` or str]
+
+        :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this action.
+        :raise ResourceNotFound: When the given user does not exist.
+        :raise NotAcceptable: When the server cannot generate a response in the content type used
+            by this connection (see also: :py:meth:`~.RestAuthConnection.set_content_handler`).
+        :raise InternalServerError: When the RestAuth service returns HTTP status code 500
+        :raise UnknownStatus: If the response status is unknown.
+        """
+        params = {}
+        if user:
+            if isinstance(user, User):
+                user = user.name
+
+            params['user'] = user
+
+        resp = conn.get(Group.prefix, params)
+        if resp.status == http.OK:
+            names = conn.content_handler.unmarshal_list(resp.read())
+            if flat is True:
+                return names
+            else:
+                return [Group(conn, name) for name in names]
+        elif resp.status == http.NOT_FOUND:
+            raise error.ResourceNotFound(resp)
+        else:  # pragma: no cover
+            raise UnknownStatus(resp)
+
+    @classmethod
+    def get(cls, conn, name):
+        """
+        Factory method that gets an *existing* user from RestAuth. This method verifies that the
+        user exists in the RestAuth and throws :py:exc:`.ResourceNotFound` if not.
+
+        :param conn: A connection to a RestAuth service.
+        :type  conn: :py:class:`.RestAuthConnection`
+        :param name: The name of the group to get
+        :type  name: str
+        :return: The group object representing the group in RestAuth.
+        :rtype: :py:class:`.Group`
+
+        :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this action.
+        :raise ResourceNotFound: If the group does not exist.
+        :raise InternalServerError: When the RestAuth service returns HTTP status code 500
+        :raise UnknownStatus: If the response status is unknown.
+        """
+        resp = conn.get('%s%s' % (Group.prefix, name))
+        if resp.status == http.NO_CONTENT:
+            return Group(conn, name)
+        elif resp.status == http.NOT_FOUND:
+            raise error.ResourceNotFound(resp)
+        else:  # pragma: no cover
+            raise UnknownStatus(resp)
+
     def __eq__(self, other):
         """
         Two instances of the class User evaluate as equal if their name and connection evaluate as
@@ -379,3 +380,27 @@ class Group(common.RestAuthResource):
             return '<Group: {0}>'.format(self.name.encode('utf-8'))
         else:
             return '<Group: {0}>'.format(self.name)
+
+
+def create(*args, **kwargs):
+    import warnings
+    warnings.warn("Module function deprecated, use Group.create instead.")
+    return Group.create(*args, **kwargs)
+
+
+def create_test(*args, **kwargs):
+    import warnings
+    warnings.warn("Module function deprecated, use Group.create_test instead.")
+    return Group.create_test(*args, **kwargs)
+
+
+def get(*args, **kwargs):
+    import warnings
+    warnings.warn("Module function deprecated, use Group.get instead.")
+    return Group.get(*args, **kwargs)
+
+
+def get_all(*args, **kwargs):
+    import warnings
+    warnings.warn("Module function deprecated, use Group.get_all instead.")
+    return Group.get_all(*args, **kwargs)

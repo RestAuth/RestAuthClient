@@ -319,7 +319,7 @@ class User(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        return self.group.get_all(self.conn, self, flat=flat)
+        return self.group.Group.get_all(self.conn, self, flat=flat)
 
     def in_group(self, grp):
         """Check if the user is a member in the given group.

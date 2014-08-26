@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from RestAuthClient.error import UserExists
 from RestAuthClient.error import PropertyExists
 from RestAuthClient.restauth_user import User
-from RestAuthClient import group
+from RestAuthClient.group import Group
 from RestAuthCommon import error
 
 from .base import RestAuthClientTestCase
@@ -471,22 +471,22 @@ class SimpleUserGroupTests(RestAuthClientTestCase):
         super(SimpleUserGroupTests, self).setUp()
         if User.get_all(self.conn):
             raise RuntimeError("Found leftover users.")
-        if group.get_all(self.conn):
+        if Group.get_all(self.conn):
             raise RuntimeError("Found leftover groups.")
 
         self.user = User.create(self.conn, username, password)
-        self.group = group.create(self.conn, groupname)
+        self.group = Group.create(self.conn, groupname)
 
     def tearDown(self):
         for user in User.get_all(self.conn):
             user.remove()
-        for grp in group.get_all(self.conn):
+        for grp in Group.get_all(self.conn):
             grp.remove()
 
     def test_addGroup(self):
         self.user.add_group(groupname)
         self.assertEqual([self.group], self.user.get_groups())
-        self.assertEqual([self.group], group.get_all(self.conn, self.user))
+        self.assertEqual([self.group], Group.get_all(self.conn, self.user))
 
     def test_inGroup(self):
         self.assertFalse(self.user.in_group(groupname))
@@ -499,7 +499,7 @@ class SimpleUserGroupTests(RestAuthClientTestCase):
 
         self.user.add_group(groupname)
         self.assertTrue(self.user.in_group(groupname))
-        self.assertEqual([self.group], group.get_all(self.conn, self.user))
+        self.assertEqual([self.group], Group.get_all(self.conn, self.user))
 
         self.user.remove_group(groupname)
         self.assertFalse(self.user.in_group(groupname))
