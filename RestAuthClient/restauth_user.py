@@ -30,135 +30,6 @@ from RestAuthClient.error import UnknownStatus
 from RestAuthClient.error import UserExists
 
 
-def create(conn, name, password=None, properties=None):
-    """Factory method that creates a *new* user in the RestAuth database.
-
-    :param conn: A connection to a RestAuth service.
-    :type  conn: :py:class:`.RestAuthConnection`
-    :param name: Name of the user to get
-    :type  name: str
-    :param password: Password for the new user. If None or an empty string, the user is effectively
-        disabled.
-    :type  password: str
-    :return: The user object representing the user just created.
-    :rtype: :py:class:`~.restauth_user.User`
-
-    :raise BadRequest: If the server was unable to parse the request body.
-    :raise Unauthorized: When the connection uses wrong credentials.
-    :raise Forbidden: When the client is not allowed to perform this action.
-    :raise UserExists: If the user already exists.
-    :raise PreconditionFailed: When username or password is invalid.
-    :raise UnsupportedMediaType: The server does not support the content type used by this
-        connection (see also: :py:meth:`~.RestAuthConnection.set_content_handler`).
-    :raise InternalServerError: When the RestAuth service returns HTTP status code 500
-    :raise UnknownStatus: If the response status is unknown.
-    """
-    params = {'user': name}
-    if password:
-        params['password'] = password
-    if properties:
-        params['properties'] = properties
-
-    resp = conn.post('/users/', params)
-    if resp.status == http.CREATED:
-        return User(conn, name)
-    elif resp.status == http.CONFLICT:
-        raise UserExists(name)
-    elif resp.status == http.PRECONDITION_FAILED:
-        raise error.PreconditionFailed(resp.read())
-    else:  # pragma: no cover
-        raise UnknownStatus(resp)
-
-
-def create_test(conn, name, password=None, properties=None):
-    """
-    Do a test-run on creating a new user (i.e. to test user input against the RestAuth server
-    configuration). This method throws the exact same Exceptions as :py:func:`create` but always
-    returns None instead of a :py:class:`User` instance if the user could be created that way.
-
-    .. NOTE:: Invoking this method cannot guarantee that actually creating this user will work in
-       the future, i.e. it may have been created by another client in the meantime.
-    """
-    params = {'user': name}
-    if password:
-        params['password'] = password
-    if properties:
-        params['properties'] = properties
-
-    resp = conn.post('/test/users/', params)
-    if resp.status == http.CREATED:
-        return
-    elif resp.status == http.CONFLICT:
-        raise UserExists(name)
-    elif resp.status == http.PRECONDITION_FAILED:
-        raise error.PreconditionFailed(resp)
-    else:  # pragma: no cover
-        raise UnknownStatus(resp)
-
-
-def get(conn, name):
-    """
-    Factory method that gets an *existing* user from RestAuth. This method verifies that the user
-    exists in RestAuth and throws :py:exc:`~RestAuthCommon:RestAuthCommon.error.ResourceNotFound`
-    if not.
-
-    :param conn: A connection to a RestAuth service.
-    :type  conn: :py:class:`.RestAuthConnection`
-    :param name: Name of the user to get
-    :type  name: str
-    :return: The user object representing the user just created.
-    :rtype: :py:class:`~.restauth_user.User`
-
-    :raise Unauthorized: When the connection uses wrong credentials.
-    :raise Forbidden: When the client is not allowed to perform this action.
-    :raise ResourceNotFound: If the user does not exist in RestAuth.
-    :raise InternalServerError: When the RestAuth service returns HTTP status code 500
-    :raise UnknownStatus: If the response status is unknown.
-    """
-    # this just verify that the user exists in RestAuth:
-    resp = conn.get('/users/%s/' % (name))
-
-    if resp.status == http.NO_CONTENT:
-        return User(conn, name)
-    elif resp.status == http.NOT_FOUND:
-        raise error.ResourceNotFound(resp)
-    else:  # pragma: no cover
-        raise UnknownStatus(resp)
-
-
-def get_all(conn, flat=False):
-    """Factory method that gets all users known to RestAuth.
-
-    .. versionadded:: 0.6.2
-       The ``flat`` parameter.
-
-    :param conn: A connection to a RestAuth service.
-    :type  conn: :py:class:`.RestAuthConnection`
-    :param flat: If True, only return a list of usernames as str, not of
-        :py:class:`~.restauth_user.User` objects.
-    :type  flat: bool
-    :return: A list of User objects or str, if ``flat=True``.
-    :rtype: [:py:class:`~.restauth_user.User` or str]
-
-    :raise Unauthorized: When the connection uses wrong credentials.
-    :raise Forbidden: When the client is not allowed to perform this action.
-    :raise NotAcceptable: When the server cannot generate a response in the content type used by
-        this connection (see also: :py:meth:`~.RestAuthConnection.set_content_handler`).
-    :raise InternalServerError: When the RestAuth service returns HTTP status code 500
-    :raise UnknownStatus: If the response status is unknown.
-    """
-    resp = conn.get('/users/')
-
-    if resp.status == http.OK:
-        usernames = conn.content_handler.unmarshal_list(resp.read())
-        if flat is True:
-            return usernames
-        else:
-            return [User(conn, name) for name in usernames]
-    else:  # pragma: no cover
-        raise UnknownStatus(resp)
-
-
 class User(object):
     """An instance of this class is an object oriented abstraction of a user in a RestAuth server.
 
@@ -509,6 +380,136 @@ class User(object):
             grp = self.group.Group(self.conn, grp)
         grp.remove_user(self.name)
 
+    @classmethod
+    def create(cls, conn, name, password=None, properties=None):
+        """Factory method that creates a *new* user in the RestAuth database.
+
+        :param conn: A connection to a RestAuth service.
+        :type  conn: :py:class:`.RestAuthConnection`
+        :param name: Name of the user to get
+        :type  name: str
+        :param password: Password for the new user. If None or an empty string, the user is
+            effectively disabled.
+        :type  password: str
+        :return: The user object representing the user just created.
+        :rtype: :py:class:`~.restauth_user.User`
+
+        :raise BadRequest: If the server was unable to parse the request body.
+        :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this action.
+        :raise UserExists: If the user already exists.
+        :raise PreconditionFailed: When username or password is invalid.
+        :raise UnsupportedMediaType: The server does not support the content type used by this
+            connection (see also: :py:meth:`~.RestAuthConnection.set_content_handler`).
+        :raise InternalServerError: When the RestAuth service returns HTTP status code 500
+        :raise UnknownStatus: If the response status is unknown.
+        """
+        params = {'user': name}
+        if password:
+            params['password'] = password
+        if properties:
+            params['properties'] = properties
+
+        resp = conn.post('/users/', params)
+        if resp.status == http.CREATED:
+            return cls(conn, name)
+        elif resp.status == http.CONFLICT:
+            raise UserExists(name)
+        elif resp.status == http.PRECONDITION_FAILED:
+            raise error.PreconditionFailed(resp.read())
+        else:  # pragma: no cover
+            raise UnknownStatus(resp)
+
+    @classmethod
+    def create_test(cls, conn, name, password=None, properties=None):
+        """
+        Do a test-run on creating a new user (i.e. to test user input against the RestAuth server
+        configuration). This method throws the exact same Exceptions as :py:func:`create` but
+        always returns None instead of a :py:class:`User` instance if the user could be created
+        that way.
+
+        .. NOTE:: Invoking this method cannot guarantee that actually creating this user will work
+           in the future, i.e. it may have been created by another client in the meantime.
+        """
+        params = {'user': name}
+        if password:
+            params['password'] = password
+        if properties:
+            params['properties'] = properties
+
+        resp = conn.post('/test/users/', params)
+        if resp.status == http.CREATED:
+            return
+        elif resp.status == http.CONFLICT:
+            raise UserExists(name)
+        elif resp.status == http.PRECONDITION_FAILED:
+            raise error.PreconditionFailed(resp)
+        else:  # pragma: no cover
+            raise UnknownStatus(resp)
+
+    @classmethod
+    def get(cls, conn, name):
+        """
+        Factory method that gets an *existing* user from RestAuth. This method verifies that the
+        user exists in RestAuth and throws
+        :py:exc:`~RestAuthCommon:RestAuthCommon.error.ResourceNotFound` if not.
+
+        :param conn: A connection to a RestAuth service.
+        :type  conn: :py:class:`.RestAuthConnection`
+        :param name: Name of the user to get
+        :type  name: str
+        :return: The user object representing the user just created.
+        :rtype: :py:class:`~.restauth_user.User`
+
+        :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this action.
+        :raise ResourceNotFound: If the user does not exist in RestAuth.
+        :raise InternalServerError: When the RestAuth service returns HTTP status code 500
+        :raise UnknownStatus: If the response status is unknown.
+        """
+        # this just verify that the user exists in RestAuth:
+        resp = conn.get('/users/%s/' % (name))
+
+        if resp.status == http.NO_CONTENT:
+            return User(conn, name)
+        elif resp.status == http.NOT_FOUND:
+            raise error.ResourceNotFound(resp)
+        else:  # pragma: no cover
+            raise UnknownStatus(resp)
+
+    @classmethod
+    def get_all(cls, conn, flat=False):
+        """Factory method that gets all users known to RestAuth.
+
+        .. versionadded:: 0.6.2
+           The ``flat`` parameter.
+
+        :param conn: A connection to a RestAuth service.
+        :type  conn: :py:class:`.RestAuthConnection`
+        :param flat: If True, only return a list of usernames as str, not of
+            :py:class:`~.restauth_user.User` objects.
+        :type  flat: bool
+        :return: A list of User objects or str, if ``flat=True``.
+        :rtype: [:py:class:`~.restauth_user.User` or str]
+
+        :raise Unauthorized: When the connection uses wrong credentials.
+        :raise Forbidden: When the client is not allowed to perform this action.
+        :raise NotAcceptable: When the server cannot generate a response in the content type used
+            by this connection (see also: :py:meth:`~.RestAuthConnection.set_content_handler`).
+        :raise InternalServerError: When the RestAuth service returns HTTP status code 500
+        :raise UnknownStatus: If the response status is unknown.
+        """
+        resp = conn.get('/users/')
+
+        if resp.status == http.OK:
+            usernames = conn.content_handler.unmarshal_list(resp.read())
+            if flat is True:
+                return usernames
+            else:
+                return [User(conn, name) for name in usernames]
+        else:  # pragma: no cover
+            raise UnknownStatus(resp)
+
     def __eq__(self, other):
         """
         Two instances of the class User evaluate as equal if their name and connection evaluate as
@@ -524,3 +525,27 @@ class User(object):
             return '<User: {0}>'.format(self.name.encode('utf-8'))
         else:
             return '<User: {0}>'.format(self.name)
+
+
+def create(*args, **kwargs):
+    import warnings
+    warnings.warn("Module function deprecated, use User.create instead.")
+    return User.create(*args, **kwargs)
+
+
+def create_test(*args, **kwargs):
+    import warnings
+    warnings.warn("Module function deprecated, use User.create_test instead.")
+    return User.create_test(*args, **kwargs)
+
+
+def get(*args, **kwargs):
+    import warnings
+    warnings.warn("Module function deprecated, use User.get instead.")
+    return User.get(*args, **kwargs)
+
+
+def get_all(*args, **kwargs):
+    import warnings
+    warnings.warn("Module function deprecated, use User.get_all instead.")
+    return User.get_all(*args, **kwargs)
