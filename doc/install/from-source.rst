@@ -6,7 +6,7 @@ Requirements
 
 RestAuthClient has few requirements:
 
-* `Python 2.7 <http://www.python.org/>`_ or later or Python 3.2 or later.
+* `Python 2.7 <https://www.python.org/>`_ or later or Python 3.2 or later.
 * `RestAuthCommon 0.6.5 <https://common.restauth.net>`_ or later
 
 If you want to use different content handlers provided by RestAuthCommon, you need the
