@@ -11,7 +11,7 @@ The **RestAuthClient** library consists of four modules, each containing one imp
   group in the RestAuth service.
 * :py:mod:`~RestAuthClient.error` is a collection of exceptions that may be thrown by the above
   modules and its member methods/classes.
-  
+
 To use RestAuth, you will always have to create a :py:class:`~.common.RestAuthConnection` first and
 then use it to get users or groups.
 
@@ -21,30 +21,32 @@ exceptions used in this library.
 
 .. code-block:: python
 
-   from RestAuthClient import common, restauth_user, group
-   
+   from RestAuthClient.common import Connection
+   from RestAuthClient.restauth_user import User
+   from RestAuthClient.group import Group
+
    # create a connection to the RestAuth service. The service must already be configured using the
    # restauth-service commandline script.
-   conn = common.RestAuthConnection( 'https://auth.example.com', 'service', 'password' )
-   
+   conn = RestAuthConnection('https://auth.example.com', 'service', 'password')
+
    # create a *new* user named 'foobar', and do some interesting things:
-   user = restauth_user.create( conn, 'foobar', 'password' )
-   if not user.verify_password( 'wrong password' ):
-       print( 'ERROR: User has wrong password!' ) # never happens in this example, of course
-       
-   user.set_property( 'key', 'value' )
-   props = user.get_properties() # returns {'key': 'value'}
-   
+   user = User.create(conn, 'foobar', 'password')
+   if not user.verify_password('wrong password'):
+       print('ERROR: User has wrong password!')  # never happens in this example, of course
+
+   user.set_property('key', 'value')
+   props = user.get_properties()  # returns {'key': 'value'}
+
    # If performance is critical, do not use the factory methods to get user objects, instead
    # reference them directly:
-   user = restauth_user.User( conn, 'foobar' )
-   user.verify_password( 'password' )
-   
+   user = User(conn, 'foobar')
+   user.verify_password('password')
+
    # Groups work in much the same way as users:
-   group = group.get( conn, 'groupname' ) # verifies that the group exists
-   group.add_user( user ) # may also just be the username!
-   group.get_members() # returns a list with the User element
-   
+   group = Group.get(conn, 'groupname')  # verifies that the group exists
+   group.add_user(user)  # may also just be the username!
+   group.get_members()  # returns a list with the User element
+
 
 .. _guide_error-handling:
 
