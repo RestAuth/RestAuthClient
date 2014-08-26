@@ -14,7 +14,8 @@ rest_host = 'http://[::1]:8000'
 rest_user = 'vowi'
 rest_passwd = 'vowi'
 
-username = "mati \u6110"
+username = "mati \u6109"
+username2 = "mati \u6110"
 password = "mati \u6111"
 propKey = "mati \u6112"
 propVal = "mati \u6113"
@@ -194,6 +195,16 @@ class BasicTests(RestAuthClientTestCase, PropertyTestMixin):
             self.fail()
         except error.ResourceNotFound as e:
             self.assertEqual("user", e.get_type())
+
+    def test_getAll(self):
+        self.assertEqual([], User.get_all(self.conn, flat=True))
+
+        User.create(self.conn, username)
+        self.assertEqual([username], User.get_all(self.conn, flat=True))
+
+        User.create(self.conn, username2)
+        self.assertEqual(sorted([username, username2]),
+                         sorted(User.get_all(self.conn, flat=True)))
 
 
 class CreateUserTest(RestAuthClientTestCase):
