@@ -2,9 +2,8 @@ restauth_user - user handling
 =============================
 
 The **restauth_user** module includes all code related to user management. You can use one of the
-factory methods (:py:func:`~.restauth_user.get`, :py:func:`~.restauth_user.get_all` or
-:py:func:`~.restauth_user.create`) to retreive an instance or a list of instances of the
-:py:class:`User class <.User>`.
+factory methods (:py:meth:`~.User.get`, :py:meth:`~.User.get_all` or :py:meth:`~.User.create`) to
+retreive an instance or a list of instances of the :py:class:`User class <.User>`.
 
 The factory methods make sure that the :py:class:`.User` object used represents a user that actually
 exists in the RestAuth service by verifying the existance for returning the respective instance(s).
@@ -15,15 +14,16 @@ handler.
 
 .. code-block:: python
 
-   from RestAuthClient import common, restauth_user
-   conn = common.RestAuthConnection('https://auth.example.com', 'service', 'password')
+   from RestAuthClient.common import RestAuthClient
+   from RestAuthClient.restauth_user import User
+   conn = RestAuthConnection('https://auth.example.com', 'service', 'password')
 
    # this is two requests:
-   user = restauth_user.get('username') # does one request
+   user = User.get('username') # does one request
    user.verify_password('password')
 
    # this is just one request:
-   user = restauth_user.User('username') # does no request
+   user = User('username') # does no request
    user.verify_password('password')
 
 API documentation
