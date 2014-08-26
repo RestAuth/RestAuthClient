@@ -8,9 +8,9 @@ project and Canonical.
 Adding our APT repository
 -------------------------
 
-To add the repositories, simply add this line to your :file:`/etc/apt/sources.list` file::
+To add the repositories, simply add a file in the ``/etc/apt/sources.list.d`` directory::
 
-   echo "deb https://apt.fsinf.at <DIST> restauth" > /etc/apt/sources.list.d/restauth.list
+   echo "deb https://apt.restauth.net <DIST> restauth" > /etc/apt/sources.list.d/restauth.list
 
 ... where ``<DIST>`` is any of the supported distributions. If you are unsure of your
 distribution, you can run the following in your terminal::
@@ -20,7 +20,7 @@ distribution, you can run the following in your terminal::
 You can also read the WikiPedia pages for `Ubuntu
 <https://en.wikipedia.org/wiki/List_of_Ubuntu_releases#Table_of_versions>`_ and `Debian
 <https://en.wikipedia.org/wiki/Debian#Release_history>`_ to see how they map to your installation.
-You can also check the `APT repository itself <https://apt.fsinf.at/dists>`_ for a list of available
+You can also check the `APT repository itself <https://apt.restauth.net/dists>`_ for a list of available
 distributions (don't forget to check the 'Last modified' timestamp!).
 
 Once you added the repository, you have to install the fsinf GPG keyring used for signing the
@@ -38,7 +38,7 @@ or download and add the key directly using:
 
 .. code-block:: bash
 
-   wget -O - https://apt.fsinf.at/gpg-key | apt-key add -
+   wget -O - https://apt.restauth.net/gpg-key | apt-key add -
 
 Install RestAuthClient
 ----------------------
