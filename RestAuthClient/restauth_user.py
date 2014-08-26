@@ -25,7 +25,6 @@ else:  # pragma: py2
     import httplib as http
 
 from RestAuthCommon import error
-from RestAuthClient import common
 from RestAuthClient.error import PropertyExists
 from RestAuthClient.error import UnknownStatus
 from RestAuthClient.error import UserExists
@@ -160,7 +159,7 @@ def get_all(conn, flat=False):
         raise UnknownStatus(resp)
 
 
-class User(common.RestAuthResource):
+class User(object):
     """An instance of this class is an object oriented abstraction of a user in a RestAuth server.
 
     .. Warning:: The constructor *does not* verify that the user actually exists.  This has the
