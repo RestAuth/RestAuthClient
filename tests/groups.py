@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from operator import attrgetter
 
-from RestAuthClient.error import *
+from RestAuthClient.error import GroupExists
 from RestAuthClient import restauth_user
 from RestAuthClient import group
 
@@ -60,7 +60,7 @@ class BasicTests(RestAuthClientTestCase):
         try:
             group.create(self.conn, "foo/bar")
             self.fail()
-        except error.PreconditionFailed as e:
+        except error.PreconditionFailed:
             self.assertEqual([], group.get_all(self.conn))
 
     def test_addUser(self):
@@ -91,7 +91,7 @@ class BasicTests(RestAuthClientTestCase):
             self.fail()
         except error.ResourceNotFound as e:
             self.assertEqual("user", e.get_type())
-            users = restauth_user.get_all(self.conn)
+            restauth_user.get_all(self.conn)
             self.assertEqual(self.users, restauth_user.get_all(self.conn))
 
     def test_addUserToInvalidGroup(self):
