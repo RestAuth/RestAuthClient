@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from RestAuthClient.common import RestAuthConnection
 from RestAuthClient.error import HttpException
-from RestAuthClient import restauth_user
+from RestAuthClient.restauth_user import User
 from RestAuthCommon import error
 
 from RestAuthCommon.handlers import ContentHandler
@@ -61,7 +61,7 @@ class BasicTests(RestAuthClientTestCase):
     def test_wrongHost(self):
         conn = RestAuthConnection('http://[:2]:8003', 'wrong', 'credentials')
         try:
-            restauth_user.get(conn, 'foobar')
+            User.get(conn, 'foobar')
             self.fail()
         except HttpException as e:
             e.get_cause()
@@ -82,7 +82,7 @@ class BasicTests(RestAuthClientTestCase):
 
     def test_badRequestPut(self):
         # we need to create it first, otherwise we might get a 404 instead
-        user = restauth_user.create(self.conn, 'testuser', 'password')
+        user = User.create(self.conn, 'testuser', 'password')
         try:
             self.conn.put('/users/testuser/', {'bad': 'request'})
             self.fail()
@@ -111,7 +111,7 @@ class BasicTests(RestAuthClientTestCase):
 
     def test_UnsupportedMediaTypePut(self):
         # we need to create it first, otherwise we might get a 404 instead
-        user = restauth_user.create(self.conn, 'testuser', 'password')
+        user = User.create(self.conn, 'testuser', 'password')
         self.conn.set_content_handler(wrongContentHandler())
 
         try:

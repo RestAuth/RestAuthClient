@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from RestAuthClient.error import UserExists
 from RestAuthClient.error import PropertyExists
-from RestAuthClient import restauth_user
+from RestAuthClient.restauth_user import User
 from RestAuthClient import group
 from RestAuthCommon import error
 
@@ -51,89 +51,89 @@ class PropertyTestMixin(object):
 class BasicTests(RestAuthClientTestCase, PropertyTestMixin):
     def setUp(self):
         super(BasicTests, self).setUp()
-        if restauth_user.get_all(self.conn):
+        if User.get_all(self.conn):
             raise RuntimeError("Found leftover users.")
 
     def tearDown(self):
-        for user in restauth_user.get_all(self.conn):
+        for user in User.get_all(self.conn):
             user.remove()
 
     def test_createUser(self):
-        user = restauth_user.create(self.conn, "mati", "password")
+        user = User.create(self.conn, "mati", "password")
 
-        self.assertEqual([user], restauth_user.get_all(self.conn))
-        self.assertEqual(user, restauth_user.get(self.conn, "mati"))
+        self.assertEqual([user], User.get_all(self.conn))
+        self.assertEqual(user, User.get(self.conn, "mati"))
 
     def test_createUserWithSpace(self):
-        user = restauth_user.create(self.conn, "mati space", "password")
+        user = User.create(self.conn, "mati space", "password")
 
-        self.assertEqual([user], restauth_user.get_all(self.conn))
-        self.assertEqual(user, restauth_user.get(self.conn, "mati space"))
+        self.assertEqual([user], User.get_all(self.conn))
+        self.assertEqual(user, User.get(self.conn, "mati space"))
 
     def test_createUserUnicode(self):
-        user = restauth_user.create(self.conn, username, "password")
+        user = User.create(self.conn, username, "password")
 
-        self.assertEqual([user], restauth_user.get_all(self.conn))
-        self.assertEqual(user, restauth_user.get(self.conn, username))
+        self.assertEqual([user], User.get_all(self.conn))
+        self.assertEqual(user, User.get(self.conn, username))
 
     def test_createUserWithNoPassword(self):
-        user1 = restauth_user.create(self.conn, username)
-        self.assertEqual([user1], restauth_user.get_all(self.conn))
-        self.assertEqual(user1, restauth_user.get(self.conn, username))
+        user1 = User.create(self.conn, username)
+        self.assertEqual([user1], User.get_all(self.conn))
+        self.assertEqual(user1, User.get(self.conn, username))
         # check that no password verifies as correct
         self.assertFalse(user1.verify_password(''))
         self.assertFalse(user1.verify_password(password))
 
         # use empty string instead:
-        user2 = restauth_user.create(self.conn, username + '1', '')
-        self.assertEqual([user1, user2], restauth_user.get_all(self.conn))
-        self.assertEqual(user2, restauth_user.get(self.conn, username + '1'))
+        user2 = User.create(self.conn, username + '1', '')
+        self.assertEqual([user1, user2], User.get_all(self.conn))
+        self.assertEqual(user2, User.get(self.conn, username + '1'))
         # check that no password verifies as correct
         self.assertFalse(user2.verify_password(''))
         self.assertFalse(user2.verify_password(password))
 
     def test_createUserWithProperty(self):
         properties = {propKey: propVal}
-        user = restauth_user.create(self.conn, username, password, properties)
+        user = User.create(self.conn, username, password, properties)
         self.assertProperties(user=user, **properties)
 
     def test_createUserWithInvalidProperties(self):
         properties = {propKey: propVal, 'foo:bar': propVal2}
         args = [self.conn, username, password, properties]
         self.assertRaises(error.PreconditionFailed,
-                          restauth_user.create, *args)
-        self.assertEqual([], restauth_user.get_all(self.conn))
+                          User.create, *args)
+        self.assertEqual([], User.get_all(self.conn))
 
     def test_createInvalidUser(self):
         args = [self.conn, "foo/bar", "password"]
         self.assertRaises(error.PreconditionFailed,
-                          restauth_user.create, *args)
+                          User.create, *args)
 
-        self.assertEqual([], restauth_user.get_all(self.conn))
+        self.assertEqual([], User.get_all(self.conn))
 
     def test_createUserTwice(self):
-        user = restauth_user.create(self.conn, "mati", "password")
+        user = User.create(self.conn, "mati", "password")
         try:
-            restauth_user.create(self.conn, "mati", "new password")
+            User.create(self.conn, "mati", "new password")
             self.fail()
-        except restauth_user.UserExists as e:
-            self.assertEqual([user], restauth_user.get_all(self.conn))
+        except UserExists:
+            self.assertEqual([user], User.get_all(self.conn))
             self.assertTrue(user.verify_password("password"))
             self.assertFalse(user.verify_password("new password"))
 
     def test_verifyPassword(self):
-        user = restauth_user.create(self.conn, username, password)
+        user = User.create(self.conn, username, password)
         self.assertTrue(user.verify_password(password))
         self.assertFalse(user.verify_password("whatever"))
 
     def test_verifyPasswordInvalidUser(self):
-        user = restauth_user.User(self.conn, username)
+        user = User(self.conn, username)
         self.assertFalse(user.verify_password(password))
 
     def test_setPassword(self):
         newpass = "new " + password
 
-        user = restauth_user.create(self.conn, username, password)
+        user = User.create(self.conn, username, password)
         self.assertTrue(user.verify_password(password))
         self.assertFalse(user.verify_password(newpass))
 
@@ -143,7 +143,7 @@ class BasicTests(RestAuthClientTestCase, PropertyTestMixin):
 
     def test_disableUser(self):
         newpass = "new " + password
-        user = restauth_user.create(self.conn, username, password)
+        user = User.create(self.conn, username, password)
         self.assertTrue(user.verify_password(password))
         self.assertFalse(user.verify_password(newpass))
 
@@ -153,7 +153,7 @@ class BasicTests(RestAuthClientTestCase, PropertyTestMixin):
         self.assertFalse(user.verify_password(''))
 
     def test_setPasswordInvalidUser(self):
-        user = restauth_user.User(self.conn, username)
+        user = User(self.conn, username)
         try:
             user.set_password(password)
             self.fail()
@@ -161,7 +161,7 @@ class BasicTests(RestAuthClientTestCase, PropertyTestMixin):
             self.assertEqual(e.get_type(), "user")
 
     def test_setTooShortPassword(self):
-        user = restauth_user.create(self.conn, username, password)
+        user = User.create(self.conn, username, password)
         try:
             user.set_password("x")
             self.fail()
@@ -171,24 +171,24 @@ class BasicTests(RestAuthClientTestCase, PropertyTestMixin):
 
     def test_getInvalidUser(self):
         try:
-            restauth_user.get(self.conn, "invalid")
+            User.get(self.conn, "invalid")
             self.fail()
         except error.ResourceNotFound as e:
             self.assertEqual("user", e.get_type())
 
     def test_removeUser(self):
-        user = restauth_user.create(self.conn, username, password)
+        user = User.create(self.conn, username, password)
         user.remove()
 
-        self.assertEqual([], restauth_user.get_all(self.conn))
+        self.assertEqual([], User.get_all(self.conn))
         try:
-            restauth_user.get(self.conn, username)
+            User.get(self.conn, username)
             self.fail()
         except error.ResourceNotFound as e:
             self.assertEqual("user", e.get_type())
 
     def test_removeInvalidUser(self):
-        user = restauth_user.User(self.conn, "invalid")
+        user = User(self.conn, "invalid")
         try:
             user.remove()
             self.fail()
@@ -198,60 +198,60 @@ class BasicTests(RestAuthClientTestCase, PropertyTestMixin):
 
 class CreateUserTest(RestAuthClientTestCase):
     def test_createUserTest(self):
-        self.assertEquals(None, restauth_user.create_test(self.conn, username))
-        self.assertEqual([], restauth_user.get_all(self.conn))
+        self.assertEquals(None, User.create_test(self.conn, username))
+        self.assertEqual([], User.get_all(self.conn))
 
     def test_createUserTestWithPassword(self):
-        self.assertEquals(None, restauth_user.create_test(
+        self.assertEquals(None, User.create_test(
             self.conn, username, "password"))
-        self.assertEqual([], restauth_user.get_all(self.conn))
+        self.assertEqual([], User.get_all(self.conn))
 
     def test_createUserTestWithProperties(self):
-        self.assertEquals(None, restauth_user.create_test(
+        self.assertEquals(None, User.create_test(
             self.conn, username, properties={'foo': 'bar'}))
-        self.assertEqual([], restauth_user.get_all(self.conn))
+        self.assertEqual([], User.get_all(self.conn))
 
     def test_createUserTestWithPasswordAndProperties(self):
-        self.assertEquals(None, restauth_user.create_test(
+        self.assertEquals(None, User.create_test(
             self.conn, username, "password", properties={'foo': 'bar'}))
-        self.assertEqual([], restauth_user.get_all(self.conn))
+        self.assertEqual([], User.get_all(self.conn))
 
     def test_createUserWithInvalidProperties(self):
         properties = {propKey: propVal, 'foo:bar': propVal2}
         args = [self.conn, username, password, properties]
         self.assertRaises(error.PreconditionFailed,
-                          restauth_user.create, *args)
-        self.assertEqual([], restauth_user.get_all(self.conn))
+                          User.create, *args)
+        self.assertEqual([], User.get_all(self.conn))
 
     def test_createUserTestWithTooShortUsername(self):
         try:
-            restauth_user.create_test(self.conn, 'a')
+            User.create_test(self.conn, 'a')
             self.fail()
         except error.PreconditionFailed:
-            self.assertEqual([], restauth_user.get_all(self.conn))
+            self.assertEqual([], User.get_all(self.conn))
 
     def test_createUserTestWithTooShortPassword(self):
         try:
-            restauth_user.create_test(self.conn, username, 'x')
+            User.create_test(self.conn, username, 'x')
             self.fail()
         except error.PreconditionFailed:
-            self.assertEqual([], restauth_user.get_all(self.conn))
+            self.assertEqual([], User.get_all(self.conn))
 
     def test_createUserTestWithInvalidUsername(self):
         try:
-            restauth_user.create_test(self.conn, 'foo/bar')
+            User.create_test(self.conn, 'foo/bar')
             self.fail()
         except error.PreconditionFailed:
-            self.assertEqual([], restauth_user.get_all(self.conn))
+            self.assertEqual([], User.get_all(self.conn))
 
     def test_existingUser(self):
-        user = restauth_user.create(self.conn, username)
+        user = User.create(self.conn, username)
 
         try:
-            restauth_user.create_test(self.conn, username)
+            User.create_test(self.conn, username)
             self.fail()
         except UserExists:
-            self.assertEqual([user], restauth_user.get_all(self.conn))
+            self.assertEqual([user], User.get_all(self.conn))
         finally:
             user.remove()
 
@@ -259,13 +259,13 @@ class CreateUserTest(RestAuthClientTestCase):
 class PropertyBaseTests(RestAuthClientTestCase, PropertyTestMixin):
     def setUp(self):
         super(PropertyBaseTests, self).setUp()
-        if restauth_user.get_all(self.conn):
+        if User.get_all(self.conn):
             raise RuntimeError("Found leftover users.")
 
-        self.user = restauth_user.create(self.conn, username, password)
+        self.user = User.create(self.conn, username, password)
 
     def tearDown(self):
-        for user in restauth_user.get_all(self.conn):
+        for user in User.get_all(self.conn):
             user.remove()
 
 
@@ -281,7 +281,7 @@ class PropertyTests(PropertyBaseTests):
         try:
             self.user.create_property(propKey, propVal + "foo")
             self.fail()
-        except restauth_user.PropertyExists as e:
+        except PropertyExists:
             # verify that the prop hasn't changed:
             self.assertProperties(**{propKey: propVal})
 
@@ -293,7 +293,7 @@ class PropertyTests(PropertyBaseTests):
             self.assertProperties(**{})
 
     def test_createPropertyWithInvalidUser(self):
-        user = restauth_user.User(self.conn, username + " foo")
+        user = User(self.conn, username + " foo")
         try:
             user.create_property(propKey, propVal)
             self.fail()
@@ -302,7 +302,7 @@ class PropertyTests(PropertyBaseTests):
 
             # verify that no user was created:
             self.assertNotEqual(user, self.user)
-            self.assertEqual([self.user], restauth_user.get_all(self.conn))
+            self.assertEqual([self.user], User.get_all(self.conn))
 
     def test_setProperty(self):
         self.assertEqual(None, self.user.set_property(propKey, propVal))
@@ -318,7 +318,7 @@ class PropertyTests(PropertyBaseTests):
         self.assertProperties(**{propKey: newpropVal})
 
     def test_setPropertyWithInvalidUser(self):
-        user = restauth_user.User(self.conn, username + " foo")
+        user = User(self.conn, username + " foo")
         try:
             user.set_property(propKey, propVal)
             self.fail()
@@ -327,7 +327,7 @@ class PropertyTests(PropertyBaseTests):
 
             # verify that no user was created:
             self.assertNotEqual(user, self.user)
-            self.assertEqual([self.user], restauth_user.get_all(self.conn))
+            self.assertEqual([self.user], User.get_all(self.conn))
 
     def test_removeProperty(self):
         self.assertEqual(None, self.user.create_property(propKey, propVal))
@@ -348,11 +348,11 @@ class PropertyTests(PropertyBaseTests):
             self.fail()
         except error.ResourceNotFound as e:
             self.assertEqual("property", e.get_type())
-            self.assertEqual([self.user], restauth_user.get_all(self.conn))
+            self.assertEqual([self.user], User.get_all(self.conn))
             self.assertProperties(**{propKey: propVal})
 
     def test_removePropertyWithInvalidUser(self):
-        user = restauth_user.User(self.conn, "new user")
+        user = User(self.conn, "new user")
 
         try:
             user.remove_property("foobar")
@@ -367,7 +367,7 @@ class PropertyTests(PropertyBaseTests):
         for the original user.
         """
 
-        user_2 = restauth_user.create(self.conn, "new user", "password")
+        user_2 = User.create(self.conn, "new user", "password")
         self.assertEquals(None, self.user.create_property(propKey, propVal))
 
         try:
@@ -386,7 +386,7 @@ class PropertyTests(PropertyBaseTests):
             self.assertEqual("property", e.get_type())
 
     def test_getPropertiesInvalidUser(self):
-        user = restauth_user.User(self.conn, "foobar")
+        user = User(self.conn, "foobar")
 
         try:
             user.get_properties()
@@ -453,7 +453,6 @@ class SetMultiplePropertyTests(PropertyBaseTests):
         except error.PreconditionFailed:
             self.assertProperties(**good_props)
 
-
     def test_mixedSetAndCreate(self):
         properties = {propKey1: propVal1}
         self.user.set_properties(properties)
@@ -470,16 +469,16 @@ class SetMultiplePropertyTests(PropertyBaseTests):
 class SimpleUserGroupTests(RestAuthClientTestCase):
     def setUp(self):
         super(SimpleUserGroupTests, self).setUp()
-        if restauth_user.get_all(self.conn):
+        if User.get_all(self.conn):
             raise RuntimeError("Found leftover users.")
         if group.get_all(self.conn):
             raise RuntimeError("Found leftover groups.")
 
-        self.user = restauth_user.create(self.conn, username, password)
+        self.user = User.create(self.conn, username, password)
         self.group = group.create(self.conn, groupname)
 
     def tearDown(self):
-        for user in restauth_user.get_all(self.conn):
+        for user in User.get_all(self.conn):
             user.remove()
         for grp in group.get_all(self.conn):
             grp.remove()
@@ -507,7 +506,7 @@ class SimpleUserGroupTests(RestAuthClientTestCase):
         self.assertEqual([], self.user.get_groups())
 
     def test_getGroupsInvalidUser(self):
-        user = restauth_user.User(self.conn, "foobar")
+        user = User(self.conn, "foobar")
         try:
             user.get_groups()
             self.fail()
@@ -538,14 +537,14 @@ class CreatePropertyTest(PropertyBaseTests):
             self.assertProperties(**{})
 
     def test_createPropertyForNonExistingUser(self):
-        user = restauth_user.User(self.conn, 'foobar')
+        user = User(self.conn, 'foobar')
         try:
             user.create_property_test(propKey, propVal)
         except error.ResourceNotFound as e:
             self.assertEqual("user", e.get_type())
 
     def test_createPropertyForInvalidUser(self):
-        user = restauth_user.User(self.conn, 'foo:bar')
+        user = User(self.conn, 'foo:bar')
         try:
             user.create_property_test(propKey, propVal)
         except error.ResourceNotFound as e:
