@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 from RestAuthClient.common import RestAuthConnection
-from RestAuthClient.error import *
+from RestAuthClient.error import HttpException
 from RestAuthClient import restauth_user
 from RestAuthCommon import error
 
