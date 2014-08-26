@@ -212,7 +212,7 @@ class User(common.RestAuthResource):
         params = {}
         if password:
             params['password'] = password
-        resp = self._put(self.name, params)
+        resp = self.conn.put('/users/%s' % self.name, params)
         if resp.status == http.NO_CONTENT:
             return
         elif resp.status == http.NOT_FOUND:
@@ -239,7 +239,7 @@ class User(common.RestAuthResource):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        resp = self._post(self.name, {'password': password})
+        resp = self.conn.post('/users/%s' % self.name, {'password': password})
         if resp.status == http.NO_CONTENT:
             return True
         elif resp.status == http.NOT_FOUND:
@@ -256,7 +256,7 @@ class User(common.RestAuthResource):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        resp = self._delete(self.name)
+        resp = self.conn.delete('/users/%s' % self.name)
         if resp.status == http.NO_CONTENT:
             return
         if resp.status == http.NOT_FOUND:
@@ -267,8 +267,7 @@ class User(common.RestAuthResource):
     def get_properties(self):
         """Get all properties defined for this user.
 
-        :return: A key/value array of the properties defined for this user.
-        :rtype: dict
+
 
         :raise Unauthorized: When the connection uses wrong credentials.
         :raise Forbidden: When the client is not allowed to perform this action.
@@ -278,7 +277,7 @@ class User(common.RestAuthResource):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        resp = self._get('%s/props/' % (self.name))
+        resp = self.conn.get('/users/%s/props/' % self.name)
         if resp.status == http.OK:
             return self.conn.content_handler.unmarshal_dict(resp.read())
         elif resp.status == http.NOT_FOUND:
@@ -308,7 +307,7 @@ class User(common.RestAuthResource):
         :raise UnknownStatus: If the response status is unknown.
         """
         params = {'prop': prop, 'value': value}
-        resp = self._post('%s/props/' % self.name, params=params)
+        resp = self.conn.post('/users/%s/props/' % self.name, params=params)
         if resp.status == http.CREATED:
             return
         elif resp.status == http.NOT_FOUND:
@@ -330,8 +329,7 @@ class User(common.RestAuthResource):
            work in the future, i.e. it may have been created by another client in the meantime.
         """
         params = {'prop': prop, 'value': value}
-        url = '/test/users/%s/props/' % self.name
-        resp = self.conn.post(url, params=params)
+        resp = self.conn.post('/test/users/%s/props/' % self.name, params=params)
 
         if resp.status == http.CREATED:
             return
@@ -364,8 +362,7 @@ class User(common.RestAuthResource):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        url = '%s/props/%s/' % (self.name, prop)
-        resp = self._put(url, params={'value': value})
+        resp = self.conn.put('/users/%s/props/%s/' % (self.name, prop), params={'value': value})
         if resp.status == http.OK:
             return self.conn.content_handler.unmarshal_str(resp.read())
         if resp.status == http.CREATED:
@@ -395,8 +392,7 @@ class User(common.RestAuthResource):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        url = '%s/props/' % self.name
-        resp = self._put(url, params=props)
+        resp = self.conn.put('/users/%s/props/' % self.name, params=props)
         if resp.status == http.NO_CONTENT:
             return
         elif resp.status == http.NOT_FOUND:
@@ -414,13 +410,12 @@ class User(common.RestAuthResource):
 
         :raise Unauthorized: When the connection uses wrong credentials.
         :raise Forbidden: When the client is not allowed to perform this action.
-        :raise ResourceNotFound: If the user or property does not exist.
-        :raise NotAcceptable: When the server cannot generate a response in the content type used
+
             by this connection (see also: :py:meth:`~.RestAuthConnection.set_content_handler`).
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        resp = self._get('%s/props/%s' % (self.name, prop))
+        resp = self.conn.get('/users/%s/props/%s' % (self.name, prop))
         if resp.status == http.OK:
             return self.conn.content_handler.unmarshal_str(resp.read())
         elif resp.status == http.NOT_FOUND:
@@ -437,7 +432,7 @@ class User(common.RestAuthResource):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        resp = self._delete('%s/props/%s' % (self.name, prop))
+        resp = self.conn.delete('/users/%s/props/%s' % (self.name, prop))
         if resp.status == http.NO_CONTENT:
             return
         elif resp.status == http.NOT_FOUND:
