@@ -305,7 +305,7 @@ class User(object):
         else:  # pragma: no cover
             raise UnknownStatus(resp)
 
-    def get_groups(self):
+    def get_groups(self, flat=False):
         """Get all groups that this user is a member of.
 
         This method is just a shortcut for :py:func:`.group.get_all`.
@@ -319,7 +319,7 @@ class User(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        return self.group.get_all(self.conn, self)
+        return self.group.get_all(self.conn, self, flat=flat)
 
     def in_group(self, grp):
         """Check if the user is a member in the given group.
