@@ -134,8 +134,6 @@ class User(object):
     def get_properties(self):
         """Get all properties defined for this user.
 
-
-
         :raise Unauthorized: When the connection uses wrong credentials.
         :raise Forbidden: When the client is not allowed to perform this action.
         :raise NotAcceptable: When the server cannot generate a response in the content type used
