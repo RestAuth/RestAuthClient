@@ -525,25 +525,25 @@ class User(object):
             return '<User: {0}>'.format(self.name)
 
 
-def create(*args, **kwargs):
+def create(*args, **kwargs):  # pragma: no cover
     import warnings
     warnings.warn("Module function deprecated, use User.create instead.")
     return User.create(*args, **kwargs)
 
 
-def create_test(*args, **kwargs):
+def create_test(*args, **kwargs):  # pragma: no cover
     import warnings
     warnings.warn("Module function deprecated, use User.create_test instead.")
     return User.create_test(*args, **kwargs)
 
 
-def get(*args, **kwargs):
+def get(*args, **kwargs):  # pragma: no cover
     import warnings
     warnings.warn("Module function deprecated, use User.get instead.")
     return User.get(*args, **kwargs)
 
 
-def get_all(*args, **kwargs):
+def get_all(*args, **kwargs):  # pragma: no cover
     import warnings
     warnings.warn("Module function deprecated, use User.get_all instead.")
     return User.get_all(*args, **kwargs)

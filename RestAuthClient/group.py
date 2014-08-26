@@ -382,25 +382,25 @@ class Group(common.RestAuthResource):
             return '<Group: {0}>'.format(self.name)
 
 
-def create(*args, **kwargs):
+def create(*args, **kwargs):  # pragma: no cover
     import warnings
     warnings.warn("Module function deprecated, use Group.create instead.")
     return Group.create(*args, **kwargs)
 
 
-def create_test(*args, **kwargs):
+def create_test(*args, **kwargs):  # pragma: no cover
     import warnings
     warnings.warn("Module function deprecated, use Group.create_test instead.")
     return Group.create_test(*args, **kwargs)
 
 
-def get(*args, **kwargs):
+def get(*args, **kwargs):  # pragma: no cover
     import warnings
     warnings.warn("Module function deprecated, use Group.get instead.")
     return Group.get(*args, **kwargs)
 
 
-def get_all(*args, **kwargs):
+def get_all(*args, **kwargs):  # pragma: no cover
     import warnings
     warnings.warn("Module function deprecated, use Group.get_all instead.")
     return Group.get_all(*args, **kwargs)
