@@ -6,11 +6,8 @@ Requirements
 
 RestAuthClient has few requirements:
 
-* `Python 2.6 <http://www.python.org/>`_ or later or Python 3.2 or later.
-
-  * Python 2.5, 3.0 or 3.1 are not supported.
-
-* `RestAuthCommon 0.6.4.1 <https://common.restauth.net>`_ or later
+* `Python 2.7 <http://www.python.org/>`_ or later or Python 3.2 or later.
+* `RestAuthCommon 0.6.5 <https://common.restauth.net>`_ or later
 
 If you want to use different content handlers provided by RestAuthCommon, you need the
 corresponding libraries as well, please check the RestAuthCommon documentation.
@@ -81,9 +78,9 @@ Run tests
    from the running RestAuth server. Do not perform these tests on a live installation.
 
 RestAuthClient features an extensive test suite. Since it implements a network protocol, the library
-requires a RestAuth server to run on ``http://[::1]:8000`` that has the service ``vowi`` with the
-password ``vowi`` preconfigured. The `RestAuth server <https://server.restauth.net>`_ contains the
-script ``test.sh`` in its source code to simply start a server and add the expected service.
+requires a RestAuth server to run on ``http://[::1]:8000`` that has the service ``example.com``
+with the password ``nopass`` preconfigured.  The `RestAuth server <https://server.restauth.net>`_
+can start a correct testserver with ``python setup.py testserver``.
 
 After you started the server, you can run test-suite using:
 
