@@ -59,7 +59,7 @@ def create(conn, name, password=None, properties=None):
     if properties:
         params['properties'] = properties
 
-    resp = conn.post(User.prefix, params)
+    resp = conn.post('/users/', params)
     if resp.status == http.CREATED:
         return User(conn, name)
     elif resp.status == http.CONFLICT:
@@ -85,7 +85,7 @@ def create_test(conn, name, password=None, properties=None):
     if properties:
         params['properties'] = properties
 
-    resp = conn.post('/test/%s/' % User.prefix, params)
+    resp = conn.post('/test/users/', params)
     if resp.status == http.CREATED:
         return
     elif resp.status == http.CONFLICT:
@@ -147,7 +147,7 @@ def get_all(conn, flat=False):
     :raise InternalServerError: When the RestAuth service returns HTTP status code 500
     :raise UnknownStatus: If the response status is unknown.
     """
-    resp = conn.get(User.prefix)
+    resp = conn.get('/users/')
 
     if resp.status == http.OK:
         usernames = conn.content_handler.unmarshal_list(resp.read())
@@ -171,9 +171,6 @@ class User(object):
     :param name: The name of this user.
     :type  name: str
     """
-    prefix = '/users/'
-    """Prefix used for HTTP query methods inherited from base class"""
-
     _group = None
 
     def __init__(self, conn, name):
