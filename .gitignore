@@ -13,4 +13,4 @@ Makefile.local
 /include/
 /lib/
 /test/
-.egg-info/
+*.egg-info/
