@@ -17,30 +17,12 @@
 
 import warnings
 
-from RestAuthClient.user import RestAuthUser
+from RestAuthClient.user import RestAuthUser as User
 
 
-class User(RestAuthUser):  # pragma: no cover
-    def __init__(self, *args, **kwargs):
-        warnings.warn("This class is deprecated. Use RestAuthClient.user.RestAuthUser instead.")
-        super(User, self).__init__(*args, **kwargs)
+warnings.warn("This module is deprecated. Use RestAuthClient.user instead.")
 
-
-def create(*args, **kwargs):  # pragma: no cover
-    warnings.warn("Deprecated function, use RestAuthClient.user.RestAuthUser.create instead.")
-    return RestAuthUser.create(*args, **kwargs)
-
-
-def create_test(*args, **kwargs):  # pragma: no cover
-    warnings.warn("Deprecated function, use RestAuthClient.user.RestAuthUser.create_test instead.")
-    return RestAuthUser.create_test(*args, **kwargs)
-
-
-def get(*args, **kwargs):  # pragma: no cover
-    warnings.warn("Deprecated function, use RestAuthClient.user.RestAuthUser.get instead.")
-    return RestAuthUser.get(*args, **kwargs)
-
-
-def get_all(*args, **kwargs):  # pragma: no cover
-    warnings.warn("Deprecated function, use RestAuthClient.user.RestAuthUser.get_all instead.")
-    return RestAuthUser.get_all(*args, **kwargs)
+create = User.create
+create_test = User.create_test
+get = User.get
+get_all = User.get_all
