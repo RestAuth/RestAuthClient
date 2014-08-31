@@ -64,5 +64,5 @@ class PropertyExists(ResourceConflict):
 
 
 class GroupExists(ResourceConflict):
-    """Thrown when a :py:class:`.Group` that already exists should be created."""
+    """Thrown when a :py:class:`.RestAuthGroup` that already exists should be created."""
     pass

@@ -60,7 +60,7 @@ class RestAuthGroup(object):
             instances.
         :type  flat: bool
         :return: A list of Group objects or a list of str if ``flat=True``
-        :rtype: [:py:class:`groups <.Group>` or str]
+        :rtype: [:py:class:`groups <.RestAuthGroup>` or str]
 
         :raise Unauthorized: When the connection uses wrong credentials.
         :raise Forbidden: When the client is not allowed to perform this action.
@@ -88,7 +88,7 @@ class RestAuthGroup(object):
         """Add a user to this group.
 
         :param user: The user or the name of the user to add.
-        :type  user: :py:class:`.User` or str
+        :type  user: :py:class:`.RestAuthUser` or str
 
         :raise BadRequest: If the server was unable to parse the request body.
         :raise Unauthorized: When the connection uses wrong credentials.
@@ -114,7 +114,7 @@ class RestAuthGroup(object):
         """Add a group to this group.
 
         :param group: The group or the name of the group to add.
-        :type  group: :py:class:`.Group` or str
+        :type  group: :py:class:`.RestAuthGroup` or str
 
         :raise BadRequest: If the server was unable to parse the request body.
         :raise Unauthorized: When the connection uses wrong credentials.
@@ -146,7 +146,7 @@ class RestAuthGroup(object):
             instances.
         :type  flat: bool
         :return: A list of Group objects or a list of str if ``flat=True``
-        :rtype: [:py:class:`groups <.Group>` or str]
+        :rtype: [:py:class:`groups <.RestAuthGroup>` or str]
 
         :raise Unauthorized: When the connection uses wrong credentials.
         :raise Forbidden: When the client is not allowed to perform this action.
@@ -172,7 +172,7 @@ class RestAuthGroup(object):
         """Remove a sub-group from this group.
 
         :param group: The group or the name of the group to remove.
-        :type  group: :py:class:`.Group` or str
+        :type  group: :py:class:`.RestAuthGroup` or str
 
         :raise Unauthorized: When the connection uses wrong credentials.
         :raise Forbidden: When the client is not allowed to perform this action.
@@ -212,7 +212,7 @@ class RestAuthGroup(object):
         """Check if the named user is a member.
 
         :param user: The user or the name of a user in question.
-        :type  user: :py:class:`.User` or str
+        :type  user: :py:class:`.RestAuthUser` or str
         :return: True if the user is a member, False if not.
         :rtype: bool
 
@@ -322,7 +322,7 @@ class RestAuthGroup(object):
             instances.
         :type  flat: bool
         :return: A list of Group objects or a list of str if ``flat=True``
-        :rtype: [:py:class:`groups <.Group>` or str]
+        :rtype: [:py:class:`groups <.RestAuthGroup>` or str]
 
         :raise Unauthorized: When the connection uses wrong credentials.
         :raise Forbidden: When the client is not allowed to perform this action.
@@ -362,7 +362,7 @@ class RestAuthGroup(object):
         :param name: The name of the group to get
         :type  name: str
         :return: The group object representing the group in RestAuth.
-        :rtype: :py:class:`.Group`
+        :rtype: :py:class:`.RestAuthGroup`
 
         :raise Unauthorized: When the connection uses wrong credentials.
         :raise Forbidden: When the client is not allowed to perform this action.

@@ -295,10 +295,10 @@ class RestAuthUser(object):
     def get_groups(self, flat=False):
         """Get all groups that this user is a member of.
 
-        This method is just a shortcut for :py:meth:`.Group.get_all`.
+        This method is just a shortcut for :py:meth:`.RestAuthGroup.get_all`.
 
         :return: All groups that the user is a member of.
-        :rtype: [:py:class:`groups <.Group>` or str]
+        :rtype: [:py:class:`groups <.RestAuthGroup>` or str]
 
         :raise Unauthorized: When the connection uses wrong credentials.
         :raise Forbidden: When the client is not allowed to perform this action.
@@ -311,10 +311,10 @@ class RestAuthUser(object):
     def in_group(self, grp):
         """Check if the user is a member in the given group.
 
-        This method is just a shortcut for :py:meth:`.Group.is_member`.
+        This method is just a shortcut for :py:meth:`.RestAuthGroup.is_member`.
 
         :param grp: The group of interest.
-        :type  grp: :py:class:`str` or :py:class:`.Group`
+        :type  grp: :py:class:`str` or :py:class:`.RestAuthGroup`
         :return: True if this user is a member, False otherwise.
         :rtype: bool
 
@@ -331,10 +331,10 @@ class RestAuthUser(object):
     def add_group(self, grp):
         """Make this user a member if the given group.
 
-        This method is just a shortcut for :py:meth:`.Group.add_user`.
+        This method is just a shortcut for :py:meth:`.RestAuthGroup.add_user`.
 
         :param grp: The group of interest.
-        :type  grp: :py:class:`str` or :py:class:`.Group`
+        :type  grp: :py:class:`str` or :py:class:`.RestAuthGroup`
 
         :raise BadRequest: If the server was unable to parse the request body.
         :raise Unauthorized: When the connection uses wrong credentials.
@@ -350,10 +350,10 @@ class RestAuthUser(object):
     def remove_group(self, grp):
         """Remove the users membership from the given group.
 
-        This method is just a shortcut for :py:meth:`.Group.remove_user`.
+        This method is just a shortcut for :py:meth:`.RestAuthGroup.remove_user`.
 
         :param grp: The group of interest.
-        :type  grp: :py:class:`str` or :py:class:`.Group`
+        :type  grp: :py:class:`str` or :py:class:`.RestAuthGroup`
 
         :raise Unauthorized: When the connection uses wrong credentials.
         :raise Forbidden: When the client is not allowed to perform this action.
@@ -377,7 +377,7 @@ class RestAuthUser(object):
             effectively disabled.
         :type  password: str
         :return: The user object representing the user just created.
-        :rtype: :py:class:`~.user.User`
+        :rtype: :py:class:`~.user.RestAuthUser`
 
         :raise BadRequest: If the server was unable to parse the request body.
         :raise Unauthorized: When the connection uses wrong credentials.
@@ -444,7 +444,7 @@ class RestAuthUser(object):
         :param name: Name of the user to get
         :type  name: str
         :return: The user object representing the user just created.
-        :rtype: :py:class:`~.user.User`
+        :rtype: :py:class:`~.user.RestAuthUser`
 
         :raise Unauthorized: When the connection uses wrong credentials.
         :raise Forbidden: When the client is not allowed to perform this action.
@@ -475,7 +475,7 @@ class RestAuthUser(object):
             instances.
         :type  flat: bool
         :return: A list of User objects or str, if ``flat=True``.
-        :rtype: [:py:class:`~.user.User` or str]
+        :rtype: [:py:class:`~.user.RestAuthUser` or str]
 
         :raise Unauthorized: When the connection uses wrong credentials.
         :raise Forbidden: When the client is not allowed to perform this action.

@@ -5,9 +5,9 @@ The **RestAuthClient** library consists of four modules, each containing one imp
 
 * :py:mod:`~RestAuthClient.common` contains :py:class:`~.common.RestAuthConnection` which represents
   a connection to a RestAuth service.
-* :py:mod:`~RestAuthClient.user` contains the :py:class:`~.user.User` class which
+* :py:mod:`~RestAuthClient.user` contains the :py:class:`~.user.RestAuthUser` class which
   represents a user in the RestAuth service.
-* :py:mod:`~RestAuthClient.group` contains the :py:class:`~.group.Group` class which represents a
+* :py:mod:`~RestAuthClient.group` contains the :py:class:`~.group.RestAuthGroup` class which represents a
   group in the RestAuth service.
 * :py:mod:`~RestAuthClient.error` is a collection of exceptions that may be thrown by the above
   modules and its member methods/classes.
@@ -22,15 +22,15 @@ exceptions used in this library.
 .. code-block:: python
 
    from RestAuthClient.common import Connection
-   from RestAuthClient.user import User
-   from RestAuthClient.group import Group
+   from RestAuthClient.user import RestAuthUser
+   from RestAuthClient.group import RestAuthGroup
 
    # create a connection to the RestAuth service. The service must already be configured using the
    # restauth-service commandline script.
    conn = RestAuthConnection('https://auth.example.com', 'service', 'password')
 
    # create a *new* user named 'foobar', and do some interesting things:
-   user = User.create(conn, 'foobar', 'password')
+   user = RestAuthUser.create(conn, 'foobar', 'password')
    if not user.verify_password('wrong password'):
        print('ERROR: User has wrong password!')  # never happens in this example, of course
 
@@ -39,11 +39,11 @@ exceptions used in this library.
 
    # If performance is critical, do not use the factory methods to get user objects, instead
    # reference them directly:
-   user = User(conn, 'foobar')
+   user = RestAuthUser(conn, 'foobar')
    user.verify_password('password')
 
    # Groups work in much the same way as users:
-   group = Group.get(conn, 'groupname')  # verifies that the group exists
+   group = RestAuthGroup.get(conn, 'groupname')  # verifies that the group exists
    group.add_user(user)  # may also just be the username!
    group.get_members()  # returns a list with the User element
 
