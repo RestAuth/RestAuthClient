@@ -33,7 +33,7 @@ else:  # pragma: py2
     import httplib as http
 
 
-class Group(object):
+class RestAuthGroup(object):
     """An instance of this class represents a group in RestAuth.
 
     *Note:* The constructor *does not* verify that the group actually exists. This has the
@@ -162,7 +162,7 @@ class Group(object):
             if flat is True:
                 return names
             else:
-                return [Group(self.conn, name) for name in names]
+                return [RestAuthGroup(self.conn, name) for name in names]
         elif resp.status == http.NOT_FOUND:
             raise error.ResourceNotFound(resp)
         else:  # pragma: no cover
@@ -278,7 +278,7 @@ class Group(object):
         """
         resp = conn.post('/groups/', {'group': name})
         if resp.status == http.CREATED:
-            return Group(conn, name)
+            return cls(conn, name)
         elif resp.status == http.CONFLICT:
             raise GroupExists("Conflict.")
         elif resp.status == http.PRECONDITION_FAILED:
@@ -345,7 +345,7 @@ class Group(object):
             if flat is True:
                 return names
             else:
-                return [Group(conn, name) for name in names]
+                return [cls(conn, name) for name in names]
         elif resp.status == http.NOT_FOUND:
             raise error.ResourceNotFound(resp)
         else:  # pragma: no cover
@@ -372,7 +372,7 @@ class Group(object):
         """
         resp = conn.get('/groups/%s' % name)
         if resp.status == http.NO_CONTENT:
-            return Group(conn, name)
+            return cls(conn, name)
         elif resp.status == http.NOT_FOUND:
             raise error.ResourceNotFound(resp)
         else:  # pragma: no cover
@@ -389,25 +389,46 @@ class Group(object):
             return '<Group: {0}>'.format(self.name)
 
 
+warnings = None
+
+
+class Group(RestAuthGroup):
+    def __init__(self, *args, **kwargs):
+        global warnings
+        if warnings is None:
+            import warnings
+
+        warnings.warn("Group class is deprecated, use RestAuthGroup instead.")
+        super(Group, self).__init__(*args, **kwargs)
+
+
 def create(*args, **kwargs):  # pragma: no cover
-    import warnings
-    warnings.warn("Module function deprecated, use Group.create instead.")
-    return Group.create(*args, **kwargs)
+    global warnings
+    if warnings is None:
+        import warnings
+    warnings.warn("Module function deprecated, use RestAuthGroup.create instead.")
+    return RestAuthGroup.create(*args, **kwargs)
 
 
 def create_test(*args, **kwargs):  # pragma: no cover
-    import warnings
-    warnings.warn("Module function deprecated, use Group.create_test instead.")
-    return Group.create_test(*args, **kwargs)
+    global warnings
+    if warnings is None:
+        import warnings
+    warnings.warn("Module function deprecated, use RestAuthGroup.create_test instead.")
+    return RestAuthGroup.create_test(*args, **kwargs)
 
 
 def get(*args, **kwargs):  # pragma: no cover
-    import warnings
-    warnings.warn("Module function deprecated, use Group.get instead.")
-    return Group.get(*args, **kwargs)
+    global warnings
+    if warnings is None:
+        import warnings
+    warnings.warn("Module function deprecated, use RestAuthGroup.get instead.")
+    return RestAuthGroup.get(*args, **kwargs)
 
 
 def get_all(*args, **kwargs):  # pragma: no cover
-    import warnings
+    global warnings
+    if warnings is None:
+        import warnings
     warnings.warn("Module function deprecated, use Group.get_all instead.")
-    return Group.get_all(*args, **kwargs)
+    return RestAuthGroup.get_all(*args, **kwargs)
