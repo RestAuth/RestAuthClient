@@ -5,8 +5,8 @@ from __future__ import unicode_literals
 from operator import attrgetter
 
 from RestAuthClient.error import GroupExists
-from RestAuthClient.user import User
-from RestAuthClient.group import Group
+from RestAuthClient.user import RestAuthUser
+from RestAuthClient.group import RestAuthGroup
 
 from RestAuthCommon import error
 
@@ -25,48 +25,48 @@ class BasicTests(RestAuthClientTestCase):
     def setUp(self):
         super(BasicTests, self).setUp()
 
-        self.assertEqual([], User.get_all(self.conn))
-        self.assertEqual([], Group.get_all(self.conn))
+        self.assertEqual([], RestAuthUser.get_all(self.conn))
+        self.assertEqual([], RestAuthGroup.get_all(self.conn))
 
         self.users = [
-            User.create(self.conn, username_1, "foobar"),
-            User.create(self.conn, username_2, "foobar"),
-            User.create(self.conn, username_3, "foobar"),
+            RestAuthUser.create(self.conn, username_1, "foobar"),
+            RestAuthUser.create(self.conn, username_2, "foobar"),
+            RestAuthUser.create(self.conn, username_3, "foobar"),
         ]
 
     def tearDown(self):
         """remove everything"""
-        for user in User.get_all(self.conn):
+        for user in RestAuthUser.get_all(self.conn):
             user.remove()
-        for grp in Group.get_all(self.conn):
+        for grp in RestAuthGroup.get_all(self.conn):
             grp.remove()
 
     def test_createGroup(self):
-        grp = Group.create(self.conn, groupname_1)
-        self.assertEqual([grp], Group.get_all(self.conn))
-        self.assertEqual(grp, Group.get(self.conn, groupname_1))
+        grp = RestAuthGroup.create(self.conn, groupname_1)
+        self.assertEqual([grp], RestAuthGroup.get_all(self.conn))
+        self.assertEqual(grp, RestAuthGroup.get(self.conn, groupname_1))
 
     def test_createGroupTwice(self):
-        grp = Group.create(self.conn, groupname_1)
+        grp = RestAuthGroup.create(self.conn, groupname_1)
 
         try:
-            Group.create(self.conn, groupname_1)
+            RestAuthGroup.create(self.conn, groupname_1)
             self.fail()
         except GroupExists:
-            self.assertEqual([grp], Group.get_all(self.conn))
-            self.assertEqual(grp, Group.get(self.conn, groupname_1))
+            self.assertEqual([grp], RestAuthGroup.get_all(self.conn))
+            self.assertEqual(grp, RestAuthGroup.get(self.conn, groupname_1))
 
     def test_createInvalidGroup(self):
         try:
-            Group.create(self.conn, "foo/bar")
+            RestAuthGroup.create(self.conn, "foo/bar")
             self.fail()
         except error.PreconditionFailed:
-            self.assertEqual([], Group.get_all(self.conn))
+            self.assertEqual([], RestAuthGroup.get_all(self.conn))
 
     def test_addUser(self):
-        grp_0 = Group.create(self.conn, groupname_1)
-        grp_1 = Group.create(self.conn, groupname_2)
-        self.assertEqual([grp_0, grp_1], Group.get_all(self.conn))
+        grp_0 = RestAuthGroup.create(self.conn, groupname_1)
+        grp_1 = RestAuthGroup.create(self.conn, groupname_2)
+        self.assertEqual([grp_0, grp_1], RestAuthGroup.get_all(self.conn))
 
         grp_0.add_user(self.users[0])
         grp_1.add_user(self.users[1])
@@ -83,28 +83,28 @@ class BasicTests(RestAuthClientTestCase):
         self.assertFalse(grp_1.is_member(self.users[0]))
 
     def test_addInvalidUser(self):
-        grp = Group.create(self.conn, groupname_1)
-        user = User(self.conn, "foobar")
+        grp = RestAuthGroup.create(self.conn, groupname_1)
+        user = RestAuthUser(self.conn, "foobar")
 
         try:
             grp.add_user(user)
             self.fail()
         except error.ResourceNotFound as e:
             self.assertEqual("user", e.get_type())
-            User.get_all(self.conn)
-            self.assertEqual(self.users, User.get_all(self.conn))
+            RestAuthUser.get_all(self.conn)
+            self.assertEqual(self.users, RestAuthUser.get_all(self.conn))
 
     def test_addUserToInvalidGroup(self):
-        grp = Group(self.conn, groupname_1)
+        grp = RestAuthGroup(self.conn, groupname_1)
         try:
             grp.add_user(self.users[0])
             self.fail()
         except error.ResourceNotFound as e:
             self.assertEqual("group", e.get_type())
-            self.assertEqual([], Group.get_all(self.conn))
+            self.assertEqual([], RestAuthGroup.get_all(self.conn))
 
     def test_isMember(self):
-        grp = Group.create(self.conn, groupname_1)
+        grp = RestAuthGroup.create(self.conn, groupname_1)
         self.assertFalse(grp.is_member(username_1))
 
         grp.add_user(username_1)
@@ -112,7 +112,7 @@ class BasicTests(RestAuthClientTestCase):
         self.assertTrue(grp.is_member(username_1))
 
     def test_isMemberInvalidGroup(self):
-        grp = Group(self.conn, groupname_1)
+        grp = RestAuthGroup(self.conn, groupname_1)
 
         try:
             grp.is_member(username_1)
@@ -121,7 +121,7 @@ class BasicTests(RestAuthClientTestCase):
             self.assertEqual("group", e.get_type())
 
     def test_removeUser(self):
-        grp = Group.create(self.conn, groupname_1)
+        grp = RestAuthGroup.create(self.conn, groupname_1)
         grp.add_user(self.users[0])
         grp.add_user(self.users[1])
         self.assertEqual(sorted(self.users[0:2], key=lambda o: o.name),
@@ -134,34 +134,34 @@ class BasicTests(RestAuthClientTestCase):
 
         # verify that no actual users where removed:
         self.assertEqual(
-            self.users[0], User.get(self.conn, username_1))
-        self.assertEqual(self.users, User.get_all(self.conn))
+            self.users[0], RestAuthUser.get(self.conn, username_1))
+        self.assertEqual(self.users, RestAuthUser.get_all(self.conn))
 
     def test_removeUserNotMember(self):
-        grp = Group.create(self.conn, groupname_1)
+        grp = RestAuthGroup.create(self.conn, groupname_1)
         try:
             grp.remove_user(self.users[0])
             self.fail()
         except error.ResourceNotFound as e:
             self.assertEqual("user", e.get_type())
             self.assertEqual(
-                self.users[0], User.get(self.conn, username_1))
-            self.assertEqual(self.users, User.get_all(self.conn))
+                self.users[0], RestAuthUser.get(self.conn, username_1))
+            self.assertEqual(self.users, RestAuthUser.get_all(self.conn))
 
     def test_removeInvalidUser(self):
-        grp = Group.create(self.conn, groupname_1)
-        user = User(self.conn, "foobar")
+        grp = RestAuthGroup.create(self.conn, groupname_1)
+        user = RestAuthUser(self.conn, "foobar")
         try:
             grp.remove_user(user)
             self.fail()
         except error.ResourceNotFound as e:
             self.assertEqual("user", e.get_type())
             self.assertEqual(
-                self.users[0], User.get(self.conn, username_1))
-            self.assertEqual(self.users, User.get_all(self.conn))
+                self.users[0], RestAuthUser.get(self.conn, username_1))
+            self.assertEqual(self.users, RestAuthUser.get_all(self.conn))
 
     def test_removeUserFromInvalidGroup(self):
-        grp = Group(self.conn, groupname_1)
+        grp = RestAuthGroup(self.conn, groupname_1)
 
         try:
             grp.remove_user(self.users[0])
@@ -169,12 +169,12 @@ class BasicTests(RestAuthClientTestCase):
         except error.ResourceNotFound as e:
             self.assertEqual("group", e.get_type())
             self.assertEqual(
-                self.users[0], User.get(self.conn, username_1))
-            self.assertEqual(self.users, User.get_all(self.conn))
+                self.users[0], RestAuthUser.get(self.conn, username_1))
+            self.assertEqual(self.users, RestAuthUser.get_all(self.conn))
 
     def test_removeInvalidUserFromInvalidGroup(self):
-        grp = Group(self.conn, groupname_1)
-        user = User(self.conn, "foobar")
+        grp = RestAuthGroup(self.conn, groupname_1)
+        user = RestAuthUser(self.conn, "foobar")
 
         try:
             grp.remove_user(user)
@@ -185,40 +185,40 @@ class BasicTests(RestAuthClientTestCase):
             self.assertEqual("group", e.get_type())
 
     def test_removeGroup(self):
-        grp = Group.create(self.conn, groupname_1)
+        grp = RestAuthGroup.create(self.conn, groupname_1)
         grp.remove()
-        self.assertEqual([], Group.get_all(self.conn))
+        self.assertEqual([], RestAuthGroup.get_all(self.conn))
         try:
-            Group.get(self.conn, groupname_1)
+            RestAuthGroup.get(self.conn, groupname_1)
             self.fail()
         except error.ResourceNotFound as e:
             self.assertEqual("group", e.get_type())
 
     def test_removeInvalidGroup(self):
-        grp = Group(self.conn, groupname_1)
+        grp = RestAuthGroup(self.conn, groupname_1)
 
         try:
             grp.remove()
             self.fail()
         except error.ResourceNotFound as e:
             self.assertEqual("group", e.get_type())
-            self.assertEqual([], Group.get_all(self.conn))
+            self.assertEqual([], RestAuthGroup.get_all(self.conn))
 
         try:
-            Group.get(self.conn, groupname_1)
+            RestAuthGroup.get(self.conn, groupname_1)
             self.fail()
         except error.ResourceNotFound as e:
             self.assertEqual("group", e.get_type())
 
     def test_getInvalidGroup(self):
         try:
-            Group.get(self.conn, groupname_1)
+            RestAuthGroup.get(self.conn, groupname_1)
             self.fail()
         except error.ResourceNotFound as e:
             self.assertEqual("group", e.get_type())
 
     def test_getMembersInvalidGroup(self):
-        grp = Group(self.conn, groupname_1)
+        grp = RestAuthGroup(self.conn, groupname_1)
         try:
             grp.get_members()
             self.fail()
@@ -230,21 +230,21 @@ class MetaGroupTests(RestAuthClientTestCase):
     def setUp(self):
         super(MetaGroupTests, self).setUp()
 
-        self.assertEqual([], User.get_all(self.conn))
-        self.assertEqual([], Group.get_all(self.conn))
+        self.assertEqual([], RestAuthUser.get_all(self.conn))
+        self.assertEqual([], RestAuthGroup.get_all(self.conn))
 
-        self.usr1 = User.create(self.conn, username_1, "foobar")
-        self.usr2 = User.create(self.conn, username_2, "foobar")
-        self.usr3 = User.create(self.conn, username_3, "foobar")
+        self.usr1 = RestAuthUser.create(self.conn, username_1, "foobar")
+        self.usr2 = RestAuthUser.create(self.conn, username_2, "foobar")
+        self.usr3 = RestAuthUser.create(self.conn, username_3, "foobar")
 
-        self.grp1 = Group.create(self.conn, groupname_1)
-        self.grp2 = Group.create(self.conn, groupname_2)
+        self.grp1 = RestAuthGroup.create(self.conn, groupname_1)
+        self.grp2 = RestAuthGroup.create(self.conn, groupname_2)
 
     def tearDown(self):
         """remove everything"""
-        for user in User.get_all(self.conn):
+        for user in RestAuthUser.get_all(self.conn):
             user.remove()
-        for grp in Group.get_all(self.conn):
+        for grp in RestAuthGroup.get_all(self.conn):
             grp.remove()
 
     def test_simpleInheritanceTest(self):
@@ -276,7 +276,7 @@ class MetaGroupTests(RestAuthClientTestCase):
         self.assertEqual([], self.grp2.get_groups())
 
     def test_addInvalidGroup(self):
-        grp3 = Group(self.conn, groupname_3 + "foo")
+        grp3 = RestAuthGroup(self.conn, groupname_3 + "foo")
         try:
             self.grp1.add_group(grp3)
             self.fail()
@@ -285,7 +285,7 @@ class MetaGroupTests(RestAuthClientTestCase):
         self.assertEqual([], self.grp1.get_groups())
 
     def test_addGroupToInvalidGroup(self):
-        grp3 = Group(self.conn, groupname_3 + "foo")
+        grp3 = RestAuthGroup(self.conn, groupname_3 + "foo")
         try:
             grp3.add_group(self.grp1)
             self.fail()
@@ -316,7 +316,7 @@ class MetaGroupTests(RestAuthClientTestCase):
             self.assertEqual("group", e.get_type())
 
     def test_removeInvalidGroup(self):
-        grp3 = Group(self.conn, groupname_3)
+        grp3 = RestAuthGroup(self.conn, groupname_3)
 
         try:
             self.grp1.remove_group(grp3)
@@ -325,7 +325,7 @@ class MetaGroupTests(RestAuthClientTestCase):
             self.assertEqual("group", e.get_type())
 
     def test_getGroupsInvalidGroup(self):
-        grp3 = Group(self.conn, groupname_3)
+        grp3 = RestAuthGroup(self.conn, groupname_3)
         try:
             grp3.get_groups()
         except error.ResourceNotFound as e:
@@ -334,23 +334,23 @@ class MetaGroupTests(RestAuthClientTestCase):
 
 class CreateTest(RestAuthClientTestCase):
     def test_createGroup(self):
-        self.assertTrue(Group.create_test(self.conn, groupname_1))
-        self.assertEquals([], Group.get_all(self.conn))
+        self.assertTrue(RestAuthGroup.create_test(self.conn, groupname_1))
+        self.assertEquals([], RestAuthGroup.get_all(self.conn))
 
     def test_createExistingGroup(self):
-        grp = Group.create(self.conn, groupname_1)
+        grp = RestAuthGroup.create(self.conn, groupname_1)
 
         try:
-            Group.create_test(self.conn, groupname_1)
+            RestAuthGroup.create_test(self.conn, groupname_1)
             self.fail()
         except GroupExists:
-            self.assertEquals([grp], Group.get_all(self.conn))
+            self.assertEquals([grp], RestAuthGroup.get_all(self.conn))
         finally:
             grp.remove()
 
     def test_createInvalidGroup(self):
         try:
-            self.assertFalse(Group.create_test(self.conn, "foo:bar"))
+            self.assertFalse(RestAuthGroup.create_test(self.conn, "foo:bar"))
             self.fail()
         except error.PreconditionFailed:
-            self.assertEquals([], Group.get_all(self.conn))
+            self.assertEquals([], RestAuthGroup.get_all(self.conn))
