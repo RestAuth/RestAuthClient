@@ -170,7 +170,7 @@ class Group(object):
     def remove_group(self, group):
         """Remove a sub-group from this group.
 
-        :param group: The group or the name of the group to remmove.
+        :param group: The group or the name of the group to remove.
         :type  group: :py:class:`.Group` or str
 
         :raise Unauthorized: When the connection uses wrong credentials.
