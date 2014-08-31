@@ -47,8 +47,8 @@ from RestAuthCommon.handlers import CONTENT_HANDLERS
 from RestAuthCommon.handlers import ContentHandler
 from RestAuthCommon.handlers import JSONContentHandler
 from RestAuthClient.error import HttpException
-from RestAuthClient.user import User
-from RestAuthClient.group import Group
+from RestAuthClient.user import RestAuthUser
+from RestAuthClient.group import RestAuthGroup
 
 
 class RestAuthConnection(object):
@@ -88,8 +88,8 @@ class RestAuthConnection(object):
     :type   source_address: tuple
     """
     context = None
-    _user = User
-    _group = Group
+    _user = RestAuthUser
+    _group = RestAuthGroup
 
     def __init__(self, host, user, passwd, content_handler=None, ssl_context=None, timeout=None,
                  source_address=None):
