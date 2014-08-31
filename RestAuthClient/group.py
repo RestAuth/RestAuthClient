@@ -379,10 +379,7 @@ class Group(object):
             raise UnknownStatus(resp)
 
     def __eq__(self, other):
-        """
-        Two instances of the class User evaluate as equal if their name and connection evaluate as
-        equal.
-        """
+        """Two instances evaluate as equal if their name and connection evaluate as equal."""
         return self.name == other.name and self.conn == other.conn
 
     def __repr__(self):  # pragma: no cover
