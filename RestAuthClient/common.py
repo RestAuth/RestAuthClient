@@ -19,7 +19,6 @@
 """
 
 import base64
-import os
 import sys
 
 if sys.version_info >= (3, ):  # pragma: py3
@@ -231,9 +230,6 @@ class RestAuthConnection(object):
         return urlencode(params).replace('+', '%20')
 
     def _sanitize_url(self, url):
-        # make sure that it starts and ends with /, cut double-slashes:
-        url = '%s/' % os.path.normpath(url)
-
         if PY3 is False and url.__class__ == unicode:  # pragma: py2
             url = url.encode('utf-8')  # encode utf-8 in python 2.x
 
