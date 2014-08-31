@@ -5,11 +5,11 @@ authorization and preferences.
 Requirements
 ============
 
-**RestAuthClient** works with Python2.6+ and Python3.2+.
+**RestAuthClient** works with Python2.7+ and Python3.2+.
 
 **RestAuthClient** requires no special libraries but RestAuthCommon_ and any
-library required by any content handler you use.
-
+library required by any content handler you use. ``pip install RestAuthClient``
+automatically installs RestAuthCommon_.
 
 Installation
 ============
@@ -24,8 +24,9 @@ If you use pip, you can install **RestAuthClient** with::
 If you want to install Debian/Ubuntu packages, simple do (Replace **<dist>**
 with your distribution)::
 
-   wget -O - http://apt.fsinf.at/keys/apt-repository@fsinf.at | apt-key add -
-   echo deb http://apt.fsinf.at <dist> restauth > /etc/apt/sources.list.d/restauth.list
+   apt-get install apt-transport-https
+   wget -O - https://apt.restauth.net/gpg-key | apt-key add -
+   echo deb https://apt.restauth.net <dist> restauth > /etc/apt/sources.list.d/restauth.list
    apt-get update
    apt-get install python-restauth python3-restauth
 
