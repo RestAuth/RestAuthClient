@@ -291,8 +291,8 @@ class RestAuthGroup(object):
         """
         Do a test-run on creating a new group (i.e. to test user input against the RestAuth server
         configuration). This method throws the exact same Exceptions as :py:func:`create` but
-        always returns None instead of a :py:class:`Group` instance if the group could be created
-        that way.
+        always returns None instead of a :py:class:`RestAuthGroup` instance if the group could be
+        created that way.
 
         .. NOTE:: Invoking this method cannot guarantee that actually creating this group will work
            in the future, i.e. it may have been created by another client in the meantime.

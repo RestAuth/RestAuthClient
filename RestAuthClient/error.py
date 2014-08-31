@@ -54,7 +54,7 @@ class HttpException(RestAuthRuntimeException):
 
 
 class UserExists(ResourceConflict):
-    """Thrown when attempting to create a :py:class:`RestAuthUser` that already exists."""
+    """Thrown when attempting to create a :py:class:`.RestAuthUser` that already exists."""
     pass
 
 

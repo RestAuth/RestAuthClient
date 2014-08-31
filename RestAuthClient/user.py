@@ -410,8 +410,8 @@ class RestAuthUser(object):
         """
         Do a test-run on creating a new user (i.e. to test user input against the RestAuth server
         configuration). This method throws the exact same Exceptions as :py:func:`create` but
-        always returns None instead of a :py:class:`User` instance if the user could be created
-        that way.
+        always returns None instead of a :py:class:`RestAuthUser` instance if the user could be
+        created that way.
 
         .. NOTE:: Invoking this method cannot guarantee that actually creating this user will work
            in the future, i.e. it may have been created by another client in the meantime.
