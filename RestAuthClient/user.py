@@ -30,7 +30,7 @@ from RestAuthClient.error import UnknownStatus
 from RestAuthClient.error import UserExists
 
 
-class User(object):
+class RestAuthUser(object):
     """An instance of this class is an object oriented abstraction of a user in a RestAuth server.
 
     .. Warning:: The constructor *does not* verify that the user actually exists.  This has the
@@ -456,7 +456,7 @@ class User(object):
         resp = conn.get('/users/%s/' % (name))
 
         if resp.status == http.NO_CONTENT:
-            return User(conn, name)
+            return cls(conn, name)
         elif resp.status == http.NOT_FOUND:
             raise error.ResourceNotFound(resp)
         else:  # pragma: no cover
@@ -491,7 +491,7 @@ class User(object):
             if flat is True:
                 return usernames
             else:
-                return [User(conn, name) for name in usernames]
+                return [cls(conn, name) for name in usernames]
         else:  # pragma: no cover
             raise UnknownStatus(resp)
 
@@ -511,23 +511,23 @@ class User(object):
 
 def create(*args, **kwargs):  # pragma: no cover
     import warnings
-    warnings.warn("Module function deprecated, use User.create instead.")
-    return User.create(*args, **kwargs)
+    warnings.warn("Module function deprecated, use RestAuthUser.create instead.")
+    return RestAuthUser.create(*args, **kwargs)
 
 
 def create_test(*args, **kwargs):  # pragma: no cover
     import warnings
-    warnings.warn("Module function deprecated, use User.create_test instead.")
-    return User.create_test(*args, **kwargs)
+    warnings.warn("Module function deprecated, use RestAuthUser.create_test instead.")
+    return RestAuthUser.create_test(*args, **kwargs)
 
 
 def get(*args, **kwargs):  # pragma: no cover
     import warnings
-    warnings.warn("Module function deprecated, use User.get instead.")
-    return User.get(*args, **kwargs)
+    warnings.warn("Module function deprecated, use RestAuthUser.get instead.")
+    return RestAuthUser.get(*args, **kwargs)
 
 
 def get_all(*args, **kwargs):  # pragma: no cover
     import warnings
-    warnings.warn("Module function deprecated, use User.get_all instead.")
-    return User.get_all(*args, **kwargs)
+    warnings.warn("Module function deprecated, use RestAuthUser.get_all instead.")
+    return RestAuthUser.get_all(*args, **kwargs)
