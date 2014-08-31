@@ -16,9 +16,9 @@ rest_passwd = 'vowi'
 
 # all paths in the restauth specification
 paths = [
-    '/users/', '/users/foo/', '/users/foo/props/', '/users/foo/props/bar',
+    '/users/', '/users/foo/', '/users/foo/props/', '/users/foo/props/bar/',
     '/groups/', '/groups/foo/', '/groups/foo/users/',
-    '/groups/foo/users/bar/', '/groups/foo/groups/', '/groups/foo/groups/bar',
+    '/groups/foo/users/bar/', '/groups/foo/groups/', '/groups/foo/groups/bar/',
     '/test/users/', '/test/users/foo/props/', '/test/groups/'
 ]
 
