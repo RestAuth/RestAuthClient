@@ -28,6 +28,8 @@ if sys.version_info >= (3, ):  # pragma: py3
     from urllib.parse import quote
     from urllib.parse import urlencode
     from urllib.parse import urlparse
+
+    import ssl
 else:  # pragma: py2
     PY3 = False
     import httplib as client
@@ -35,8 +37,6 @@ else:  # pragma: py2
     from urllib import urlencode
     from urlparse import urlparse
 
-if sys.version_info >= (3, 2):  # pragma: py3
-    import ssl
 if sys.version_info >= (3, 4):  # pragma: py34
     PY34 = True
 else:  # pragma: no cover
