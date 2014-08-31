@@ -63,9 +63,8 @@ class Group(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        params = {}
+        resp = self.conn.get('/groups/%s/users/' % self.name)
 
-        resp = self._get('/%s/users/' % self.name, params)
         if resp.status == http.OK:
             # parse user-list:
             names = self.conn.content_handler.unmarshal_list(resp.read())
@@ -93,8 +92,8 @@ class Group(object):
         """
         if isinstance(user, User):
             user = user.name
-        params = {'user': user}
-        resp = self._post('/%s/users/' % self.name, params)
+
+        resp = self.conn.post('/groups/%s/users/' % self.name, {'user': user})
         if resp.status == http.NO_CONTENT:
             return
         elif resp.status == http.NOT_FOUND:
@@ -120,10 +119,7 @@ class Group(object):
         if isinstance(group, Group):
             group = group.name
 
-        params = {'group': group}
-        path = '/%s/groups/' % self.name
-
-        resp = self._post(path, params)
+        resp = self.conn.post('/groups/%s/groups/' % self.name, {'group': group})
         if resp.status == http.NO_CONTENT:
             return
         elif resp.status == http.NOT_FOUND:
@@ -142,8 +138,7 @@ class Group(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        path = '/%s/groups/' % self.name
-        resp = self._get(path)
+        resp = self.conn.get('/groups//%s/groups/' % self.name)
         if resp.status == http.OK:
             names = self.conn.content_handler.unmarshal_list(resp.read())
             return [Group(self.conn, name) for name in names]
@@ -167,8 +162,7 @@ class Group(object):
         if isinstance(group, Group):
             group = group.name
 
-        path = '/%s/groups/%s/' % (self.name, group)
-        resp = self._delete(path)
+        resp = self.conn.delete('/groups/%s/groups/%s/' % (self.name, group))
         if resp.status == http.NO_CONTENT:
             return
         elif resp.status == http.NOT_FOUND:
@@ -185,7 +179,7 @@ class Group(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        resp = self._delete(self.name)
+        resp = self.conn.delete('/groups/%s' % self.name)
         if resp.status == http.NO_CONTENT:
             return
         elif resp.status == http.NOT_FOUND:
@@ -210,8 +204,7 @@ class Group(object):
         if isinstance(user, User):
             user = user.name
 
-        path = '/%s/users/%s/' % (self.name, user)
-        resp = self._get(path)
+        resp = self.conn.get('/groups/%s/users/%s/' % (self.name, user))
         if resp.status == http.NO_CONTENT:
             return True
         elif resp.status == http.NOT_FOUND:
@@ -234,8 +227,7 @@ class Group(object):
         if isinstance(user, User):
             user = user.name
 
-        path = '/%s/users/%s/' % (self.name, user)
-        resp = self._delete(path)
+        resp = self.conn.delete('/groups/%s/users/%s/' % (self.name, user))
         if resp.status == http.NO_CONTENT:
             return
         elif resp.status == http.NOT_FOUND:
@@ -263,7 +255,7 @@ class Group(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        resp = conn.post(Group.prefix, {'group': name})
+        resp = conn.post('/groups/', {'group': name})
         if resp.status == http.CREATED:
             return Group(conn, name)
         elif resp.status == http.CONFLICT:
@@ -284,7 +276,7 @@ class Group(object):
         .. NOTE:: Invoking this method cannot guarantee that actually creating this group will work
            in the future, i.e. it may have been created by another client in the meantime.
         """
-        resp = conn.post('/test/%s/' % Group.prefix, {'group': name})
+        resp = conn.post('/test/groups/', {'group': name})
         if resp.status == http.CREATED:
             return True
         elif resp.status == http.CONFLICT:
@@ -326,7 +318,7 @@ class Group(object):
 
             params['user'] = user
 
-        resp = conn.get(Group.prefix, params)
+        resp = conn.get('/groups', params)
         if resp.status == http.OK:
             names = conn.content_handler.unmarshal_list(resp.read())
             if flat is True:
@@ -357,7 +349,7 @@ class Group(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        resp = conn.get('%s%s' % (Group.prefix, name))
+        resp = conn.get('/groups/%s' % name)
         if resp.status == http.NO_CONTENT:
             return Group(conn, name)
         elif resp.status == http.NOT_FOUND:
