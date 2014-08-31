@@ -59,7 +59,7 @@ class BasicTests(RestAuthClientTestCase):
                 pass
 
     def test_wrongHost(self):
-        conn = RestAuthConnection('http://[:2]:8003', 'wrong', 'credentials')
+        conn = RestAuthConnection('http://[:2]:8003', 'wrong', 'credentials', timeout=1.0)
         try:
             RestAuthUser.get(conn, 'foobar')
             self.fail()
