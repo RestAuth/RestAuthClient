@@ -66,7 +66,7 @@ class RestAuthUser(object):
         params = {}
         if password:
             params['password'] = password
-        resp = self.conn.put('/users/%s' % self.name, params)
+        resp = self.conn.put('/users/%s/' % self.name, params)
         if resp.status == http.NO_CONTENT:
             return
         elif resp.status == http.NOT_FOUND:
@@ -93,7 +93,7 @@ class RestAuthUser(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500.
         :raise UnknownStatus: If the response status is unknown.
         """
-        resp = self.conn.post('/users/%s' % self.name, {'password': password})
+        resp = self.conn.post('/users/%s/' % self.name, {'password': password})
         if resp.status == http.NO_CONTENT:
             return True
         elif resp.status == http.NOT_FOUND:
@@ -110,7 +110,7 @@ class RestAuthUser(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500.
         :raise UnknownStatus: If the response status is unknown.
         """
-        resp = self.conn.delete('/users/%s' % self.name)
+        resp = self.conn.delete('/users/%s/' % self.name)
         if resp.status == http.NO_CONTENT:
             return
         if resp.status == http.NOT_FOUND:
@@ -267,7 +267,7 @@ class RestAuthUser(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500.
         :raise UnknownStatus: If the response status is unknown.
         """
-        resp = self.conn.get('/users/%s/props/%s' % (self.name, prop))
+        resp = self.conn.get('/users/%s/props/%s/' % (self.name, prop))
         if resp.status == http.OK:
             return self.conn.content_handler.unmarshal_str(resp.read())
         elif resp.status == http.NOT_FOUND:
@@ -284,7 +284,7 @@ class RestAuthUser(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500.
         :raise UnknownStatus: If the response status is unknown.
         """
-        resp = self.conn.delete('/users/%s/props/%s' % (self.name, prop))
+        resp = self.conn.delete('/users/%s/props/%s/' % (self.name, prop))
         if resp.status == http.NO_CONTENT:
             return
         elif resp.status == http.NOT_FOUND:
