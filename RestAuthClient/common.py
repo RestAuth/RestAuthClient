@@ -233,8 +233,6 @@ class RestAuthConnection(object):
     def _sanitize_url(self, url):
         # make sure that it starts and ends with /, cut double-slashes:
         url = '%s/' % os.path.normpath(url)
-        if not url.startswith('/'):  # pragma: no cover
-            url = '/%s' % url
 
         if PY3 is False and url.__class__ == unicode:  # pragma: py2
             url = url.encode('utf-8')  # encode utf-8 in python 2.x
