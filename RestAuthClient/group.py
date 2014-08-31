@@ -389,6 +389,7 @@ class RestAuthGroup(object):
             return '<Group: {0}>'.format(self.name)
 
 
+# provide compatability with old paths:
 warnings = None
 
 
@@ -406,7 +407,7 @@ def create(*args, **kwargs):  # pragma: no cover
     global warnings
     if warnings is None:
         import warnings
-    warnings.warn("Module function deprecated, use RestAuthGroup.create instead.")
+    warnings.warn("Deprecated function, use RestAuthGroup.create instead.")
     return RestAuthGroup.create(*args, **kwargs)
 
 
@@ -414,7 +415,7 @@ def create_test(*args, **kwargs):  # pragma: no cover
     global warnings
     if warnings is None:
         import warnings
-    warnings.warn("Module function deprecated, use RestAuthGroup.create_test instead.")
+    warnings.warn("Deprecated function, use RestAuthGroup.create_test instead.")
     return RestAuthGroup.create_test(*args, **kwargs)
 
 
@@ -422,7 +423,7 @@ def get(*args, **kwargs):  # pragma: no cover
     global warnings
     if warnings is None:
         import warnings
-    warnings.warn("Module function deprecated, use RestAuthGroup.get instead.")
+    warnings.warn("Deprecated function, use RestAuthGroup.get instead.")
     return RestAuthGroup.get(*args, **kwargs)
 
 
@@ -430,5 +431,5 @@ def get_all(*args, **kwargs):  # pragma: no cover
     global warnings
     if warnings is None:
         import warnings
-    warnings.warn("Module function deprecated, use Group.get_all instead.")
+    warnings.warn("Deprecated function, use RestAuthGroup.get_all instead.")
     return RestAuthGroup.get_all(*args, **kwargs)
