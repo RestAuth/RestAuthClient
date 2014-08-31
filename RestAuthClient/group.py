@@ -99,7 +99,7 @@ class Group(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        if isinstance(user, self.conn._user):
+        if hasattr(user, 'name'):
             user = user.name
 
         resp = self.conn.post('/groups/%s/users/' % self.name, {'user': user})
@@ -125,7 +125,7 @@ class Group(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        if isinstance(group, Group):
+        if hasattr(group, 'name'):
             group = group.name
 
         resp = self.conn.post('/groups/%s/groups/' % self.name, {'group': group})
@@ -180,7 +180,7 @@ class Group(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        if isinstance(group, Group):
+        if hasattr(group, 'name'):
             group = group.name
 
         resp = self.conn.delete('/groups/%s/groups/%s/' % (self.name, group))
@@ -222,7 +222,7 @@ class Group(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        if isinstance(user, self.conn._user):
+        if hasattr(user, 'name'):
             user = user.name
 
         resp = self.conn.get('/groups/%s/users/%s/' % (self.name, user))
@@ -245,7 +245,7 @@ class Group(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        if isinstance(user, self.conn._user):
+        if hasattr(user, 'name'):
             user = user.name
 
         resp = self.conn.delete('/groups/%s/users/%s/' % (self.name, user))
@@ -334,7 +334,7 @@ class Group(object):
         """
         params = {}
         if user:
-            if isinstance(user, conn._user):
+            if hasattr(user, 'name'):
                 user = user.name
 
             params['user'] = user

@@ -324,7 +324,7 @@ class User(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500.
         :raise UnknownStatus: If the response status is unknown.
         """
-        if isinstance(grp, str) or (PY3 is False and isinstance(grp, unicode)):
+        if not hasattr(grp, 'name'):
             grp = self.conn._group(self.conn, grp)
         return grp.is_member(self.name)
 
@@ -343,7 +343,7 @@ class User(object):
         :raise InternalServerError: When the RestAuth server returns HTTP status code 500.
         :raise UnknownStatus: If the response status is unknown.
         """
-        if isinstance(grp, str) or (PY3 is False and isinstance(grp, unicode)):
+        if not hasattr(grp, 'name'):
             grp = self.conn._group(self.conn, grp)
         grp.add_user(self.name)
 
@@ -361,7 +361,7 @@ class User(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500.
         :raise UnknownStatus: If the response status is unknown.
         """
-        if isinstance(grp, str) or (PY3 is False and isinstance(grp, unicode)):
+        if not hasattr(grp, 'name'):
             grp = self.conn._group(self.conn, grp)
         grp.remove_user(self.name)
 
