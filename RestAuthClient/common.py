@@ -82,7 +82,7 @@ class RestAuthConnection(object):
           loaded by :py:meth:`~ssl.set_default_verify_paths`.
     :type      ssl_context: :py:class:`~ssl.SSLContext`
     :param         timeout: Timeout for HTTP connections. If omitted, use the systems default.
-    :type          timeout: int
+    :type          timeout: float
     :param  source_address: A tuple of ``(host, port)`` to make connections from.
     :type   source_address: tuple
     """
