@@ -66,3 +66,28 @@ RestAuthCommon documentation.
 
 RestAuthClient provides a view additional exceptions that only make sense at the client side. Please
 see the :py:mod:`error module <RestAuthClient.error>` for more documentation.
+
+Upgrade
+-------
+
+0.6.2
+_____
+
+Many module and class names changed for consistency. Wrappers for the old class
+names are provided, so you shouldn't run into immediate problems. It is non the
+less advised to upgrade to the new module paths::
+
+   # old imports:
+   #from RestAuthClient.restauth_user import User
+   #from RestAuthClient.group import Group
+
+   # new imports:
+   from RestAuthClient.user import RestAuthUser
+   from RestAuthClient.group import RestAuthGroup
+
+   # factory functions are now class functions, so instead of:
+   #restauth_user.get(...)
+
+   # ... use new class-level functions:
+   RestAuthUser.get(...)
+
