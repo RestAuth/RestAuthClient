@@ -377,7 +377,7 @@ class User(object):
             effectively disabled.
         :type  password: str
         :return: The user object representing the user just created.
-        :rtype: :py:class:`~.restauth_user.User`
+        :rtype: :py:class:`~.user.User`
 
         :raise BadRequest: If the server was unable to parse the request body.
         :raise Unauthorized: When the connection uses wrong credentials.
@@ -444,7 +444,7 @@ class User(object):
         :param name: Name of the user to get
         :type  name: str
         :return: The user object representing the user just created.
-        :rtype: :py:class:`~.restauth_user.User`
+        :rtype: :py:class:`~.user.User`
 
         :raise Unauthorized: When the connection uses wrong credentials.
         :raise Forbidden: When the client is not allowed to perform this action.
@@ -475,7 +475,7 @@ class User(object):
             instances.
         :type  flat: bool
         :return: A list of User objects or str, if ``flat=True``.
-        :rtype: [:py:class:`~.restauth_user.User` or str]
+        :rtype: [:py:class:`~.user.User` or str]
 
         :raise Unauthorized: When the connection uses wrong credentials.
         :raise Forbidden: When the client is not allowed to perform this action.

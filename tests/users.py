@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from RestAuthClient.error import UserExists
 from RestAuthClient.error import PropertyExists
-from RestAuthClient.restauth_user import User
+from RestAuthClient.user import User
 from RestAuthClient.group import Group
 from RestAuthCommon import error
 

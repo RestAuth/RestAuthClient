@@ -16,4 +16,4 @@
 # along with RestAuth.  If not, see <http://www.gnu.org/licenses/>.
 
 version = '0.6.1'
-__all__ = ['common', 'error', 'restauth_user', 'group', 'content_types']
+__all__ = ['common', 'error', 'user', 'group', 'content_types']

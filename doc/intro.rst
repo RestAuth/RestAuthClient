@@ -5,7 +5,7 @@ The **RestAuthClient** library consists of four modules, each containing one imp
 
 * :py:mod:`~RestAuthClient.common` contains :py:class:`~.common.RestAuthConnection` which represents
   a connection to a RestAuth service.
-* :py:mod:`~RestAuthClient.restauth_user` contains the :py:class:`~.restauth_user.User` class which
+* :py:mod:`~RestAuthClient.user` contains the :py:class:`~.user.User` class which
   represents a user in the RestAuth service.
 * :py:mod:`~RestAuthClient.group` contains the :py:class:`~.group.Group` class which represents a
   group in the RestAuth service.
@@ -22,7 +22,7 @@ exceptions used in this library.
 .. code-block:: python
 
    from RestAuthClient.common import Connection
-   from RestAuthClient.restauth_user import User
+   from RestAuthClient.user import User
    from RestAuthClient.group import Group
 
    # create a connection to the RestAuth service. The service must already be configured using the

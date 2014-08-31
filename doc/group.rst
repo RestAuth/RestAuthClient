@@ -2,12 +2,12 @@ group - group handling
 ======================
 
 The **group** module includes all code relevant to group management. Just like the
-:doc:`restauth_user <restauth_user>` module, the module contains factory methods (:py:meth:`~.Group.get`,
+:doc:`user <user>` module, the module contains factory methods (:py:meth:`~.Group.get`,
 :py:meth:`~.Group.get_all` or :py:meth:`~.Group.create`) and the :py:class:`.Group` class that
 offers an interface for managing a group.
 
 Just like with users, it is recommended to instantiate a :py:class:`.Group` object directly if
-performance is critical. Please see the :doc:`restauth_user <restauth_user>` module for an analogous
+performance is critical. Please see the :doc:`user <user>` module for an analogous
 example.
 
 API documentation

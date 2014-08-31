@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from operator import attrgetter
 
 from RestAuthClient.error import GroupExists
-from RestAuthClient.restauth_user import User
+from RestAuthClient.user import User
 from RestAuthClient.group import Group
 
 from RestAuthCommon import error

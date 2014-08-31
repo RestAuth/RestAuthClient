@@ -1,7 +1,7 @@
-restauth_user - user handling
-=============================
+user - user handling
+====================
 
-The **restauth_user** module includes all code related to user management. You can use one of the
+The **user** module includes all code related to user management. You can use one of the
 factory methods (:py:meth:`~.User.get`, :py:meth:`~.User.get_all` or :py:meth:`~.User.create`) to
 retreive an instance or a list of instances of the :py:class:`User class <.User>`.
 
@@ -15,7 +15,7 @@ handler.
 .. code-block:: python
 
    from RestAuthClient.common import RestAuthClient
-   from RestAuthClient.restauth_user import User
+   from RestAuthClient.user import User
    conn = RestAuthConnection('https://auth.example.com', 'service', 'password')
 
    # this is two requests:
@@ -29,5 +29,5 @@ handler.
 API documentation
 -----------------
 
-.. automodule:: RestAuthClient.restauth_user
+.. automodule:: RestAuthClient.user
    :members:

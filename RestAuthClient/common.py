@@ -47,7 +47,7 @@ from RestAuthCommon.handlers import CONTENT_HANDLERS
 from RestAuthCommon.handlers import ContentHandler
 from RestAuthCommon.handlers import JSONContentHandler
 from RestAuthClient.error import HttpException
-from RestAuthClient.restauth_user import User
+from RestAuthClient.user import User
 from RestAuthClient.group import Group
 
 

@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from RestAuthClient.common import RestAuthConnection
 from RestAuthClient.error import HttpException
-from RestAuthClient.restauth_user import User
+from RestAuthClient.user import User
 from RestAuthCommon import error
 
 from RestAuthCommon.handlers import ContentHandler

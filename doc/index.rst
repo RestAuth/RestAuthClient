@@ -38,7 +38,7 @@ API documentation
    :maxdepth: 1
 
    common
-   restauth_user
+   user
    group
    errors
 
