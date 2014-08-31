@@ -25,10 +25,12 @@ from RestAuthClient.error import UnknownStatus
 
 from RestAuthCommon import error
 
-if sys.version_info < (3, 0):
-    import httplib as http
-else:  # pragma: no cover
+if sys.version_info > (3, 0):  # pragma: py3
+    PY3 = True
     from http import client as http
+else:  # pragma: py2
+    PY3 = False
+    import httplib as http
 
 
 class Group(object):
@@ -384,7 +386,7 @@ class Group(object):
         return self.name == other.name and self.conn == other.conn
 
     def __repr__(self):  # pragma: no cover
-        if sys.version_info < (3, 0) and isinstance(self.name, unicode):
+        if PY3 is False and isinstance(self.name, unicode):
             return '<Group: {0}>'.format(self.name.encode('utf-8'))
         else:
             return '<Group: {0}>'.format(self.name)
