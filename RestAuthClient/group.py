@@ -20,7 +20,6 @@
 
 import sys
 
-from RestAuthClient.restauth_user import User
 from RestAuthClient.error import GroupExists
 from RestAuthClient.error import UnknownStatus
 
@@ -77,7 +76,7 @@ class Group(object):
             if flat is True:
                 return names
             else:
-                return [User(self.conn, name) for name in names]
+                return [self.conn._user(self.conn, name) for name in names]
         elif resp.status == http.NOT_FOUND:
             raise error.ResourceNotFound(resp)
         else:  # pragma: no cover
@@ -98,7 +97,7 @@ class Group(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        if isinstance(user, User):
+        if isinstance(user, self.conn._user):
             user = user.name
 
         resp = self.conn.post('/groups/%s/users/' % self.name, {'user': user})
@@ -221,7 +220,7 @@ class Group(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        if isinstance(user, User):
+        if isinstance(user, self.conn._user):
             user = user.name
 
         resp = self.conn.get('/groups/%s/users/%s/' % (self.name, user))
@@ -244,7 +243,7 @@ class Group(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500
         :raise UnknownStatus: If the response status is unknown.
         """
-        if isinstance(user, User):
+        if isinstance(user, self.conn._user):
             user = user.name
 
         resp = self.conn.delete('/groups/%s/users/%s/' % (self.name, user))
@@ -333,7 +332,7 @@ class Group(object):
         """
         params = {}
         if user:
-            if isinstance(user, User):
+            if isinstance(user, conn._user):
                 user = user.name
 
             params['user'] = user
