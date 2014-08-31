@@ -49,7 +49,7 @@ from RestAuthCommon.handlers import JSONContentHandler
 from RestAuthClient.error import HttpException
 
 
-class RestAuthConnection:
+class RestAuthConnection(object):
     """An instance of this class represents a connection to a RestAuth service.
 
     .. NOTE: The constructor does not verify that the connection actually works. Since HTTP is
@@ -378,42 +378,3 @@ class RestAuthConnection:
     def __eq__(self, other):
         return self._conn == other._conn and self._conn_kwargs == other._conn_kwargs and \
             self.auth_header == other.auth_header
-
-
-class RestAuthResource:
-    """
-    Superclass for :py:class:`~.User` and :py:class:`~.Group` objects. The private methods of this
-    class do nothing but prefix all request URLs with the prefix of that class (i.e. /users/).
-    """
-
-    def _get(self, url, params=None, headers=None):
-        """
-        Internal method that prefixes a GET request with the resource name and passes the request
-        to :py:meth:`RestAuthConnection.get`.
-        """
-        url = '%s%s' % (self.__class__.prefix, url)
-        return self.conn.get(url, params, headers)
-
-    def _post(self, url, params, headers=None):
-        """
-        Internal method that prefixes a POST request with the resources name and passes the request
-        to :py:meth:`RestAuthConnection.post`.
-        """
-        url = '%s%s' % (self.__class__.prefix, url)
-        return self.conn.post(url, params, headers)
-
-    def _put(self, url, params, headers=None):
-        """
-        Internal method that prefixes a PUT request with the resources name and passes the request
-        to :py:meth:`RestAuthConnection.put`.
-        """
-        url = '%s%s' % (self.__class__.prefix, url)
-        return self.conn.put(url, params, headers)
-
-    def _delete(self, url, headers=None):
-        """
-        Internal method that prefixes a DELETE request with the resources name and passes the
-        request to :py:meth:`RestAuthConnection.delete`.
-        """
-        url = '%s%s' % (self.__class__.prefix, url)
-        return self.conn.delete(url, headers)
