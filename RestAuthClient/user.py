@@ -507,27 +507,3 @@ class RestAuthUser(object):
             return '<User: {0}>'.format(self.name.encode('utf-8'))
         else:
             return '<User: {0}>'.format(self.name)
-
-
-def create(*args, **kwargs):  # pragma: no cover
-    import warnings
-    warnings.warn("Module function deprecated, use RestAuthUser.create instead.")
-    return RestAuthUser.create(*args, **kwargs)
-
-
-def create_test(*args, **kwargs):  # pragma: no cover
-    import warnings
-    warnings.warn("Module function deprecated, use RestAuthUser.create_test instead.")
-    return RestAuthUser.create_test(*args, **kwargs)
-
-
-def get(*args, **kwargs):  # pragma: no cover
-    import warnings
-    warnings.warn("Module function deprecated, use RestAuthUser.get instead.")
-    return RestAuthUser.get(*args, **kwargs)
-
-
-def get_all(*args, **kwargs):  # pragma: no cover
-    import warnings
-    warnings.warn("Module function deprecated, use RestAuthUser.get_all instead.")
-    return RestAuthUser.get_all(*args, **kwargs)
