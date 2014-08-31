@@ -91,3 +91,14 @@ less advised to upgrade to the new module paths::
    # ... use new class-level functions:
    RestAuthUser.get(...)
 
+Additionally, all functions that return a list of Users or Groups now have an
+optional ``flat`` parameter which returns a list of user/groupnames as str
+instead. So if you want a list of all usernames, you can now do::
+
+   # old:
+   #from RestAuthClient.restauth_user import get_all
+   #users = [u.name for u in get_all(conn)]
+
+   # new:
+   from RestAuthClient.user import User
+   users = User.get_all(flat=True)
