@@ -49,11 +49,17 @@ class Group(object):
         self.conn = conn
         self.name = name
 
-    def get_members(self):
+    def get_members(self, flat=False):
         """Get all members of this group.
 
-        :return: A list of :py:class:`users <.User>`.
-        :rtype: list
+        .. versionadded:: 0.6.2
+           The ``flat`` parameter.
+
+        :param flat: If True, return a list group names as str instead of a list of Group
+            instances.
+        :type  flat: bool
+        :return: A list of Group objects or a list of str if ``flat=True``
+        :rtype: [:py:class:`groups <.Group>` or str]
 
         :raise Unauthorized: When the connection uses wrong credentials.
         :raise Forbidden: When the client is not allowed to perform this action.
@@ -68,8 +74,10 @@ class Group(object):
         if resp.status == http.OK:
             # parse user-list:
             names = self.conn.content_handler.unmarshal_list(resp.read())
-            users = [User(self.conn, name) for name in names]
-            return users
+            if flat is True:
+                return names
+            else:
+                return [User(self.conn, name) for name in names]
         elif resp.status == http.NOT_FOUND:
             raise error.ResourceNotFound(resp)
         else:  # pragma: no cover
@@ -127,8 +135,17 @@ class Group(object):
         else:  # pragma: no cover
             raise UnknownStatus(resp)
 
-    def get_groups(self):
+    def get_groups(self, flat=False):
         """Get a list of sub-groups of this group.
+
+        .. versionadded:: 0.6.2
+           The ``flat`` parameter.
+
+        :param flat: If True, return a list group names as str instead of a list of Group
+            instances.
+        :type  flat: bool
+        :return: A list of Group objects or a list of str if ``flat=True``
+        :rtype: [:py:class:`groups <.Group>` or str]
 
         :raise Unauthorized: When the connection uses wrong credentials.
         :raise Forbidden: When the client is not allowed to perform this action.
@@ -141,7 +158,10 @@ class Group(object):
         resp = self.conn.get('/groups//%s/groups/' % self.name)
         if resp.status == http.OK:
             names = self.conn.content_handler.unmarshal_list(resp.read())
-            return [Group(self.conn, name) for name in names]
+            if flat is True:
+                return names
+            else:
+                return [Group(self.conn, name) for name in names]
         elif resp.status == http.NOT_FOUND:
             raise error.ResourceNotFound(resp)
         else:  # pragma: no cover
@@ -297,8 +317,8 @@ class Group(object):
         :type  conn: :py:class:`.RestAuthConnection`
         :param user: Only return groups where the named user is a member
         :type  user: str
-        :param flat: If True, only return a list of group names as str, not of
-            :py:class:`~.groups.Group` objects.
+        :param flat: If True, return a list group names as str instead of a list of Group
+            instances.
         :type  flat: bool
         :return: A list of Group objects or a list of str if ``flat=True``
         :rtype: [:py:class:`groups <.Group>` or str]
