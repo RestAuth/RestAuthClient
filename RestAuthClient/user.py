@@ -471,8 +471,8 @@ class RestAuthUser(object):
 
         :param conn: A connection to a RestAuth service.
         :type  conn: :py:class:`.RestAuthConnection`
-        :param flat: If True, return a list group names as str instead of a list of Group
-            instances.
+        :param flat: If True, return a list group names as str instead of a list of
+            :py:class:`.RestAuthGroup` instances.
         :type  flat: bool
         :return: A list of User objects or str, if ``flat=True``.
         :rtype: [:py:class:`~.user.RestAuthUser` or str]

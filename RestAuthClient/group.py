@@ -56,10 +56,10 @@ class RestAuthGroup(object):
         .. versionadded:: 0.6.2
            The ``flat`` parameter.
 
-        :param flat: If True, return a list group names as str instead of a list of Group
-            instances.
+        :param flat: If True, return a list group names as str instead of a list of
+            :py:class:`.RestAuthGroup` instances.
         :type  flat: bool
-        :return: A list of Group objects or a list of str if ``flat=True``
+        :return: A list of:py:class:`.RestAuthGroup` objects or a list of str if ``flat=True``.
         :rtype: [:py:class:`groups <.RestAuthGroup>` or str]
 
         :raise Unauthorized: When the connection uses wrong credentials.
@@ -67,7 +67,7 @@ class RestAuthGroup(object):
         :raise ResourceNotFound: If the group does not exist.
         :raise NotAcceptable: When the server cannot generate a response in the content type used
             by this connection (see also: :py:meth:`~.RestAuthConnection.set_content_handler`).
-        :raise InternalServerError: When the RestAuth service returns HTTP status code 500
+        :raise InternalServerError: When the RestAuth service returns HTTP status code 500.
         :raise UnknownStatus: If the response status is unknown.
         """
         resp = self.conn.get('/groups/%s/users/' % self.name)
@@ -96,7 +96,7 @@ class RestAuthGroup(object):
         :raise ResourceNotFound: If the group or user does not exist.
         :raise UnsupportedMediaType: The server does not support the content type used by this
             connection (see also: :py:meth:`~.RestAuthConnection.set_content_handler`).
-        :raise InternalServerError: When the RestAuth service returns HTTP status code 500
+        :raise InternalServerError: When the RestAuth service returns HTTP status code 500.
         :raise UnknownStatus: If the response status is unknown.
         """
         if hasattr(user, 'name'):
@@ -122,7 +122,7 @@ class RestAuthGroup(object):
         :raise ResourceNotFound: If the group or user does not exist.
         :raise UnsupportedMediaType: The server does not support the content type used by this
             connection (see also: :py:meth:`~.RestAuthConnection.set_content_handler`).
-        :raise InternalServerError: When the RestAuth service returns HTTP status code 500
+        :raise InternalServerError: When the RestAuth service returns HTTP status code 500.
         :raise UnknownStatus: If the response status is unknown.
         """
         if hasattr(group, 'name'):
@@ -142,18 +142,18 @@ class RestAuthGroup(object):
         .. versionadded:: 0.6.2
            The ``flat`` parameter.
 
-        :param flat: If True, return a list group names as str instead of a list of Group
-            instances.
+        :param flat: If True, return a list group names as str instead of a list of
+            :py:class:`.RestAuthGroup` instances.
         :type  flat: bool
-        :return: A list of Group objects or a list of str if ``flat=True``
-        :rtype: [:py:class:`groups <.RestAuthGroup>` or str]
+        :return: A list of :py:class:`.RestAuthGroup` objects or a list of str if ``flat=True``
+        :rtype: [:py:class:`.RestAuthGroup` or str]
 
         :raise Unauthorized: When the connection uses wrong credentials.
         :raise Forbidden: When the client is not allowed to perform this action.
         :raise ResourceNotFound: If the sub- or meta-group not exist.
         :raise NotAcceptable: When the server cannot generate a response in the content type used
             by this connection (see also: :py:meth:`~.RestAuthConnection.set_content_handler`).
-        :raise InternalServerError: When the RestAuth service returns HTTP status code 500
+        :raise InternalServerError: When the RestAuth service returns HTTP status code 500.
         :raise UnknownStatus: If the response status is unknown.
         """
         resp = self.conn.get('/groups//%s/groups/' % self.name)
@@ -177,7 +177,7 @@ class RestAuthGroup(object):
         :raise Unauthorized: When the connection uses wrong credentials.
         :raise Forbidden: When the client is not allowed to perform this action.
         :raise ResourceNotFound: If the sub- or meta-group not exist.
-        :raise InternalServerError: When the RestAuth service returns HTTP status code 500
+        :raise InternalServerError: When the RestAuth service returns HTTP status code 500.
         :raise UnknownStatus: If the response status is unknown.
         """
         if hasattr(group, 'name'):
@@ -197,7 +197,7 @@ class RestAuthGroup(object):
         :raise Unauthorized: When the connection uses wrong credentials.
         :raise Forbidden: When the client is not allowed to perform this action.
         :raise ResourceNotFound: If the group does not exist.
-        :raise InternalServerError: When the RestAuth service returns HTTP status code 500
+        :raise InternalServerError: When the RestAuth service returns HTTP status code 500.
         :raise UnknownStatus: If the response status is unknown.
         """
         resp = self.conn.delete('/groups/%s' % self.name)
@@ -219,7 +219,7 @@ class RestAuthGroup(object):
         :raise Unauthorized: When the connection uses wrong credentials.
         :raise Forbidden: When the client is not allowed to perform this action.
         :raise ResourceNotFound: If the group or user does not exist.
-        :raise InternalServerError: When the RestAuth service returns HTTP status code 500
+        :raise InternalServerError: When the RestAuth service returns HTTP status code 500.
         :raise UnknownStatus: If the response status is unknown.
         """
         if hasattr(user, 'name'):
@@ -242,7 +242,7 @@ class RestAuthGroup(object):
         :raise Unauthorized: When the connection uses wrong credentials.
         :raise Forbidden: When the client is not allowed to perform this action.
         :raise ResourceNotFound: If the group or user does not exist.
-        :raise InternalServerError: When the RestAuth service returns HTTP status code 500
+        :raise InternalServerError: When the RestAuth service returns HTTP status code 500.
         :raise UnknownStatus: If the response status is unknown.
         """
         if hasattr(user, 'name'):
@@ -265,7 +265,7 @@ class RestAuthGroup(object):
         :param name: The name of the group to create
         :type  name: str
         :return: The group object representing the group just created.
-        :rtype: Group
+        :rtype: :py:class:`.RestAuthGroup`
 
         :raise BadRequest: If the server was unable to parse the request body.
         :raise Unauthorized: When the connection uses wrong credentials.
@@ -273,7 +273,7 @@ class RestAuthGroup(object):
         :raise GroupExists: When the user already exists.
         :raise UnsupportedMediaType: The server does not support the content type used by this
             connection (see also: :py:meth:`~.RestAuthConnection.set_content_handler`).
-        :raise InternalServerError: When the RestAuth service returns HTTP status code 500
+        :raise InternalServerError: When the RestAuth service returns HTTP status code 500.
         :raise UnknownStatus: If the response status is unknown.
         """
         resp = conn.post('/groups/', {'group': name})
@@ -318,18 +318,18 @@ class RestAuthGroup(object):
         :type  conn: :py:class:`.RestAuthConnection`
         :param user: Only return groups where the named user is a member
         :type  user: str
-        :param flat: If True, return a list group names as str instead of a list of Group
-            instances.
+        :param flat: If True, return a list group names as str instead of a list of
+            :py:class:`RestAuthGroup` instances.
         :type  flat: bool
-        :return: A list of Group objects or a list of str if ``flat=True``
-        :rtype: [:py:class:`groups <.RestAuthGroup>` or str]
+        :return: A list of :py:class:`RestAuthGroup` objects or a list of str if ``flat=True``
+        :rtype: [:py:class:`.RestAuthGroup` or str]
 
         :raise Unauthorized: When the connection uses wrong credentials.
         :raise Forbidden: When the client is not allowed to perform this action.
         :raise ResourceNotFound: When the given user does not exist.
         :raise NotAcceptable: When the server cannot generate a response in the content type used
             by this connection (see also: :py:meth:`~.RestAuthConnection.set_content_handler`).
-        :raise InternalServerError: When the RestAuth service returns HTTP status code 500
+        :raise InternalServerError: When the RestAuth service returns HTTP status code 500.
         :raise UnknownStatus: If the response status is unknown.
         """
         params = {}
@@ -367,7 +367,7 @@ class RestAuthGroup(object):
         :raise Unauthorized: When the connection uses wrong credentials.
         :raise Forbidden: When the client is not allowed to perform this action.
         :raise ResourceNotFound: If the group does not exist.
-        :raise InternalServerError: When the RestAuth service returns HTTP status code 500
+        :raise InternalServerError: When the RestAuth service returns HTTP status code 500.
         :raise UnknownStatus: If the response status is unknown.
         """
         resp = conn.get('/groups/%s' % name)
