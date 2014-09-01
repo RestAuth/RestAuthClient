@@ -165,6 +165,7 @@ class RestAuthConnection(object):
                 raise RuntimeError("Unknown content_handler: %s" % content_handler)
 
             self.content_handler = cl()
+        self.mime = self.content_handler.mime
 
     def send(self, method, url, body=None, headers=None):
         """
@@ -197,7 +198,7 @@ class RestAuthConnection(object):
             headers = {}
 
         headers['Authorization'] = self.auth_header
-        headers['Accept'] = self.content_handler.mime
+        headers['Accept'] = self.mime
 
         conn = self._conn(**self._conn_kwargs)
 
@@ -301,7 +302,7 @@ class RestAuthConnection(object):
         if headers is None:
             headers = {}
 
-        headers['Content-Type'] = self.content_handler.mime
+        headers['Content-Type'] = self.mime
         body = self.content_handler.marshal_dict(params)
         url = self._sanitize_url(url)
         response = self.send('POST', url, body, headers)
@@ -343,7 +344,7 @@ class RestAuthConnection(object):
         if headers is None:
             headers = {}
 
-        headers['Content-Type'] = self.content_handler.mime
+        headers['Content-Type'] = self.mime
         body = self.content_handler.marshal_dict(params)
         url = self._sanitize_url(url)
         response = self.send('PUT', url, body, headers)
