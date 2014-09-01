@@ -315,6 +315,13 @@ class PropertyTests(PropertyBaseTests):
             self.assertNotEqual(user, self.user)
             self.assertEqual([self.user], RestAuthUser.get_all(self.conn))
 
+    def test_createInvalidProperty2(self):
+        try:
+            self.user.set_property('foo\\bar', 'value')
+            self.fail()
+        except error.PreconditionFailed:
+            self.assertProperties(**{})
+
     def test_setProperty(self):
         self.assertEqual(None, self.user.set_property(propKey, propVal))
         self.assertProperties(**{propKey: propVal})
@@ -475,6 +482,15 @@ class SetMultiplePropertyTests(PropertyBaseTests):
 
         self.user.set_properties(properties)
         self.assertProperties(**properties)
+
+    def test_invalidUser(self):
+        properties = {propKey1: propVal1}
+        user = RestAuthUser(self.conn, 'invalid')
+        try:
+            user.set_properties(properties)
+            self.fail()
+        except error.ResourceNotFound:
+            pass
 
 
 class SimpleUserGroupTests(RestAuthClientTestCase):
