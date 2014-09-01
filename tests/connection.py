@@ -11,8 +11,8 @@ from RestAuthCommon.handlers import ContentHandler
 from .base import RestAuthClientTestCase
 
 rest_host = 'http://[:1]:8000'
-rest_user = 'vowi'
-rest_passwd = 'vowi'
+rest_user = 'example.com'
+rest_passwd = 'nopass'
 
 # all paths in the restauth specification
 paths = [
@@ -121,3 +121,9 @@ class BasicTests(RestAuthClientTestCase):
             pass
         finally:
             user.remove()
+
+    def test_source_address(self):
+        # Real functionality is difficult to test, but at least we can verify that the arg works.
+        address = '127.0.0.1'
+        conn = RestAuthConnection(rest_host, 'wrong', 'credentials', source_address=address)
+        self.assertEqual(address, conn._conn_kwargs['source_address'])
