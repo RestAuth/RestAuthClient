@@ -127,3 +127,11 @@ class BasicTests(RestAuthClientTestCase):
         address = '127.0.0.1'
         conn = RestAuthConnection(rest_host, 'wrong', 'credentials', source_address=address)
         self.assertEqual(address, conn._conn_kwargs['source_address'])
+
+    def test_forbidden(self):
+        conn = RestAuthConnection(rest_host, 'example.net', 'nopass')
+        try:
+            RestAuthUser.get_all(conn)
+            self.fail()
+        except error.Forbidden:
+            pass
