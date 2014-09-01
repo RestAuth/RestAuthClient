@@ -25,8 +25,8 @@ class BasicTests(RestAuthClientTestCase):
     def setUp(self):
         super(BasicTests, self).setUp()
 
-        self.assertEqual([], RestAuthUser.get_all(self.conn))
-        self.assertEqual([], RestAuthGroup.get_all(self.conn))
+        self.assertEqual([], RestAuthUser.get_all(self.conn, flat=True))
+        self.assertEqual([], RestAuthGroup.get_all(self.conn, flat=True))
 
         self.users = [
             RestAuthUser.create(self.conn, username_1, "foobar"),
@@ -119,6 +119,17 @@ class BasicTests(RestAuthClientTestCase):
             self.fail()
         except error.ResourceNotFound as e:
             self.assertEqual("group", e.get_type())
+
+    def test_getMembersFlat(self):
+        grp = RestAuthGroup.create(self.conn, groupname_1)
+        self.assertEqual(grp.get_members(flat=True), [])
+
+        grp.add_user(self.users[0])
+        self.assertEqual(grp.get_members(flat=True), [self.users[0].name])
+
+        grp.add_user(self.users[1])
+        self.assertEqual(sorted(grp.get_members(flat=True)),
+                         sorted([self.users[0].name, self.users[1].name]))
 
     def test_removeUser(self):
         grp = RestAuthGroup.create(self.conn, groupname_1)
@@ -274,6 +285,12 @@ class MetaGroupTests(RestAuthClientTestCase):
         # see if grp2 is really a subgroup of grp1:
         self.assertEqual([self.grp2], self.grp1.get_groups())
         self.assertEqual([], self.grp2.get_groups())
+
+    def test_getGroupsFlat(self):
+        self.assertEqual(self.grp1.get_groups(flat=True), [])
+
+        self.grp1.add_group(self.grp2)
+        self.assertEqual(self.grp1.get_groups(flat=True), [self.grp2.name])
 
     def test_addInvalidGroup(self):
         grp3 = RestAuthGroup(self.conn, groupname_3 + "foo")

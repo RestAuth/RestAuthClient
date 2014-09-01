@@ -393,7 +393,7 @@ class RestAuthGroup(object):
 warnings = None
 
 
-class Group(RestAuthGroup):
+class Group(RestAuthGroup):  # pragma: no cover
     def __init__(self, *args, **kwargs):
         global warnings
         if warnings is None:
