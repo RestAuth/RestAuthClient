@@ -107,8 +107,7 @@ class BasicTests(RestAuthClientTestCase, PropertyTestMixin):
 
     def test_createInvalidUser(self):
         args = [self.conn, "foo/bar", "password"]
-        self.assertRaises(error.PreconditionFailed,
-                          RestAuthUser.create, *args)
+        self.assertRaises(error.PreconditionFailed, RestAuthUser.create, *args)
 
         self.assertEqual([], RestAuthUser.get_all(self.conn))
 
