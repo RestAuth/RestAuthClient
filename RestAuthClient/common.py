@@ -230,13 +230,6 @@ class RestAuthConnection(object):
 
         return urlencode(params).replace('+', '%20')
 
-    def _sanitize_url(self, url):
-        if PY3 is False and url.__class__ == unicode:  # pragma: py2
-            url = url.encode('utf-8')  # encode utf-8 in python 2.x
-
-        url = quote(url)
-        return url
-
     def get(self, url, params=None, headers=None):
         """
         Perform a GET request on the connection. This method takes care
@@ -265,7 +258,6 @@ class RestAuthConnection(object):
         if params is None:
             params = {}
 
-        url = self._sanitize_url(url)
         if params:
             url = '%s?%s' % (url, self._sanitize_qs(params))
 
@@ -304,7 +296,6 @@ class RestAuthConnection(object):
 
         headers['Content-Type'] = self.mime
         body = self.content_handler.marshal_dict(params)
-        url = self._sanitize_url(url)
         response = self.send('POST', url, body, headers)
         if response.status == client.BAD_REQUEST:
             raise error.BadRequest(response)
@@ -346,7 +337,6 @@ class RestAuthConnection(object):
 
         headers['Content-Type'] = self.mime
         body = self.content_handler.marshal_dict(params)
-        url = self._sanitize_url(url)
         response = self.send('PUT', url, body, headers)
         if response.status == client.BAD_REQUEST:
             raise error.BadRequest(response)
@@ -371,9 +361,20 @@ class RestAuthConnection(object):
             by this connection (see also: :py:meth:`.set_content_handler`).
         :raise InternalServerError: When the server has some internal error.
         """
-        url = self._sanitize_url(url)
         return self.send('DELETE', url, headers=headers)
+
 
     def __eq__(self, other):
         return self._conn == other._conn and self._conn_kwargs == other._conn_kwargs and \
             self.auth_header == other.auth_header
+
+    if PY3:
+        def quote(self, name):
+            return quote(name, safe='')
+
+    else:
+        def quote(self, name):
+            if isinstance(name, unicode):
+                name = name.encode('utf-8')
+            return quote(name, safe='')
+
