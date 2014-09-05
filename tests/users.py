@@ -514,10 +514,17 @@ class SimpleUserGroupTests(RestAuthClientTestCase):
         self.assertEqual([self.group], self.user.get_groups())
         self.assertEqual([self.group], RestAuthGroup.get_all(self.conn, self.user))
 
+    def test_addGroupClass(self):
+        self.user.add_group(self.group)
+        self.assertEqual([self.group], self.user.get_groups())
+        self.assertEqual([self.group], RestAuthGroup.get_all(self.conn, self.user))
+
     def test_inGroup(self):
         self.assertFalse(self.user.in_group(groupname))
+        self.assertFalse(self.user.in_group(self.group))
         self.user.add_group(groupname)
         self.assertTrue(self.user.in_group(groupname))
+        self.assertTrue(self.user.in_group(self.group))
 
     def test_removeGroup(self):
         self.assertFalse(self.user.in_group(groupname))
@@ -529,6 +536,18 @@ class SimpleUserGroupTests(RestAuthClientTestCase):
 
         self.user.remove_group(groupname)
         self.assertFalse(self.user.in_group(groupname))
+        self.assertEqual([], self.user.get_groups())
+
+    def test_removeGroupClass(self):
+        self.assertFalse(self.user.in_group(self.group))
+        self.assertEqual([], self.user.get_groups())
+
+        self.user.add_group(self.group)
+        self.assertTrue(self.user.in_group(self.group))
+        self.assertEqual([self.group], RestAuthGroup.get_all(self.conn, self.user))
+
+        self.user.remove_group(self.group)
+        self.assertFalse(self.user.in_group(self.group))
         self.assertEqual([], self.user.get_groups())
 
     def test_getGroupsInvalidUser(self):
