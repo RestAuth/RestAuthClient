@@ -70,7 +70,14 @@ class BasicTests(RestAuthClientTestCase):
         try:
             self.conn.set_content_handler('foo/bar')
             self.fail()
-        except RuntimeError:
+        except error.RestAuthRuntimeException:
+            pass
+
+        try:
+            # set a bullshit-object:
+            self.conn.set_content_handler(self.conn)
+            self.fail()
+        except error.RestAuthRuntimeException:
             pass
 
     def test_badRequestPost(self):
@@ -141,3 +148,21 @@ class BasicTests(RestAuthClientTestCase):
             self.fail()
         except error.Forbidden:
             pass
+
+    def test_quote(self):
+        self.assertEqual(self.conn.quote('foobar'), 'foobar')
+        self.assertEqual(self.conn.quote('foo bar'), 'foo%20bar')
+        self.assertEqual(self.conn.quote('foo/bar'), 'foo%2Fbar')
+        self.assertEqual(self.conn.quote('\u6109'), '%E6%84%89')
+
+        # casts to str in python2:
+        self.assertEqual(self.conn.quote(str('foobar')), 'foobar')
+
+    def test_qs(self):
+        self.assertEqual(self.conn._sanitize_qs({'foo': 'bar'}), 'foo=bar')
+        self.assertEqual(self.conn._sanitize_qs({'foo': 'foo bar'}), 'foo=foo%20bar')
+        self.assertEqual(self.conn._sanitize_qs({'foo': 'foo/bar'}), 'foo=foo%2Fbar')
+        self.assertEqual(self.conn._sanitize_qs({'foo': '\u6109'}), 'foo=%E6%84%89')
+
+        # casts to str in python2:
+        self.assertEqual(self.conn._sanitize_qs({str('foo'): str('bar')}), 'foo=bar')
