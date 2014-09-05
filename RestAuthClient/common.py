@@ -29,6 +29,7 @@ if sys.version_info >= (3, ):  # pragma: py3
     from urllib.parse import urlparse
 
     import ssl
+    basestring = str
 else:  # pragma: py2
     PY3 = False
     import httplib as client
@@ -158,7 +159,7 @@ class RestAuthConnection(object):
             self.content_handler = JSONContentHandler()
         elif isinstance(content_handler, ContentHandler):
             self.content_handler = content_handler
-        elif isinstance(content_handler, str) or isinstance(content_handler, unicode):
+        elif isinstance(content_handler, basestring):
             try:
                 cl = CONTENT_HANDLERS[content_handler]
             except KeyError:
