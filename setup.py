@@ -215,7 +215,10 @@ class coverage(Command):
         if not os.path.exists(coverage_path):
             os.makedirs(coverage_path)
 
-        cov = coverage.coverage(include='RestAuthClient/*')
+        cov = coverage.coverage(source=['RestAuthClient'], branch=True, omit=[
+            'RestAuthClient/__init__.py',
+            'RestAuthClient/restauth_user.py',
+        ])
 
         if PY3:
             cov.exclude(r'pragma: .*\bpy2\b')
