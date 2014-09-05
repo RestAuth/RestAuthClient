@@ -46,6 +46,13 @@ class RestAuthUser(object):
         self.conn = conn
         self.name = name
 
+        # just some shortcuts
+        self.get = conn.get
+        self.post = conn.post
+        self.put = conn.put
+        self.delete = conn.delete
+        self.quote = conn.quote
+
     def set_password(self, password=None):
         """Set the password of this user.
 
@@ -66,7 +73,7 @@ class RestAuthUser(object):
         params = {}
         if password:
             params['password'] = password
-        resp = self.conn.put('/users/%s/' % self.conn.quote(self.name), params)
+        resp = self.put('/users/%s/' % self.quote(self.name), params)
         if resp.status == http.NO_CONTENT:
             return
         elif resp.status == http.NOT_FOUND:
@@ -93,7 +100,7 @@ class RestAuthUser(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500.
         :raise UnknownStatus: If the response status is unknown.
         """
-        resp = self.conn.post('/users/%s/' % self.conn.quote(self.name), {'password': password})
+        resp = self.post('/users/%s/' % self.quote(self.name), {'password': password})
         if resp.status == http.NO_CONTENT:
             return True
         elif resp.status == http.NOT_FOUND:
@@ -110,7 +117,7 @@ class RestAuthUser(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500.
         :raise UnknownStatus: If the response status is unknown.
         """
-        resp = self.conn.delete('/users/%s/' % self.conn.quote(self.name))
+        resp = self.delete('/users/%s/' % self.quote(self.name))
         if resp.status == http.NO_CONTENT:
             return
         if resp.status == http.NOT_FOUND:
@@ -129,7 +136,7 @@ class RestAuthUser(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500.
         :raise UnknownStatus: If the response status is unknown.
         """
-        resp = self.conn.get('/users/%s/props/' % self.conn.quote(self.name))
+        resp = self.get('/users/%s/props/' % self.quote(self.name))
         if resp.status == http.OK:
             return self.conn.content_handler.unmarshal_dict(resp.read())
         elif resp.status == http.NOT_FOUND:
@@ -159,7 +166,7 @@ class RestAuthUser(object):
         :raise UnknownStatus: If the response status is unknown.
         """
         params = {'prop': prop, 'value': value}
-        resp = self.conn.post('/users/%s/props/' % self.conn.quote(self.name), params=params)
+        resp = self.post('/users/%s/props/' % self.quote(self.name), params=params)
         if resp.status == http.CREATED:
             return
         elif resp.status == http.NOT_FOUND:
@@ -181,7 +188,7 @@ class RestAuthUser(object):
            work in the future, i.e. it may have been created by another client in the meantime.
         """
         params = {'prop': prop, 'value': value}
-        resp = self.conn.post('/test/users/%s/props/' % self.conn.quote(self.name), params=params)
+        resp = self.post('/test/users/%s/props/' % self.quote(self.name), params=params)
 
         if resp.status == http.CREATED:
             return
@@ -214,7 +221,7 @@ class RestAuthUser(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500.
         :raise UnknownStatus: If the response status is unknown.
         """
-        resp = self.conn.put('/users/%s/props/%s/' % (self.conn.quote(self.name), self.conn.quote(prop)),
+        resp = self.put('/users/%s/props/%s/' % (self.quote(self.name), self.quote(prop)),
                              params={'value': value})
         if resp.status == http.OK:
             return self.conn.content_handler.unmarshal_str(resp.read())
@@ -245,7 +252,7 @@ class RestAuthUser(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500.
         :raise UnknownStatus: If the response status is unknown.
         """
-        resp = self.conn.put('/users/%s/props/' % self.conn.quote(self.name), params=props)
+        resp = self.put('/users/%s/props/' % self.quote(self.name), params=props)
         if resp.status == http.NO_CONTENT:
             return
         elif resp.status == http.NOT_FOUND:
@@ -268,7 +275,7 @@ class RestAuthUser(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500.
         :raise UnknownStatus: If the response status is unknown.
         """
-        resp = self.conn.get('/users/%s/props/%s/' % (self.conn.quote(self.name), self.conn.quote(prop)))
+        resp = self.get('/users/%s/props/%s/' % (self.quote(self.name), self.quote(prop)))
         if resp.status == http.OK:
             return self.conn.content_handler.unmarshal_str(resp.read())
         elif resp.status == http.NOT_FOUND:
@@ -285,7 +292,7 @@ class RestAuthUser(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500.
         :raise UnknownStatus: If the response status is unknown.
         """
-        resp = self.conn.delete('/users/%s/props/%s/' % (self.conn.quote(self.name), self.conn.quote(prop)))
+        resp = self.delete('/users/%s/props/%s/' % (self.quote(self.name), self.quote(prop)))
         if resp.status == http.NO_CONTENT:
             return
         elif resp.status == http.NOT_FOUND:

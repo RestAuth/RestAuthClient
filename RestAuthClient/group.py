@@ -50,6 +50,13 @@ class RestAuthGroup(object):
         self.conn = conn
         self.name = name
 
+        # just some shortcuts
+        self.get = conn.get
+        self.post = conn.post
+        self.put = conn.put
+        self.delete = conn.delete
+        self.quote = conn.quote
+
     def get_members(self, flat=False):
         """Get all members of this group.
 
@@ -70,7 +77,7 @@ class RestAuthGroup(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500.
         :raise UnknownStatus: If the response status is unknown.
         """
-        resp = self.conn.get('/groups/%s/users/' % self.conn.quote(self.name))
+        resp = self.get('/groups/%s/users/' % self.quote(self.name))
 
         if resp.status == http.OK:
             # parse user-list:
@@ -102,7 +109,7 @@ class RestAuthGroup(object):
         if hasattr(user, 'name'):
             user = user.name
 
-        resp = self.conn.post('/groups/%s/users/' % self.conn.quote(self.name), {'user': user})
+        resp = self.post('/groups/%s/users/' % self.quote(self.name), {'user': user})
         if resp.status == http.NO_CONTENT:
             return
         elif resp.status == http.NOT_FOUND:
@@ -128,7 +135,7 @@ class RestAuthGroup(object):
         if hasattr(group, 'name'):
             group = group.name
 
-        resp = self.conn.post('/groups/%s/groups/' % self.conn.quote(self.name), {'group': group})
+        resp = self.post('/groups/%s/groups/' % self.quote(self.name), {'group': group})
         if resp.status == http.NO_CONTENT:
             return
         elif resp.status == http.NOT_FOUND:
@@ -156,7 +163,7 @@ class RestAuthGroup(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500.
         :raise UnknownStatus: If the response status is unknown.
         """
-        resp = self.conn.get('/groups/%s/groups/' % self.conn.quote(self.name))
+        resp = self.get('/groups/%s/groups/' % self.quote(self.name))
         if resp.status == http.OK:
             names = self.conn.content_handler.unmarshal_list(resp.read())
             if flat is True:
@@ -183,8 +190,7 @@ class RestAuthGroup(object):
         if hasattr(group, 'name'):
             group = group.name
 
-        resp = self.conn.delete('/groups/%s/groups/%s/' % (self.conn.quote(self.name),
-                                                           self.conn.quote(group)))
+        resp = self.delete('/groups/%s/groups/%s/' % (self.quote(self.name), self.quote(group)))
         if resp.status == http.NO_CONTENT:
             return
         elif resp.status == http.NOT_FOUND:
@@ -201,7 +207,7 @@ class RestAuthGroup(object):
         :raise InternalServerError: When the RestAuth service returns HTTP status code 500.
         :raise UnknownStatus: If the response status is unknown.
         """
-        resp = self.conn.delete('/groups/%s/' % self.conn.quote(self.name))
+        resp = self.delete('/groups/%s/' % self.quote(self.name))
         if resp.status == http.NO_CONTENT:
             return
         elif resp.status == http.NOT_FOUND:
@@ -226,8 +232,7 @@ class RestAuthGroup(object):
         if hasattr(user, 'name'):
             user = user.name
 
-        resp = self.conn.get('/groups/%s/users/%s/' % (self.conn.quote(self.name),
-                                                       self.conn.quote(user)))
+        resp = self.get('/groups/%s/users/%s/' % (self.quote(self.name), self.quote(user)))
         if resp.status == http.NO_CONTENT:
             return True
         elif resp.status == http.NOT_FOUND:
@@ -250,8 +255,7 @@ class RestAuthGroup(object):
         if hasattr(user, 'name'):
             user = user.name
 
-        resp = self.conn.delete('/groups/%s/users/%s/' % (self.conn.quote(self.name),
-                                                          self.conn.quote(user)))
+        resp = self.delete('/groups/%s/users/%s/' % (self.quote(self.name), self.quote(user)))
         if resp.status == http.NO_CONTENT:
             return
         elif resp.status == http.NOT_FOUND:
