@@ -79,8 +79,8 @@ class RestAuthConnection(object):
         * In Python 3.4 or later, the default is created with
           :py:func:`~ssl.create_default_context`.
         * In Python 3.2 and 3.3, a context is created with :py:data:`~ssl.PROTOCOL_SSLv23` as
-          protocol, :py:data:`~ssl.CERT_REQUIRED` as :py:attr:`~ssl.SSLContext.verify_mode` and the certificate chain
-          loaded by :py:meth:`~ssl.set_default_verify_paths`.
+          protocol, :py:data:`~ssl.CERT_REQUIRED` as :py:attr:`~ssl.SSLContext.verify_mode` and the
+          certificate chain loaded by :py:meth:`~ssl.set_default_verify_paths`.
     :type      ssl_context: :py:class:`~ssl.SSLContext`
     :param         timeout: Timeout for HTTP connections. If omitted, use the systems default.
     :type          timeout: float
@@ -152,8 +152,8 @@ class RestAuthConnection(object):
             * If a str, it is asumed to be one of the MIME types specified in
               :py:data:`~common:RestAuthCommon.handlers.CONTENT_HANDLERS`.
 
-        :type  content_handler: str or
-            :py:class:`~common:RestAuthCommon.handlers.ContentHandler`
+        :type  content_handler: str or :py:class:`~common:RestAuthCommon.handlers.ContentHandler`
+        :raise RestAuthRuntimeException: If an invalid content handler was supplied.
         """
         if content_handler is None:
             self.content_handler = JSONContentHandler()
@@ -163,9 +163,12 @@ class RestAuthConnection(object):
             try:
                 cl = CONTENT_HANDLERS[content_handler]
             except KeyError:
-                raise RuntimeError("Unknown content_handler: %s" % content_handler)
+                raise error.RestAuthRuntimeException(
+                    "Unknown content_handler: %s" % content_handler)
 
             self.content_handler = cl()
+        else:
+            raise error.RestAuthRuntimeException("Unknown content handler defined.")
         self.mime = self.content_handler.mime
 
     def send(self, method, url, body=None, headers=None):
@@ -219,17 +222,6 @@ class RestAuthConnection(object):
             raise error.InternalServerError(response)
         else:
             return response
-
-    def _sanitize_qs(self, params):
-        if PY3 is False:  # pragma: py2
-            for key, value in params.iteritems():
-                if key.__class__ == unicode:  # pragma: no cover
-                    key = key.encode('utf-8')
-                if value.__class__ == unicode:
-                    value = value.encode('utf-8')
-                params[key] = value
-
-        return urlencode(params).replace('+', '%20')
 
     def get(self, url, params=None, headers=None):
         """
@@ -292,7 +284,7 @@ class RestAuthConnection(object):
             connection.
         :raise InternalServerError: When the server has some internal error.
         """
-        if headers is None:
+        if headers is None:  # pragma: no branch
             headers = {}
 
         headers['Content-Type'] = self.mime
@@ -333,7 +325,7 @@ class RestAuthConnection(object):
             connection.
         :raise InternalServerError: When the server has some internal error.
         """
-        if headers is None:
+        if headers is None:  # pragma: no branch
             headers = {}
 
         headers['Content-Type'] = self.mime
@@ -364,18 +356,28 @@ class RestAuthConnection(object):
         """
         return self.send('DELETE', url, headers=headers)
 
-
     def __eq__(self, other):
         return self._conn == other._conn and self._conn_kwargs == other._conn_kwargs and \
             self.auth_header == other.auth_header
 
-    if PY3:
+    if PY3:  # pragma: py3
         def quote(self, name):
             return quote(name, safe='')
 
-    else:
+        def _sanitize_qs(self, params):
+            return urlencode(params).replace('+', '%20')
+    else:  # pragma: py2
         def quote(self, name):
             if isinstance(name, unicode):
                 name = name.encode('utf-8')
             return quote(name, safe='')
 
+        def _sanitize_qs(self, params):
+            for key, value in params.iteritems():
+                if key.__class__ == unicode:
+                    key = key.encode('utf-8')
+                if value.__class__ == unicode:
+                    value = value.encode('utf-8')
+                params[key] = value
+
+            return urlencode(params).replace('+', '%20')
