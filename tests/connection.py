@@ -92,6 +92,7 @@ class BasicTests(RestAuthClientTestCase):
         user.remove()
 
     def test_NotAcceptable(self):
+        old = self.conn.content_handler
         self.conn.set_content_handler(wrongContentHandler())
 
         try:
@@ -99,8 +100,10 @@ class BasicTests(RestAuthClientTestCase):
             self.fail()
         except error.NotAcceptable:
             pass
+        self.conn.set_content_handler(old)
 
     def test_UnsupportedMediaTypePost(self):
+        old = self.conn.content_handler
         self.conn.set_content_handler(wrongContentHandler())
 
         try:
@@ -108,9 +111,11 @@ class BasicTests(RestAuthClientTestCase):
             self.fail()
         except error.UnsupportedMediaType:
             pass
+        self.conn.set_content_handler(old)
 
     def test_UnsupportedMediaTypePut(self):
         # we need to create it first, otherwise we might get a 404 instead
+        old = self.conn.content_handler
         user = RestAuthUser.create(self.conn, 'testuser', 'password')
         self.conn.set_content_handler(wrongContentHandler())
 
@@ -121,6 +126,7 @@ class BasicTests(RestAuthClientTestCase):
             pass
         finally:
             user.remove()
+        self.conn.set_content_handler(old)
 
     def test_source_address(self):
         # Real functionality is difficult to test, but at least we can verify that the arg works.
