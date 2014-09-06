@@ -117,7 +117,7 @@ class version(Command):
         print(get_version())
 
 
-def run_test_suite(host, user, passwd, part=None):
+def run_test_suite(host, user, passwd, part=None, fail_on_error=False):
     if part is None:
         from tests import connection, users, groups
         suite = connection, users, groups
@@ -125,14 +125,17 @@ def run_test_suite(host, user, passwd, part=None):
         mod = __import__('tests', globals(), locals(), [part], -1)
         suite = [getattr(mod, part)]
 
+    loader = unittest.TestLoader()
     for mod in suite:
         mod.rest_host = host
         mod.rest_user = user
         mod.rest_passwd = passwd
 
-        loader = unittest.TestLoader()
         suite = loader.loadTestsFromModule(mod)
-        unittest.TextTestRunner(verbosity=1).run(suite)
+        result = unittest.TextTestRunner(verbosity=1).run(suite)
+        if fail_on_error is True:
+            if result.errors or result.failures:
+                return result.errors, result.failures
 
 
 class prepare_debian_changelog(Command):
@@ -187,7 +190,10 @@ class test(Command):
         if os.path.exists(common_path):
             sys.path.insert(0, common_path)
 
-        run_test_suite(self.host, self.user, self.passwd, part=self.part)
+        errors, failures = run_test_suite(self.host, self.user, self.passwd, part=self.part,
+                                          fail_on_error=True)
+        if errors or failures:
+            sys.exit(1)
 
 
 class coverage(Command):
