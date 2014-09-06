@@ -1,19 +1,40 @@
-.. comment: This file is displayed on our github mirror.
+**RestAuthClient** is the reference client implementation, for RestAuth_,
+written in Python. RestAuth is a protocol providing shared authentication,
+authorization and preferences.
 
-RestAuth
-========
+Requirements
+============
+
+**RestAuthClient** works with Python2.7+ and Python3.2+.
+
+**RestAuthClient** requires no special libraries but RestAuthCommon_ and any
+library required by any content handler you use. ``pip install RestAuthClient``
+automatically installs RestAuthCommon_.
+
+Installation
+============
+
+Full installation instructions are provided on the `homepage
+<https://python.restauth.net>`_.
+
+If you use pip, you can install **RestAuthClient** with::
+
+   pip install RestAuthClient
+
+If you want to install Debian/Ubuntu packages, simple do (Replace **<dist>**
+with your distribution)::
+
+   apt-get install apt-transport-https
+   wget -O - https://apt.restauth.net/gpg-key | apt-key add -
+   echo deb https://apt.restauth.net <dist> restauth > /etc/apt/sources.list.d/restauth.list
+   apt-get update
+   apt-get install python-restauth python3-restauth
+
+Getting started
+===============
+
+Please see our guide_.
 
 .. _RestAuth: https://restauth.net
-.. _RestAuth server: https://server.restauth.net
-.. _RestAuthClient: https://python.restauth.net
-
-RestAuth_ is a project providing shared authentication, authorization and
-preferences. Shared authentication and preferences allow users to use a single
-account on multiple services (such as websites, mail, system accounts, ...),
-sharing preferences among those systems. Shared authorization allows
-administrators to manage permissions for users in a central and easy way.
-
-This is a mirror of the client-side reference implementation of the RestAuth
-protocol, the most up-to-date documentation can always be viewed at
-https://python.restauth.net. The master source repository can be found at
-https://git.fsinf.at/restauth/python.
+.. _RestAuthCommon: https://common.restauth.net
+.. _guide: https://python.restauth.net/intro.html

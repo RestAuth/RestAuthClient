@@ -1,23 +1,25 @@
-# This file is part of RestAuthClient.py.
+# -*- coding: utf-8 -*-
 #
-#    RestAuthClient.py is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
+# This file is part of RestAuthClient (https://python.restauth.net).
 #
-#    Foobar is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
+# RestAuthClient is free software: you can redistribute it and/or modify it under the terms of the
+# GNU General Public License as published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
 #
-#    You should have received a copy of the GNU General Public License
-#    along with RestAuthClient.py.  If not, see <http://www.gnu.org/licenses/>.
+# RestAuthClient is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+# the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with RestAuthClient.py.
+# If not, see <http://www.gnu.org/licenses/>.
+
+
+from __future__ import unicode_literals
 
 import os
 import re
 import sys
 import shutil
-import time
 import unittest
 
 from distutils.command.clean import clean as _clean
@@ -33,13 +35,15 @@ except ImportError:
     from setuptools import Command
     from setuptools import setup
 
+from RestAuthClient import version as LATEST_RELEASE
+PY2 = sys.version_info[0] == 2
+PY3 = sys.version_info[0] == 3
 
 name = 'RestAuthClient'
 url = 'https://python.restauth.net'
 
-LATEST_RELEASE = '0.6.1'
-
-requires = ['RestAuthCommon>=0.6.1', ]
+requires = ['RestAuthCommon>=0.6.5', ]
+coverage_path = os.path.join('doc', 'coverage')
 
 class build_doc(Command):
     description = "Build documentation."
@@ -53,11 +57,11 @@ class build_doc(Command):
 
     def run(self):
         version = get_version()
+        os.environ['LATEST_RELEASE'] = LATEST_RELEASE
         os.environ['SPHINXOPTS'] = ' '.join([
             '-D release=%s' % version,
             '-D version=%s' % version,
         ])
-        os.environ['LATEST_RELEASE'] = LATEST_RELEASE
 
         cmd = ['make', '-C', 'doc', 'html']
         p = Popen(cmd)
@@ -70,7 +74,6 @@ class clean(_clean):
             shutil.rmtree('build')
         if os.path.exists('dist'):
             shutil.rmtree('dist')
-        coverage_path = os.path.join('doc', 'coverage')
         if os.path.exists(coverage_path):
             shutil.rmtree(coverage_path)
         if os.path.exists('MANIFEST'):
@@ -85,10 +88,7 @@ class clean(_clean):
 
 def get_version():
     version = LATEST_RELEASE
-    if os.path.exists('.version'):
-        version = open('.version').readlines()[0]
-    elif os.path.exists('.git'):  # get from git
-        date = time.strftime('%Y.%m.%d')
+    if os.path.exists('.git'):  # get from git
         cmd = ['git', 'describe', 'master']
         p = Popen(cmd, stdout=PIPE)
         version = p.communicate()[0].decode('utf-8')
@@ -117,7 +117,7 @@ class version(Command):
         print(get_version())
 
 
-def run_test_suite(host, user, passwd, part=None):
+def run_test_suite(host, user, passwd, part=None, fail_on_error=False):
     if part is None:
         from tests import connection, users, groups
         suite = connection, users, groups
@@ -125,14 +125,18 @@ def run_test_suite(host, user, passwd, part=None):
         mod = __import__('tests', globals(), locals(), [part], -1)
         suite = [getattr(mod, part)]
 
+    loader = unittest.TestLoader()
     for mod in suite:
         mod.rest_host = host
         mod.rest_user = user
         mod.rest_passwd = passwd
 
-        loader = unittest.TestLoader()
         suite = loader.loadTestsFromModule(mod)
-        unittest.TextTestRunner(verbosity=1).run(suite)
+        result = unittest.TextTestRunner(verbosity=1).run(suite)
+        if fail_on_error is True:
+            if result.errors or result.failures:
+                return result.errors, result.failures
+    return [], []
 
 
 class prepare_debian_changelog(Command):
@@ -156,22 +160,24 @@ class prepare_debian_changelog(Command):
 
 
 server_options = [
-    ('user=', 'u', 'Username to use vor RestAuth server'),
-    ('password=', 'p', 'Password to use vor RestAuth server'),
-    ('host=', 'h', 'URL of the RestAuth server (ex: http://auth.example.com)')
+    # cast to str because Python2 distutils requires a str.
+    (str('user='), str('u'), 'Username to use vor RestAuth server'),
+    (str('password='), str('p'), 'Password to use vor RestAuth server'),
+    (str('host='), str('h'), 'URL of the RestAuth server (ex: http://auth.example.com)')
 ]
 
 
 class test(Command):
     description = "Run test suite."
     user_options = server_options + [
-        ('part=', None,
+        # cast to str because Python2 distutils requires a str.
+        (str('part='), None,
          'Only test one module (either "connection", "users" or "groups")'),
     ]
 
     def initialize_options(self):
-        self.user = 'vowi'
-        self.passwd = 'vowi'
+        self.user = 'example.com'
+        self.passwd = 'nopass'
         self.host = 'http://[::1]:8000'
         self.part = None
 
@@ -181,23 +187,24 @@ class test(Command):
             sys.exit(1)
 
     def run(self):
-        common_path = os.path.join('..', 'restauth-common', 'python')
+        common_path = os.path.join('..', 'RestAuthCommon', 'python')
         if os.path.exists(common_path):
             sys.path.insert(0, common_path)
 
-        run_test_suite(self.host, self.user, self.passwd, part=self.part)
+        errors, failures = run_test_suite(self.host, self.user, self.passwd, part=self.part,
+                                          fail_on_error=True)
+        if errors or failures:
+            sys.exit(1)
 
 
 class coverage(Command):
     description = "Run test suite and generate code coverage analysis."
-    user_options = server_options + [
-        ('output-dir=', 'o', 'Output directory for coverage analysis')]
+    user_options = server_options
 
     def initialize_options(self):
-        self.user = 'vowi'
-        self.passwd = 'vowi'
+        self.user = 'example.com'
+        self.passwd = 'nopass'
         self.host = 'http://[::1]:8000'
-        self.dir = 'doc/coverage'
 
     def finalize_options(self):
         pass
@@ -208,20 +215,30 @@ class coverage(Command):
         except ImportError:
             print("You need coverage.py installed.")
             return
-        common_path = os.path.join('..', 'restauth-common', 'python')
+        common_path = os.path.join('..', 'RestAuthCommon', 'python')
         if os.path.exists(common_path):
             sys.path.insert(0, common_path)
 
-        if not os.path.exists(self.dir):
-            os.makedirs(self.dir)
+        if not os.path.exists(coverage_path):
+            os.makedirs(coverage_path)
 
-        exclude_list = ['raise UnknownStatus.*']
+        cov = coverage.coverage(source=['RestAuthClient'], branch=True, omit=[
+            'RestAuthClient/__init__.py',
+            'RestAuthClient/restauth_user.py',
+        ])
 
-        cov = coverage.coverage(include='RestAuthClient/*')
+        if PY3:
+            cov.exclude(r'pragma: .*\bpy2\b')
+        else:
+            cov.exclude(r'pragma: .*\bpy3\b')
+
+        if sys.version_info < (3, 4):
+            cov.exclude(r'pragma: .*\bpy34\b')
+
         cov.start()
         run_test_suite(self.host, self.user, self.passwd)
         cov.stop()
-        cov.html_report(directory=self.dir)
+        cov.html_report(directory=coverage_path)
         cov.report()
 
 setup(
@@ -261,12 +278,11 @@ This library requires `RestAuthCommon <https://common.restauth.net>`_
         "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.1",
         "Programming Language :: Python :: 3.2",
         "Programming Language :: Python :: 3.3",
+        "Programming Language :: Python :: 3.4",
         "Programming Language :: Python",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Software Development :: Libraries :: Python Modules",

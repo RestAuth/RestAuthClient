@@ -5,13 +5,13 @@ The **RestAuthClient** library consists of four modules, each containing one imp
 
 * :py:mod:`~RestAuthClient.common` contains :py:class:`~.common.RestAuthConnection` which represents
   a connection to a RestAuth service.
-* :py:mod:`~RestAuthClient.restauth_user` contains the :py:class:`~.restauth_user.User` class which
+* :py:mod:`~RestAuthClient.user` contains the :py:class:`~.user.RestAuthUser` class which
   represents a user in the RestAuth service.
-* :py:mod:`~RestAuthClient.group` contains the :py:class:`~.group.Group` class which represents a
+* :py:mod:`~RestAuthClient.group` contains the :py:class:`~.group.RestAuthGroup` class which represents a
   group in the RestAuth service.
 * :py:mod:`~RestAuthClient.error` is a collection of exceptions that may be thrown by the above
   modules and its member methods/classes.
-  
+
 To use RestAuth, you will always have to create a :py:class:`~.common.RestAuthConnection` first and
 then use it to get users or groups.
 
@@ -21,30 +21,32 @@ exceptions used in this library.
 
 .. code-block:: python
 
-   from RestAuthClient import common, restauth_user, group
-   
+   from RestAuthClient.common import RestAuthConnectiaon
+   from RestAuthClient.user import RestAuthUser
+   from RestAuthClient.group import RestAuthGroup
+
    # create a connection to the RestAuth service. The service must already be configured using the
    # restauth-service commandline script.
-   conn = common.RestAuthConnection( 'https://auth.example.com', 'service', 'password' )
-   
+   conn = RestAuthConnection('https://auth.example.com', 'service', 'password')
+
    # create a *new* user named 'foobar', and do some interesting things:
-   user = restauth_user.create( conn, 'foobar', 'password' )
-   if not user.verify_password( 'wrong password' ):
-       print( 'ERROR: User has wrong password!' ) # never happens in this example, of course
-       
-   user.set_property( 'key', 'value' )
-   props = user.get_properties() # returns {'key': 'value'}
-   
+   user = RestAuthUser.create(conn, 'foobar', 'password')
+   if not user.verify_password('wrong password'):
+       print('ERROR: User has wrong password!')  # never happens in this example, of course
+
+   user.set_property('key', 'value')
+   props = user.get_properties()  # returns {'key': 'value'}
+
    # If performance is critical, do not use the factory methods to get user objects, instead
    # reference them directly:
-   user = restauth_user.User( conn, 'foobar' )
-   user.verify_password( 'password' )
-   
+   user = RestAuthUser(conn, 'foobar')
+   user.verify_password('password')
+
    # Groups work in much the same way as users:
-   group = group.get( conn, 'groupname' ) # verifies that the group exists
-   group.add_user( user ) # may also just be the username!
-   group.get_members() # returns a list with the User element
-   
+   group = RestAuthGroup.get(conn, 'groupname')  # verifies that the group exists
+   group.add_user(user)  # may also just be the username!
+   group.get_members()  # returns a list with the User element
+
 
 .. _guide_error-handling:
 
@@ -64,3 +66,39 @@ RestAuthCommon documentation.
 
 RestAuthClient provides a view additional exceptions that only make sense at the client side. Please
 see the :py:mod:`error module <RestAuthClient.error>` for more documentation.
+
+Upgrade
+-------
+
+0.6.2
+_____
+
+Many module and class names changed for consistency. Wrappers for the old class
+names are provided, so you shouldn't run into immediate problems. It is non the
+less advised to upgrade to the new module paths::
+
+   # old imports:
+   #from RestAuthClient.restauth_user import User
+   #from RestAuthClient.group import Group
+
+   # new imports:
+   from RestAuthClient.user import RestAuthUser
+   from RestAuthClient.group import RestAuthGroup
+
+   # factory functions are now class functions, so instead of:
+   #restauth_user.get(...)
+
+   # ... use new class-level functions:
+   RestAuthUser.get(...)
+
+Additionally, all functions that return a list of Users or Groups now have an
+optional ``flat`` parameter which returns a list of user/groupnames as str
+instead. So if you want a list of all usernames, you can now do::
+
+   # old:
+   #from RestAuthClient.restauth_user import get_all
+   #users = [u.name for u in get_all(conn)]
+
+   # new:
+   from RestAuthClient.user import User
+   users = User.get_all(flat=True)

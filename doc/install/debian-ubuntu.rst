@@ -2,21 +2,25 @@ Installation on Debian/Ubuntu
 =============================
 
 The RestAuth project provides APT repositories for all software it maintains. Repositories are
-available for all distributions that are currently maintained by the Debian project and Canonical
-respectively except Debian 5.0 ("*lenny*") and Ubuntu 8.04 (*Hardy Heron*).
+available for all distributions that are currently maintained by the Debian
+project and Canonical.
 
 Adding our APT repository
 -------------------------
-To add the repositories, simply add this line to your :file:`/etc/apt/sources.list` file::
-   
-   deb http://apt.fsinf.at <dist> restauth
-   
-... where :samp:`{<dist>}` is any of the supported distributions. At the time of writing, possible
-values are ``lucid``, ``maverick``, ``natty``, ``oneiric``, ``squeeze`` or ``wheezy``. Please see
-the WikiPedia pages for `Ubuntu
-<http://en.wikipedia.org/wiki/List_of_Ubuntu_releases#Table_of_versions>`_ and `Debian
-<http://en.wikipedia.org/wiki/Debian#Release_history>`_ to see how they map to your installation.
-You can also check the `APT repository itself <http://apt.fsinf.at/dists>`_ for a list of available
+
+To add the repositories, simply add a file in the ``/etc/apt/sources.list.d`` directory::
+
+   echo "deb https://apt.restauth.net <DIST> restauth" > /etc/apt/sources.list.d/restauth.list
+
+... where ``<DIST>`` is any of the supported distributions. If you are unsure of your
+distribution, you can run the following in your terminal::
+
+   lsb_release -sc
+
+You can also read the WikiPedia pages for `Ubuntu
+<https://en.wikipedia.org/wiki/List_of_Ubuntu_releases#Table_of_versions>`_ and `Debian
+<https://en.wikipedia.org/wiki/Debian#Release_history>`_ to see how they map to your installation.
+You can also check the `APT repository itself <https://apt.restauth.net/dists>`_ for a list of available
 distributions (don't forget to check the 'Last modified' timestamp!).
 
 Once you added the repository, you have to install the fsinf GPG keyring used for signing the
@@ -25,6 +29,7 @@ repositories, so you won't get any warnings when updating. You can either instal
 
 .. code-block:: bash
 
+   apt-get install apt-transport-https
    apt-get update
    apt-get install fsinf-keyring
    apt-get update
@@ -33,7 +38,7 @@ or download and add the key directly using:
 
 .. code-block:: bash
 
-   wget -O - http://packages.spectrum.im/keys/apt-repository@fsinf.at | apt-key add -
+   wget -O - https://apt.restauth.net/gpg-key | apt-key add -
 
 Install RestAuthClient
 ----------------------
@@ -43,4 +48,7 @@ Once you have added the repositories, installing RestAuthClient is as simple as
 .. code-block:: bash
 
    apt-get install python-restauth
-   
+
+or, if you use Python 3::
+
+   apt-get install python3-restauth
