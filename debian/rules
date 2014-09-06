@@ -33,3 +33,11 @@ override_dh_auto_build: ${PY2VERS:%=build-python%} ${PY3VERS:%=build-python%}
 override_dh_auto_install:  ${PY2VERS:%=install-python%} ${PY3VERS:%=install-python%}
 	dh_testdir
 	dh_auto_install
+
+test-python%: 
+	virtualenv -p /usr/bin/python$* test/python$*
+	test/python$*/bin/python setup.py test
+
+ifeq (,$(findstring nocheck,$(DEB_BUILD_OPTIONS)))
+override_dh_auto_test: ${PYVERS:%=test-python%} ${PY3VERS:%=test-python%}
+endif
