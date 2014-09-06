@@ -197,7 +197,7 @@ class BasicTests(RestAuthClientTestCase, PropertyTestMixin):
         self.assertEqual([username], RestAuthUser.get_all(self.conn, flat=True))
 
         RestAuthUser.create(self.conn, username2)
-        self.assertCountEqual([username, username2],RestAuthUser.get_all(self.conn, flat=True))
+        self.assertCountEqual([username, username2], RestAuthUser.get_all(self.conn, flat=True))
 
 
 class CreateUserTest(RestAuthClientTestCase):
