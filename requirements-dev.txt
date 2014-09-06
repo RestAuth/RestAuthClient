@@ -1,6 +1,6 @@
-PyYAML>=3.10
-Sphinx>=1.2.2
+PyYAML>=3.11
+Sphinx>=1.2.3
 coverage>=3.7.1
-lxml>=3.3.3
-msgpack-python>=0.4.1
-pymongo>=2.6.3
+lxml>=3.3.6
+msgpack-python>=0.4.2
+pymongo>=2.7.2
