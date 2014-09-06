@@ -41,6 +41,18 @@ class BasicTests(RestAuthClientTestCase):
         for grp in RestAuthGroup.get_all(self.conn):
             grp.remove()
 
+    def test_getall_user(self):
+        user = self.users[0]
+
+        self.assertEqual(RestAuthGroup.get_all(self.conn, user=user), [])
+        self.assertEqual(RestAuthGroup.get_all(self.conn, user=user.name), [])
+
+        grp = RestAuthGroup.create(self.conn, groupname_1)
+        grp.add_user(user)
+
+        self.assertEqual(RestAuthGroup.get_all(self.conn, user=user), [grp])
+        self.assertEqual(RestAuthGroup.get_all(self.conn, user=user.name), [grp])
+
     def test_createGroup(self):
         grp = RestAuthGroup.create(self.conn, groupname_1)
         self.assertEqual([grp], RestAuthGroup.get_all(self.conn))
@@ -285,6 +297,42 @@ class MetaGroupTests(RestAuthClientTestCase):
         # see if grp2 is really a subgroup of grp1:
         self.assertEqual([self.grp2], self.grp1.get_groups())
         self.assertEqual([], self.grp2.get_groups())
+
+    def test_simpleInheritanceClass(self):
+        # test passing group instances to add/remove_group:
+        self.grp1.add_user(self.usr1)
+        self.grp2.add_user(self.usr2)
+
+        self.assertEqual([self.usr1], self.grp1.get_members())
+        self.assertEqual([self.usr2], self.grp2.get_members())
+        self.assertTrue(self.grp1.is_member(self.usr1))
+        self.assertTrue(self.grp2.is_member(self.usr2))
+
+        # make grp2 a subgroup of grp1:
+        self.grp1.add_group(self.grp2.name)
+
+        # grp1 hasn't changed:
+        self.assertEqual([self.usr1], self.grp1.get_members())
+        self.assertTrue(self.grp1.is_member(self.usr1))
+
+        # grp2 now has two members:
+        self.assertEqual(
+            sorted([self.usr1, self.usr2], key=attrgetter('name')),
+            sorted(self.grp2.get_members(), key=attrgetter('name'))
+        )
+        self.assertTrue(self.grp2.is_member(self.usr1))
+        self.assertTrue(self.grp2.is_member(self.usr2))
+
+        # see if grp2 is really a subgroup of grp1:
+        self.assertEqual([self.grp2], self.grp1.get_groups())
+
+        self.assertEqual([], self.grp2.get_groups())
+        # remove again:
+        self.grp1.remove_group(self.grp2.name)
+        self.assertEqual([self.usr1], self.grp1.get_members())
+        self.assertEqual([self.usr2], self.grp2.get_members())
+        self.assertTrue(self.grp1.is_member(self.usr1))
+        self.assertTrue(self.grp2.is_member(self.usr2))
 
     def test_getGroupsFlat(self):
         self.assertEqual(self.grp1.get_groups(flat=True), [])
