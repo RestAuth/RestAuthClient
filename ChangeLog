@@ -35,6 +35,7 @@ RestAuthClient 0.6.2 (XX XXXXX 2013)
   * Enable branch coverage and reach a test-coverage of 100%.
   * Group tests now have users created via setUpModule, speeds up group tests
     300%.
+  * setup.py test now exits with status 1 if testcases fail.
 
 
 RestAuthClient 0.6.1 (01 April 2013)
