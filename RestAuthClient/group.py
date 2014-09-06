@@ -389,6 +389,9 @@ class RestAuthGroup(object):
         """Two instances evaluate as equal if their name and connection evaluate as equal."""
         return self.name == other.name and self.conn == other.conn
 
+    def __hash__(self):
+        return hash(self.name)
+
     def __repr__(self):  # pragma: no cover
         if PY3 is False and isinstance(self.name, unicode):
             return '<Group: {0}>'.format(self.name.encode('utf-8'))
