@@ -252,7 +252,7 @@ This library requires `RestAuthCommon <https://common.restauth.net>`_
     author_email='mati@restauth.net',
     url=url,
     download_url='https://python.restauth.net/download/',
-    packages=['RestAuthClient', ],
+    packages=[str('RestAuthClient'), ],
     cmdclass={
         'build_doc': build_doc,
         'clean': clean,
