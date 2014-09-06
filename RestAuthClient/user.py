@@ -222,7 +222,7 @@ class RestAuthUser(object):
         :raise UnknownStatus: If the response status is unknown.
         """
         resp = self.put('/users/%s/props/%s/' % (self.quote(self.name), self.quote(prop)),
-                             params={'value': value})
+                        params={'value': value})
         if resp.status == http.OK:
             return self.conn.content_handler.unmarshal_str(resp.read())
         if resp.status == http.CREATED:
