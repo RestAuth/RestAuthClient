@@ -17,7 +17,7 @@
 
 import sys
 
-if sys.version_info > (3, 0):  # pragma: py3
+if sys.version_info > (3, ):  # pragma: py3
     PY3 = True
     from http import client as http
 else:  # pragma: py2
