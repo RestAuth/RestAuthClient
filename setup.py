@@ -26,14 +26,8 @@ from distutils.command.clean import clean as _clean
 from subprocess import PIPE
 from subprocess import Popen
 
-try:
-    from setuptools import Command
-    from setuptools import setup
-except ImportError:
-    import distribute_setup
-    distribute_setup.use_setuptools()
-    from setuptools import Command
-    from setuptools import setup
+from setuptools import Command
+from setuptools import setup
 
 from RestAuthClient import version as LATEST_RELEASE
 PY2 = sys.version_info[0] == 2
