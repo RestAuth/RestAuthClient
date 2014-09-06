@@ -21,7 +21,7 @@ exceptions used in this library.
 
 .. code-block:: python
 
-   from RestAuthClient.common import Connection
+   from RestAuthClient.common import RestAuthConnectiaon
    from RestAuthClient.user import RestAuthUser
    from RestAuthClient.group import RestAuthGroup
 
