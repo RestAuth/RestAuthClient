@@ -1,18 +1,41 @@
 RestAuthClient 0.6.2 (XX XXXXX 2013)
 
+  General:
   * This project is now hosted on github:
     https://github.com/RestAuth/RestAuthClient
-  * Generalize and update requirements.txt
+  * RestAuthClient now requires Python 2.7 or later.
+
+  Breaking changes:
+  * The classes representing users and groups have been moved for consistency:
+    * restauth_user.User is now user.RestAuthUser
+	* group.Group is now group.RestAuthGroup
+  * Factory methods get(), get_all(), create() and create_test() are now
+	classmethods, so e.g. group.get_all now becomes RestAuthGroup.get_all.
+  * User and group no longer have a common base class, this allows us to
+    import Users/Groups in the common module.
+
+  New features:
+  * Methods that return a list of entities now support the optional "flat"
+    parameter to only return a list of names instead of objects.
+  * RestAuthConnection now accepts the source_address and timeout parameters,
+    in Python 3, it also accepts an SSLContext.
+  * Path elements in HTTP requests are now quotet separately and without any
+    safe characters. This means that entity names with '/' are encoded
+	correctly.
+  * Various speed improvements.
+
+  Bugfixes:
   * Do not decode HTTP responses, as this brakes binary protocols (e.g. BSON)
   * Do not use mutable default arguments, this is dangerous. See:
 	http://pythonconquerstheuniverse.wordpress.com/2012/02/15/mutable-default-arguments/
+  
+  Testing:
   * The test cases now use the content handler specified by the MIME
     environment variable.
-  * RestAuthConnection now offers new optional parameters timeout an
-    source_address.
-  * RestAuthConnection now offers an optional ssl_context parameter in Python3.
-  * get_all() in restauth_user and groups now accepts the "flat" parameter. If
-    True, the functions return a list of strings instead of objects.
+  * Enable branch coverage and reach a test-coverage of 100%.
+  * Group tests now have users created via setUpModule, speeds up group tests
+    300%.
+
 
 RestAuthClient 0.6.1 (01 April 2013)
 
