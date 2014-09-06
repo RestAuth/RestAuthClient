@@ -2,8 +2,6 @@
 
 from __future__ import unicode_literals
 
-from operator import attrgetter
-
 from RestAuthClient.error import GroupExists
 from RestAuthClient.user import RestAuthUser
 from RestAuthClient.group import RestAuthGroup
@@ -45,10 +43,6 @@ class BasicTests(RestAuthClientTestCase):
         super(BasicTests, self).setUp()
 
         self.assertEqual([], RestAuthGroup.get_all(self.conn, flat=True))
-
-        self.users = [
-            user1, user2, user3,
-        ]
 
     def tearDown(self):
         """remove everything"""
@@ -92,7 +86,7 @@ class BasicTests(RestAuthClientTestCase):
     def test_addUser(self):
         grp_0 = RestAuthGroup.create(self.conn, groupname_1)
         grp_1 = RestAuthGroup.create(self.conn, groupname_2)
-        self.assertEqual([grp_0, grp_1], RestAuthGroup.get_all(self.conn))
+        self.assertItemsEqual([grp_0, grp_1], RestAuthGroup.get_all(self.conn))
 
         grp_0.add_user(user1)
         grp_1.add_user(user2)
@@ -154,8 +148,7 @@ class BasicTests(RestAuthClientTestCase):
         self.assertEqual(grp.get_members(flat=True), [user1.name])
 
         grp.add_user(user2)
-        self.assertEqual(sorted(grp.get_members(flat=True)),
-                         sorted([user1.name, user2.name]))
+        self.assertItemsEqual(grp.get_members(flat=True), [user1.name, user2.name])
 
     def test_removeUser(self):
         grp = RestAuthGroup.create(self.conn, groupname_1)
@@ -169,8 +162,7 @@ class BasicTests(RestAuthClientTestCase):
         self.assertTrue(grp.is_member(user2))
 
         # verify that no actual users where removed:
-        self.assertEqual(
-            user1, RestAuthUser.get(self.conn, username_1))
+        self.assertEqual(user1, RestAuthUser.get(self.conn, username_1))
         self.assertEqual(self.users, RestAuthUser.get_all(self.conn))
 
     def test_removeUserNotMember(self):
@@ -180,8 +172,7 @@ class BasicTests(RestAuthClientTestCase):
             self.fail()
         except error.ResourceNotFound as e:
             self.assertEqual("user", e.get_type())
-            self.assertEqual(
-                user1, RestAuthUser.get(self.conn, username_1))
+            self.assertEqual(user1, RestAuthUser.get(self.conn, username_1))
             self.assertEqual(self.users, RestAuthUser.get_all(self.conn))
 
     def test_removeInvalidUser(self):
@@ -192,8 +183,7 @@ class BasicTests(RestAuthClientTestCase):
             self.fail()
         except error.ResourceNotFound as e:
             self.assertEqual("user", e.get_type())
-            self.assertEqual(
-                user1, RestAuthUser.get(self.conn, username_1))
+            self.assertEqual(user1, RestAuthUser.get(self.conn, username_1))
             self.assertEqual(self.users, RestAuthUser.get_all(self.conn))
 
     def test_removeUserFromInvalidGroup(self):
@@ -204,8 +194,7 @@ class BasicTests(RestAuthClientTestCase):
             self.fail()
         except error.ResourceNotFound as e:
             self.assertEqual("group", e.get_type())
-            self.assertEqual(
-                user1, RestAuthUser.get(self.conn, username_1))
+            self.assertEqual(user1, RestAuthUser.get(self.conn, username_1))
             self.assertEqual(self.users, RestAuthUser.get_all(self.conn))
 
     def test_removeInvalidUserFromInvalidGroup(self):
@@ -293,10 +282,7 @@ class MetaGroupTests(RestAuthClientTestCase):
         self.assertTrue(self.grp1.is_member(user1))
 
         # grp2 now has two members:
-        self.assertEqual(
-            sorted([user1, user2], key=attrgetter('name')),
-            sorted(self.grp2.get_members(), key=attrgetter('name'))
-        )
+        self.assertItemsEqual([user1, user2], self.grp2.get_members())
         self.assertTrue(self.grp2.is_member(user1))
         self.assertTrue(self.grp2.is_member(user2))
 
@@ -322,10 +308,7 @@ class MetaGroupTests(RestAuthClientTestCase):
         self.assertTrue(self.grp1.is_member(user1))
 
         # grp2 now has two members:
-        self.assertEqual(
-            sorted([user1, user2], key=attrgetter('name')),
-            sorted(self.grp2.get_members(), key=attrgetter('name'))
-        )
+        self.assertItemsEqual([user1, user2], self.grp2.get_members())
         self.assertTrue(self.grp2.is_member(user1))
         self.assertTrue(self.grp2.is_member(user2))
 
