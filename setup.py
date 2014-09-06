@@ -136,6 +136,7 @@ def run_test_suite(host, user, passwd, part=None, fail_on_error=False):
         if fail_on_error is True:
             if result.errors or result.failures:
                 return result.errors, result.failures
+    return [], []
 
 
 class prepare_debian_changelog(Command):
