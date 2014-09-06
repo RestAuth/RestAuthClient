@@ -82,7 +82,7 @@ class BasicTests(RestAuthClientTestCase):
 
     def test_badRequestPost(self):
         try:
-            self.conn.post(paths[0], {'bad': 'request'})
+            self.conn.post(str(paths[0]), {'bad': 'request'})
             self.fail()
         except error.BadRequest:
             pass
@@ -91,7 +91,7 @@ class BasicTests(RestAuthClientTestCase):
         # we need to create it first, otherwise we might get a 404 instead
         user = RestAuthUser.create(self.conn, 'testuser', 'password')
         try:
-            self.conn.put('/users/testuser/', {'bad': 'request'})
+            self.conn.put(str('/users/testuser/'), {'bad': 'request'})
             self.fail()
         except error.BadRequest:
             pass
