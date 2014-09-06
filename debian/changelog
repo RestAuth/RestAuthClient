@@ -1,3 +1,9 @@
+python-restauth (0.6.1-174-g36ef93f-1) unstable; urgency=low
+
+  * Test-build for 0.6.2 release.
+
+ -- Mathias Ertl <mati@restauth.net>  Sat, 06 Sep 2014 11:56:33 +0200
+
 python-restauth (0.6.1-1) unstable; urgency=low
 
   * Version bump from upstream
