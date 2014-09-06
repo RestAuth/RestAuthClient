@@ -10,10 +10,6 @@ from RestAuthCommon import error
 
 from .base import RestAuthClientTestCase
 
-rest_host = 'http://[::1]:8000'
-rest_user = 'vowi'
-rest_passwd = 'vowi'
-
 username = "mati \u6109"
 username2 = "mati \u6110"
 password = "mati \u6111"
