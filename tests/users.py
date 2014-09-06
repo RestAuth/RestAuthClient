@@ -83,7 +83,7 @@ class BasicTests(RestAuthClientTestCase, PropertyTestMixin):
 
         # use empty string instead:
         user2 = RestAuthUser.create(self.conn, username + '1', '')
-        self.assertItemsEqual([user1, user2], RestAuthUser.get_all(self.conn))
+        self.assertCountEqual([user1, user2], RestAuthUser.get_all(self.conn))
         self.assertEqual(user2, RestAuthUser.get(self.conn, username + '1'))
         # check that no password verifies as correct
         self.assertFalse(user2.verify_password(''))
@@ -197,7 +197,7 @@ class BasicTests(RestAuthClientTestCase, PropertyTestMixin):
         self.assertEqual([username], RestAuthUser.get_all(self.conn, flat=True))
 
         RestAuthUser.create(self.conn, username2)
-        self.assertItemsEqual([username, username2],RestAuthUser.get_all(self.conn, flat=True))
+        self.assertCountEqual([username, username2],RestAuthUser.get_all(self.conn, flat=True))
 
 
 class CreateUserTest(RestAuthClientTestCase):

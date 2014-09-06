@@ -86,14 +86,14 @@ class BasicTests(RestAuthClientTestCase):
     def test_addUser(self):
         grp_0 = RestAuthGroup.create(self.conn, groupname_1)
         grp_1 = RestAuthGroup.create(self.conn, groupname_2)
-        self.assertItemsEqual([grp_0, grp_1], RestAuthGroup.get_all(self.conn))
+        self.assertCountEqual([grp_0, grp_1], RestAuthGroup.get_all(self.conn))
 
         grp_0.add_user(user1)
         grp_1.add_user(user2)
         grp_1.add_user(user3)
 
-        self.assertItemsEqual([user1], grp_0.get_members())
-        self.assertItemsEqual([user2, user3], grp_1.get_members())
+        self.assertCountEqual([user1], grp_0.get_members())
+        self.assertCountEqual([user2, user3], grp_1.get_members())
 
         self.assertTrue(grp_0.is_member(user1))
         self.assertFalse(grp_0.is_member(user2))
@@ -148,13 +148,13 @@ class BasicTests(RestAuthClientTestCase):
         self.assertEqual(grp.get_members(flat=True), [user1.name])
 
         grp.add_user(user2)
-        self.assertItemsEqual(grp.get_members(flat=True), [user1.name, user2.name])
+        self.assertCountEqual(grp.get_members(flat=True), [user1.name, user2.name])
 
     def test_removeUser(self):
         grp = RestAuthGroup.create(self.conn, groupname_1)
         grp.add_user(user1)
         grp.add_user(user2)
-        self.assertItemsEqual([user1, user2], grp.get_members())
+        self.assertCountEqual([user1, user2], grp.get_members())
 
         grp.remove_user(user1)
         self.assertEqual([user2], grp.get_members())
@@ -282,7 +282,7 @@ class MetaGroupTests(RestAuthClientTestCase):
         self.assertTrue(self.grp1.is_member(user1))
 
         # grp2 now has two members:
-        self.assertItemsEqual([user1, user2], self.grp2.get_members())
+        self.assertCountEqual([user1, user2], self.grp2.get_members())
         self.assertTrue(self.grp2.is_member(user1))
         self.assertTrue(self.grp2.is_member(user2))
 
@@ -308,7 +308,7 @@ class MetaGroupTests(RestAuthClientTestCase):
         self.assertTrue(self.grp1.is_member(user1))
 
         # grp2 now has two members:
-        self.assertItemsEqual([user1, user2], self.grp2.get_members())
+        self.assertCountEqual([user1, user2], self.grp2.get_members())
         self.assertTrue(self.grp2.is_member(user1))
         self.assertTrue(self.grp2.is_member(user2))
 
