@@ -97,8 +97,7 @@ class BasicTests(RestAuthClientTestCase, PropertyTestMixin):
     def test_createUserWithInvalidProperties(self):
         properties = {propKey: propVal, 'foo:bar': propVal2}
         args = [self.conn, username, password, properties]
-        self.assertRaises(error.PreconditionFailed,
-                          RestAuthUser.create, *args)
+        self.assertRaises(error.PreconditionFailed, RestAuthUser.create, *args)
         self.assertEqual([], RestAuthUser.get_all(self.conn))
 
     def test_createInvalidUser(self):
@@ -198,8 +197,7 @@ class BasicTests(RestAuthClientTestCase, PropertyTestMixin):
         self.assertEqual([username], RestAuthUser.get_all(self.conn, flat=True))
 
         RestAuthUser.create(self.conn, username2)
-        self.assertEqual(sorted([username, username2]),
-                         sorted(RestAuthUser.get_all(self.conn, flat=True)))
+        self.assertItemsEqual([username, username2],RestAuthUser.get_all(self.conn, flat=True))
 
 
 class CreateUserTest(RestAuthClientTestCase):
@@ -208,8 +206,7 @@ class CreateUserTest(RestAuthClientTestCase):
         self.assertEqual([], RestAuthUser.get_all(self.conn))
 
     def test_createUserTestWithPassword(self):
-        self.assertEquals(None, RestAuthUser.create_test(
-            self.conn, username, "password"))
+        self.assertEquals(None, RestAuthUser.create_test(self.conn, username, "password"))
         self.assertEqual([], RestAuthUser.get_all(self.conn))
 
     def test_createUserTestWithProperties(self):
@@ -225,8 +222,7 @@ class CreateUserTest(RestAuthClientTestCase):
     def test_createUserWithInvalidProperties(self):
         properties = {propKey: propVal, 'foo:bar': propVal2}
         args = [self.conn, username, password, properties]
-        self.assertRaises(error.PreconditionFailed,
-                          RestAuthUser.create, *args)
+        self.assertRaises(error.PreconditionFailed, RestAuthUser.create, *args)
         self.assertEqual([], RestAuthUser.get_all(self.conn))
 
     def test_createUserTestWithTooShortUsername(self):
@@ -557,8 +553,7 @@ class SimpleUserGroupTests(RestAuthClientTestCase):
 
 class CreatePropertyTest(PropertyBaseTests):
     def test_createProperty(self):
-        self.assertEquals(None,
-                          self.user.create_property_test(propKey, propVal))
+        self.assertEquals(None, self.user.create_property_test(propKey, propVal))
         self.assertProperties(**{})
 
     def test_createExistingProperty(self):
